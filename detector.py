@@ -1,4 +1,12 @@
-def detect_persons(model, frame, confidence_threshold=0.3, min_area=500):
+def detect_persons(
+    model,
+    frame,
+    confidence_threshold=0.3,
+    min_area=500,
+    imgsz=320,
+    device=None,
+    half=False,
+):
     """Run YOLO tracking on a single frame and return person detections.
 
     Args:
@@ -7,10 +15,21 @@ def detect_persons(model, frame, confidence_threshold=0.3, min_area=500):
         confidence_threshold: Minimum confidence to keep a detection.
         min_area: Minimum bounding box area (in pixels) to keep a detection.
     Returns:
-        List of dicts with keys: 'box', 'conf', 'class_id', 'centroid', 'track_id'.
+        List of dicts with keys: 'box', 'conf', 'class_id', 'centroid',
+        'foot_point', and 'track_id'.
     """
-    # Use model.track for persistent IDs across frames
-    results = model.track(frame, persist=True, verbose=False)
+    # Track only people at inference time. Filtering before post-processing keeps
+    # IDs focused on the class that matters for line crossing.
+    results = model.track(
+        frame,
+        persist=True,
+        verbose=False,
+        classes=[0],
+        conf=confidence_threshold,
+        imgsz=imgsz,
+        device=device,
+        half=half,
+    )
     result = results[0]
     person_detections = []
     if result.boxes is not None:
@@ -26,12 +45,15 @@ def detect_persons(model, frame, confidence_threshold=0.3, min_area=500):
                 continue
             cx = int((x1 + x2) / 2)
             cy = int((y1 + y2) / 2)
+            foot_x = int((x1 + x2) / 2)
+            foot_y = int(y2)
             track_id = int(box.id[0]) if box.id is not None else None
             person_detections.append({
                 'box': xyxy,
                 'conf': conf,
                 'class_id': class_id,
                 'centroid': (cx, cy),
+                'foot_point': (foot_x, foot_y),
                 'track_id': track_id,
             })
     return person_detections

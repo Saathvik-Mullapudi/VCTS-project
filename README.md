@@ -11,8 +11,9 @@ The app watches a video, tracks people, draws a virtual boundary, and counts whe
 | --- | --- |
 | Model | `yolov8n.pt` by default |
 | Input | Image, video file, webcam index, or stream URL |
-| Detection | YOLO tracking with person filtering |
-| Speed controls | Resize + `--skip-frames` |
+| Detection | YOLOv8n tracking with person filtering |
+| Speed controls | Resize + optional `--skip-frames` |
+| Crossing point | Bottom-center foot point against the drawn line |
 | Output | Live OpenCV window, optional `output.mp4` |
 | Main sample | `video.mp4` |
 
@@ -20,8 +21,8 @@ The app watches a video, tracks people, draws a virtual boundary, and counts whe
 
 ```text
 line_crossing/
-|-- main.py          # CLI, video loop, line placement, crossing count
-|-- detector.py      # YOLO tracking wrapper, person/confidence filtering
+|-- main.py          # CLI, video loop, line geometry, crossing count
+|-- detector.py      # YOLOv8n tracking wrapper, person/confidence filtering
 |-- visualizer.py    # Boundary line, boxes, labels, centroid drawing
 |-- motion_utils.py  # Motion-detection helper functions, not yet wired in
 |-- requirements.txt # opencv-python, ultralytics, numpy
@@ -50,7 +51,7 @@ flowchart TD
     L --> M[Track people]
     M --> N[Filter class 0: person]
     N --> O[Draw overlays]
-    O --> P[Update crossing count]
+    O --> P[Stable foot-point line crossing]
     P --> Q[Display / save]
     Q --> H
 ```
@@ -60,8 +61,8 @@ flowchart TD
 ```mermaid
 stateDiagram-v2
     [*] --> NewTrack
-    NewTrack --> Above: centroid above line_y
-    NewTrack --> Below: centroid below line_y
+    NewTrack --> Above: foot point on side A
+    NewTrack --> Below: foot point on side B
     Above --> Above: same side
     Below --> Below: same side
     Above --> Counted: side changed
@@ -70,7 +71,7 @@ stateDiagram-v2
     Counted --> Below
 ```
 
-The visual boundary is drawn as a slanted custom line, but the current crossing check still uses horizontal `line_y`. That is the biggest accuracy upgrade waiting to happen.
+Crossing is based on YOLO track IDs, the bottom-center foot point of each person box, a margin around the line, and a short stable-frame check. This reduces false counts from box jitter near the boundary.
 
 ## Setup
 
@@ -87,7 +88,7 @@ python main.py
 python main.py --model yolov8n.pt
 python main.py --use-gpu --model yolov8n.pt
 python main.py --save-output --model yolov8n.pt
-python main.py --width 320 --height 240 --skip-frames 2 --conf-thresh 0.3
+python main.py --width 640 --height 360 --skip-frames 1 --conf-thresh 0.5
 ```
 
 Press `q` in the playback window to stop.
@@ -98,17 +99,20 @@ Press `q` in the playback window to stop.
 | --- | ---: | --- |
 | `--source` | `video.mp4` | Image, video, webcam, or URL |
 | `--model` | `yolov8n.pt` | YOLO model path |
-| `--width` | `320` | Frame width after resize |
-| `--height` | `240` | Frame height after resize |
-| `--skip-frames` | `2` | Process 1 of every N frames |
-| `--conf-thresh` | `0.3` | Minimum person confidence |
+| `--width` | `640` | Frame width after resize |
+| `--height` | `360` | Frame height after resize |
+| `--skip-frames` | `1` | Process 1 of every N frames |
+| `--conf-thresh` | `0.5` | Minimum person confidence |
 | `--save-output` | off | Save annotated `output.mp4` |
 | `--use-gpu` | off | Move model to CUDA if available |
+| `--line-margin` | `3.0` | Dead zone around the line |
+| `--stable-frames` | `1` | Frames required to accept side change |
+| `--crossing-cooldown` | `8` | Delay before same track can count again |
+| `--debug` | off | Print per-frame detection details |
 
 ## Next Improvements
 
-1. Enforce YOLOv8n-only and remove the heavier model from the workflow.
-2. Auto-select CUDA and pass faster YOLO args: `classes=[0]`, `conf`, `imgsz`, `device`.
-3. Count against the actual slanted line using bottom-center foot points.
-4. Add per-track debounce to avoid repeat counts near the line.
-5. Wire `motion_utils.py` into the loop to skip low-motion frames.
+1. Auto-select CUDA instead of requiring `--use-gpu`.
+2. Tune tracker settings for the target CCTV angle.
+3. Wire `motion_utils.py` into the loop to skip low-motion frames.
+4. Add a `--no-display` benchmark mode for faster testing.

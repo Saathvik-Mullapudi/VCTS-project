@@ -4,7 +4,7 @@
 # Includes:
 #   - draw_virtual_line: full‑width line (kept for compatibility)
 #   - draw_custom_line: manual line with user‑specified start/end points
-#   - draw_detections: bounding boxes, centroids and confidence labels
+#   - draw_detections: bounding boxes, foot points, track IDs and confidence labels
 # ------------------------------------------------------------------
 import cv2
 
@@ -68,11 +68,12 @@ def draw_custom_line(frame,
 
 def draw_detections(frame, detections):
     """
-    Draws bounding boxes, tracking IDs, and centroids (center points) for all detections.
+    Draws bounding boxes, tracking IDs, centroids, and foot points for detections.
     
     Args:
         frame: The OpenCV frame (numpy array) to draw on.
-        detections: List of detection dictionaries containing 'box', 'conf', 'centroid', and 'track_id'.
+        detections: List of detection dictionaries containing 'box', 'conf',
+        'centroid', 'foot_point', and 'track_id'.
         
     Returns:
         The frame with visual elements drawn on it.
@@ -81,11 +82,11 @@ def draw_detections(frame, detections):
         box = det['box']
         conf = det['conf']
         cx, cy = det['centroid']
+        fx, fy = det.get('foot_point', (cx, cy))
+        track_id = det.get('track_id')
         # Default colors (no tracking, no crossing alerts)
         box_color = (255, 0, 0)  # Blue in BGR
         dot_color = (0, 255, 0)  # Green in BGR
-        # No label for tracking ID or crossing alerts
-        
         # Bounding box corners as integer coordinates
         x1, y1, x2, y2 = map(int, box)
 
@@ -94,9 +95,11 @@ def draw_detections(frame, detections):
         
         # Draw centroid dot
         cv2.circle(frame, (cx, cy), 5, dot_color, -1)
+
+        # Draw bottom-center foot point used for line-crossing decisions
+        cv2.circle(frame, (fx, fy), 5, (0, 255, 255), -1)
         
-        # No need for track_id; use only confidence
-        label = f"Conf: {conf:.2f}"
+        label = f"ID {track_id} | {conf:.2f}" if track_id is not None else f"Conf: {conf:.2f}"
         cv2.putText(
             frame,
             label,

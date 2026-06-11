@@ -1,3 +1,4 @@
+
 # Line Crossing Detection with YOLOv8n
 
 Fast, readable people-crossing detection built with **OpenCV** and **YOLOv8n**.  
@@ -116,3 +117,7 @@ Press `q` in the playback window to stop.
 2. Tune tracker settings for the target CCTV angle.
 3. Wire `motion_utils.py` into the loop to skip low-motion frames.
 4. Add a `--no-display` benchmark mode for faster testing.
+
+# VCTS-project
+YOLOv8n + OpenCV CCTV line-crossing detector using person tracking, foot-point logic, and configurable crossing controls.
+

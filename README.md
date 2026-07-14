@@ -29,7 +29,7 @@ line_crossing/
 |-- scripts/             # Export, calibration, and model verification scripts
 |-- configs/             # YAML configuration files
 |-- models/              # YOLO and exported TFLite model artifacts
-|-- data/calibration/    # Calibration frames and arrays
+|-- data/calibration/    # Local calibration arrays; calibration images live outside Git
 |-- data/videos/         # Input/demo videos
 |-- outputs/             # Generated videos, metrics, and debug frames
 |-- docs/                # Reports and project documents
@@ -113,6 +113,21 @@ Press `q` in the playback window to stop.
 | `--debug-mapping` | off | Print tile-to-model box mapping details |
 
 ## Next Improvements
+
+## Calibration Data
+
+Calibration images are stored outside the repository by default:
+
+```text
+C:/Users/saath/VCTS_DATA/calibration_images/
+```
+
+The TFLite export uses `configs/calib_dataset.yaml`. To override the calibration YAML or extracted-frame location:
+
+```powershell
+python scripts/export_to_tflite.py --data configs/calib_dataset.yaml
+python scripts/extract_calibration_frames.py --out-dir C:/Users/saath/VCTS_DATA/calibration_images
+```
 
 1. Add a short smoke-test mode for quick CI checks.
 2. Tune tracker settings for the target CCTV angle.

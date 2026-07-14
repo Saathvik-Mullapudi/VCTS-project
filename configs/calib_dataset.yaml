@@ -1,6 +1,6 @@
-path: ../data/calibration/calib_dataset
-train: images
-val: images
+path: C:/Users/saath/VCTS_DATA/calibration_images
+train: .
+val: .
 
 names:
   0: person

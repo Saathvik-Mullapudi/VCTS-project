@@ -1,7 +1,10 @@
 import argparse
+import os
 from pathlib import Path
 
 import cv2
+
+DEFAULT_CALIBRATION_IMAGES_DIR = "C:/Users/saath/VCTS_DATA/calibration_images"
 
 
 def parse_args():
@@ -15,7 +18,7 @@ def parse_args():
     )
     parser.add_argument(
         "--out-dir",
-        default="data/calibration/calib_dataset/images",
+        default=os.environ.get("VCTS_CALIBRATION_IMAGES_DIR", DEFAULT_CALIBRATION_IMAGES_DIR),
         help="Output folder for extracted frames.",
     )
     parser.add_argument(

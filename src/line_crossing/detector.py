@@ -6,6 +6,7 @@ def detect_persons(
     imgsz=320,
     device=None,
     half=False,
+    offset=(0, 0),
 ):
     """Run YOLO tracking on a single frame and return person detections.
 
@@ -47,6 +48,12 @@ def detect_persons(
             cy = int((y1 + y2) / 2)
             foot_x = int((x1 + x2) / 2)
             foot_y = int(y2)
+            offset_x, offset_y = offset
+            xyxy = [x1 + offset_x, y1 + offset_y, x2 + offset_x, y2 + offset_y]
+            cx += offset_x
+            cy += offset_y
+            foot_x += offset_x
+            foot_y += offset_y
             track_id = int(box.id[0]) if box.id is not None else None
             person_detections.append({
                 'box': xyxy,

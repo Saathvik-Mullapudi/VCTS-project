@@ -10,26 +10,29 @@ The app watches a video, tracks people, draws a virtual boundary, and counts whe
 
 | Area | Current Behavior |
 | --- | --- |
-| Model | `yolov8n.pt` by default |
+| Model | `models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite` by default |
 | Input | Image, video file, webcam index, or stream URL |
 | Detection | YOLOv8n tracking with person filtering |
-| Speed controls | Resize + optional `--skip-frames` |
+| Speed controls | Built-in frame skipping and optional tiled inference |
 | Crossing point | Bottom-center foot point against the drawn line |
-| Output | Live OpenCV window, optional `output.mp4` |
-| Main sample | `video.mp4` |
+| Tiling | Optional right-half tile for crowded CCTV regions |
+| Output | Live OpenCV window, optional `outputs/videos/output.mp4` |
+| Main sample | `data/videos/vid.mp4` |
 
 ## Project Map
 
 ```text
 line_crossing/
-|-- main.py          # CLI, video loop, line geometry, crossing count
-|-- detector.py      # YOLOv8n tracking wrapper, person/confidence filtering
-|-- visualizer.py    # Boundary line, boxes, labels, centroid drawing
-|-- motion_utils.py  # Motion-detection helper functions, not yet wired in
-|-- requirements.txt # opencv-python, ultralytics, numpy
-|-- yolov8n.pt       # lightweight model used by default
-|-- video.mp4        # default sample video
-|-- bus.jpg          # sample image
+|-- main.py              # CLI, video loop, line geometry, crossing count
+|-- requirements.txt     # Python dependencies
+|-- src/line_crossing/   # Reusable detector, visualization, motion, and GStreamer modules
+|-- scripts/             # Export, calibration, and model verification scripts
+|-- configs/             # YAML configuration files
+|-- models/              # YOLO and exported TFLite model artifacts
+|-- data/calibration/    # Calibration frames and arrays
+|-- data/videos/         # Input/demo videos
+|-- outputs/             # Generated videos, metrics, and debug frames
+|-- docs/                # Reports and project documents
 ```
 
 ## Pipeline
@@ -86,10 +89,11 @@ python -m pip install -r requirements.txt
 
 ```powershell
 python main.py
-python main.py --model yolov8n.pt
-python main.py --use-gpu --model yolov8n.pt
-python main.py --save-output --model yolov8n.pt
-python main.py --width 640 --height 360 --skip-frames 1 --conf-thresh 0.5
+python main.py --model models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+python main.py --video data/videos/vid.mp4
+python main.py --output outputs/videos/output.mp4
+python main.py --video data/videos/vid.mp4 --use-tiling --tile-padding 120
+python main.py --metrics-csv outputs/metrics/metrics.csv --metrics-json outputs/metrics/metrics.json
 ```
 
 Press `q` in the playback window to stop.
@@ -98,25 +102,22 @@ Press `q` in the playback window to stop.
 
 | Option | Default | Meaning |
 | --- | ---: | --- |
-| `--source` | `video.mp4` | Image, video, webcam, or URL |
-| `--model` | `yolov8n.pt` | YOLO model path |
-| `--width` | `640` | Frame width after resize |
-| `--height` | `360` | Frame height after resize |
-| `--skip-frames` | `1` | Process 1 of every N frames |
-| `--conf-thresh` | `0.5` | Minimum person confidence |
-| `--save-output` | off | Save annotated `output.mp4` |
-| `--use-gpu` | off | Move model to CUDA if available |
-| `--line-margin` | `3.0` | Dead zone around the line |
-| `--stable-frames` | `1` | Frames required to accept side change |
-| `--crossing-cooldown` | `8` | Delay before same track can count again |
-| `--debug` | off | Print per-frame detection details |
+| `--video` | `data/videos/vid.mp4` | Video file, webcam, or stream URL |
+| `--model` | `models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite` | TFLite model path |
+| `--output` | `outputs/videos/output.mp4` | Save annotated output video |
+| `--use-tiling` | on | Track people inside the right-half tile |
+| `--tile-padding` | `120` | Pixels to extend tile left of center |
+| `--metrics-csv` | `outputs/metrics/metrics.csv` | CSV file for runtime metrics |
+| `--metrics-json` | `outputs/metrics/metrics.json` | JSON file for runtime metrics |
+| `--preview` | off | Enable local OpenCV display |
+| `--debug-mapping` | off | Print tile-to-model box mapping details |
 
 ## Next Improvements
 
-1. Auto-select CUDA instead of requiring `--use-gpu`.
+1. Add a short smoke-test mode for quick CI checks.
 2. Tune tracker settings for the target CCTV angle.
-3. Wire `motion_utils.py` into the loop to skip low-motion frames.
-4. Add a `--no-display` benchmark mode for faster testing.
+3. Wire `src/line_crossing/motion_utils.py` into the loop to skip low-motion frames.
+4. Add a no-output benchmark mode for faster testing.
 
 # VCTS-project
 YOLOv8n + OpenCV CCTV line-crossing detector using person tracking, foot-point logic, and configurable crossing controls.

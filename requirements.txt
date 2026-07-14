@@ -1,3 +1,10 @@
+
 opencv-python
-ultralytics
-numpy
+numpy==1.26.4
+av
+psutil
+# ultralytics (Not needed for i.MX8 deployment)
+# For i.MX8 with TFLite:
+tflite-runtime
+# For Windows with TensorFlow (if needed later):
+#tensorflow

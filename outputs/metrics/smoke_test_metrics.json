@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "timestamp_start": "2026-07-14T15:48:40",
+    "model_path": "models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite",
+    "video_src": "data/videos/smoke_test.mp4",
+    "output_file": "outputs/videos/smoke_test_output.mp4",
+    "use_tiling": true,
+    "tile_padding": 120,
+    "skip_frames": 2,
+    "conf_threshold": 0.5,
+    "nms_threshold": 0.45,
+    "display_width": 1920,
+    "display_height": 1080,
+    "ml_input_width": 640,
+    "ml_input_height": 640,
+    "npu_available": false,
+    "system_monitor_interval_sec": 1.0,
+    "line_start": [
+      691,
+      496
+    ],
+    "line_end": [
+      1593,
+      648
+    ]
+  },
+  "summary": {
+    "frame_records": 0,
+    "system_records": 1,
+    "timestamp_end": "2026-07-14T15:48:41",
+    "elapsed_seconds": 1.043996
+  },
+  "frame_metrics": [],
+  "system_metrics": [
+    {
+      "timestamp": "2026-07-14T15:48:40",
+      "frame_number": 0,
+      "cpu_total_percent": 0.0,
+      "cpu_per_core_percent": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ram_percent": 68.1,
+      "temperature_c": null,
+      "temperature_source": null,
+      "gpu_utilization_percent": null,
+      "gpu_source": null,
+      "npu_utilization_percent": null,
+      "npu_source": null,
+      "power_w": null,
+      "power_source": null
+    }
+  ]
+}

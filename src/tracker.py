@@ -1,5 +1,8 @@
+import logging
 import numpy as np
 from collections import OrderedDict
+
+logger = logging.getLogger(__name__)
 from configs.settings import TRACKER_FOOT_POINT_MAX_DIST
 
 # CENTROID TRACKER (FROM OVERSPEED PROJECT)
@@ -170,7 +173,7 @@ class LineCrossingCounter:
                     self.crossing_count += 1
                     state["counted"] = True
                     state["side"] = current_side
-                    print(f"[ALERT] ID{objectID} crossed! Total: {self.crossing_count}")
+                    logger.info(f"ID{objectID} crossed! Total: {self.crossing_count}")
             else:
                 # Back on original side, reset pending
                 state["pending_frames"] = 0

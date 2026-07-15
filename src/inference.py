@@ -1,5 +1,8 @@
+import logging
 import numpy as np
 import cv2
+
+logger = logging.getLogger(__name__)
 from configs.settings import PREPROCESS_PAD_COLOR, PREPROCESS_INT8_OFFSET
 
 # ============================================================================

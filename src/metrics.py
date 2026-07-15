@@ -4,6 +4,9 @@ from datetime import datetime
 from pathlib import Path
 import csv
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 class PipelineProfiler:
     def __init__(self, stage_names):
@@ -106,8 +109,8 @@ class MetricsRecorder:
             try:
                 start_dt = datetime.fromisoformat(start_ts)
                 payload["summary"]["elapsed_seconds"] = (datetime.now() - start_dt).total_seconds()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"Could not parse start timestamp for metrics summary: {e}")
         json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     def _base_row(self, record_type, record):

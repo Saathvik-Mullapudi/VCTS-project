@@ -2,6 +2,9 @@ import time
 import threading
 from datetime import datetime
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 try:
     import psutil
 except ImportError:
@@ -56,7 +59,7 @@ class SystemMonitor:
                         self._on_sample(sample)
                     except Exception:
                         pass
-                print(f"[SYS] {self.format_sample(sample)}")
+                logger.info(f"System Metrics: {self.format_sample(sample)}")
                 next_sample = time.monotonic() + self.interval_sec
 
     def sample(self):

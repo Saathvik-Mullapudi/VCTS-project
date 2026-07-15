@@ -2,7 +2,16 @@
 import os
 import logging
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+os.makedirs("outputs/logs", exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("outputs/logs/line_crossing.log")
+    ]
+)
+logger = logging.getLogger(__name__)
 import time
 import threading
 from contextlib import contextmanager
@@ -23,27 +32,7 @@ try:
 except ImportError:
     psutil = None
 
-# Try tflite-runtime first (for i.MX8)
-try:
-    from tflite_runtime.interpreter import Interpreter
-    from tflite_runtime.interpreter import load_delegate
-    NPU_AVAILABLE = True
-    print("[OK] Using tflite-runtime (i.MX8 mode)")
-except ImportError:
-    # Try TensorFlow (for Windows laptop)
-    try:
-        import tensorflow as tf
-        Interpreter = tf.lite.Interpreter
-        # For TensorFlow >= 2.14, experimental.load_delegate is still valid
-        try:
-            load_delegate = tf.lite.experimental.load_delegate
-        except AttributeError:
-            load_delegate = None  # N/A on Windows
-        NPU_AVAILABLE = False
-        print("[OK] Using TensorFlow for TFLite (Windows mode)")
-    except ImportError as e:
-        logging.error(f" Need either tensorflow or tflite-runtime installed! Error: {e}".strip())
-        exit(1)
+
 
 from configs.settings import *
 
@@ -66,7 +55,7 @@ except (ImportError, ValueError):
 from src.system_monitor import SystemMonitor
 from src.metrics import MetricsRecorder, PipelineProfiler
 from src.tracker import CentroidTracker, LineCrossingCounter
-from src.inference import CPUPreprocessor, OptimizedPostprocessor
+from src.model import TFLitePersonDetector, NPU_AVAILABLE
 
 # ============================================================================
 # MAIN LINE CROSSING DETECTOR
@@ -99,7 +88,9 @@ class LineCrossingDetector:
         self.crossing_count = 0
         
         # Load model
-        self._load_model(model_path)
+        self.detector = TFLitePersonDetector(model_path)
+        self.in_h, self.in_w = self.detector.in_h, self.detector.in_w
+        self.npu_status = self.detector.npu_status
         
         # Initialize tracker and counter
         self.tracker = CentroidTracker(
@@ -145,61 +136,7 @@ class LineCrossingDetector:
             "line_end": list(LINE_END),
         }
     
-    def _load_model(self, model_path):
-        logging.info(f" Loading: {model_path}".strip())
-        self.npu_status = "unknown"
-        
-        if NPU_AVAILABLE:
-            try:
-                delegate = load_delegate('libvx_delegate.so')
-                self.interpreter = Interpreter(model_path, experimental_delegates=[delegate])
-                self.npu_status = "loaded"
-                logging.info(f" NPU delegate loaded".strip())
-            except Exception as e:
-                self.npu_status = "fallback"
-                logging.warning(f" NPU delegate failed, CPU fallback: {e}".strip())
-                self.interpreter = Interpreter(model_path, num_threads=4)
-        else:
-            self.npu_status = "unavailable"
-            self.interpreter = Interpreter(model_path, num_threads=4)
-            logging.info(f" NPU unavailable, using CPU".strip())
-        
-        self.interpreter.allocate_tensors()
-        self.input_details = self.interpreter.get_input_details()
-        self.output_details = self.interpreter.get_output_details()
-        
-        input_shape = self.input_details[0]['shape']
-        in_h, in_w = int(input_shape[1]), int(input_shape[2])
-        in_dtype = self.input_details[0]['dtype']
-        
-        self.in_h, self.in_w = in_h, in_w
-        logging.info(f" Model input dtype: {in_dtype}, output dtype: {self.output_details[0]['dtype']}".strip())
-        if str(in_dtype) not in ("<class 'numpy.uint8'>", "uint8", "int8", "int32"):
-            logging.warning(f" Model input does not look like a fully quantized int8/uint8 TFLite model".strip())
-        
-        self.scale_params = {'scale': None, 'zero_point': 0}
-        try:
-            qp = self.output_details[0].get('quantization_parameters', {})
-            if qp.get('scales'):
-                self.scale_params['scale'] = float(qp['scales'][0])
-            if qp.get('zero_points'):
-                self.scale_params['zero_point'] = int(qp['zero_points'][0])
-        except:
-            pass
-        
-        self.preprocessor = CPUPreprocessor(in_w, in_h, in_dtype)
-        self.postprocessor = OptimizedPostprocessor(
-            conf_threshold=CONF_THRESHOLD,
-            nms_threshold=NMS_THRESHOLD,
-            topk=500,
-            class_ids=PERSON_CLASS_IDS
-        )
-        
-        dummy = np.zeros((480, 640, 3), dtype=np.uint8)
-        dummy_input, _, _, _ = self.preprocessor.process(dummy)
-        self.interpreter.set_tensor(self.input_details[0]['index'], dummy_input)
-        self.interpreter.invoke()
-        logging.info(f" Model ready".strip())
+
 
     def _get_tile_bounds(self):
         """Right-half ROI with optional left padding (display coordinates)."""
@@ -226,7 +163,7 @@ class LineCrossingDetector:
                 int(dy2 * ml_scale_y),
             ])
         if self.debug_mapping and mapped:
-            print(
+            logger.debug(
                 f"[MAP] tile_x0={tile_x0} tile_y0={tile_y0} "
                 f"tile_box={boxes[0]} mapped_ml={mapped[0]}"
             )
@@ -266,11 +203,11 @@ class LineCrossingDetector:
         """Callback when pad caps change."""
         caps = pad.get_current_caps()
         pad_name = pad.get_name()
-        print(f"\n=== [CAPS CHANGE] {element_name}:{pad_name} ===")
+        logger.debug(f"=== [CAPS CHANGE] {element_name}:{pad_name} ===")
         if caps:
-            logging.debug(caps.to_string())
+            logger.debug(caps.to_string())
         else:
-            logging.debug("(no caps)")
+            logger.debug("(no caps)")
     
     def _monitor_element_pads(self, element, element_name):
         """Monitor both src and sink pads of an element for caps changes."""
@@ -285,18 +222,18 @@ class LineCrossingDetector:
     def _on_bus_message(self, bus, message):
         t = message.type
         if t == Gst.MessageType.EOS:
-            logging.info(f" End of stream".strip())
+            logger.info("End of stream")
             self.pipeline.set_state(Gst.State.NULL)
             self.loop.quit()
         elif t == Gst.MessageType.ERROR:
             err, debug = message.parse_error()
-            logging.error(f" {err}: {debug}".strip())
+            logger.error(f"{err}: {debug}")
             self.pipeline.set_state(Gst.State.NULL)
             self.loop.quit()
         elif t == Gst.MessageType.STATE_CHANGED:
             old, new, pending = message.parse_state_changed()
             if message.src == self.pipeline and new == Gst.State.PLAYING:
-                logging.info("=== [PIPELINE PLAYING] Printing current caps for key elements ===")
+                logger.info("=== [PIPELINE PLAYING] Printing current caps for key elements ===")
                 # Print caps for key elements after pipeline is playing
                 self._print_key_element_caps()
     
@@ -307,11 +244,11 @@ class LineCrossingDetector:
             pad = element.get_static_pad(pad_name)
             if pad:
                 caps = pad.get_current_caps()
-                print(f"\n=== {element_label} {pad_name.upper()} CAPS ===")
+                logger.debug(f"=== {element_label} {pad_name.upper()} CAPS ===")
                 if caps:
-                    logging.debug(caps.to_string())
+                    logger.debug(caps.to_string())
                 else:
-                    logging.debug("(no caps yet)")
+                    logger.debug("(no caps yet)")
         
         # Iterate through all elements to find the ones we want
         it = self.pipeline.iterate_elements()
@@ -336,21 +273,13 @@ class LineCrossingDetector:
                 print_pad_caps(element, "sink", "cairooverlay")
                 print_pad_caps(element, "src", "cairooverlay")
 
-    def _run_inference(self, frame_segment, seg_h, seg_w):
-        input_tensor, scale, pad_x, pad_y = self.preprocessor.process(frame_segment)
-        self.interpreter.set_tensor(self.input_details[0]['index'], input_tensor)
-        self.interpreter.invoke()
-        output_data = self.interpreter.get_tensor(self.output_details[0]['index'])
-        return self.postprocessor.process(
-            output_data, (seg_h, seg_w), (self.in_h, self.in_w),
-            self.scale_params, scale, pad_x, pad_y
-        )
+
 
     def _process_frame_for_detection(self, frame):
-        logging.debug(f" _process_frame_for_detection called for frame {self.frame_count}, frame id: {id(frame)}".strip())
+        logger.debug(f"_process_frame_for_detection called for frame {self.frame_count}, frame id: {id(frame)}")
         
         if self.frame_count % (SKIP_FRAMES + 1) != 1:
-            logging.debug(f" Skipping frame {self.frame_count} (not inference frame)".strip())
+            logger.debug(f"Skipping frame {self.frame_count} (not inference frame)")
             return
 
         frame_display = frame
@@ -360,19 +289,19 @@ class LineCrossingDetector:
             frame_tile = frame_display[tile_y0:tile_y1, tile_x0:tile_x1]
             tile_h, tile_w = frame_tile.shape[:2]
             
-            person_boxes, person_scores, person_classes = self._run_inference(frame_tile, tile_h, tile_w)
+            person_boxes, person_scores, person_classes = self.detector.predict(frame_tile, tile_h, tile_w)
             
             person_boxes_display = self._map_boxes_tile_to_display(person_boxes, tile_x0, tile_y0)
             person_boxes = self._map_boxes_tile_to_full_ml(person_boxes, tile_x0, tile_y0)
         else:
             frame_ml = frame_display
-            person_boxes, person_scores, person_classes = self._run_inference(frame_ml, self.in_h, self.in_w)
+            person_boxes, person_scores, person_classes = self.detector.predict(frame_ml, self.in_h, self.in_w)
             
             person_boxes_display = self._map_boxes_ml_to_display(person_boxes)
 
         tracked_objects, _ = self.tracker.update(person_boxes)
         crossing_count = self.counter.update(tracked_objects, self.tracker, person_boxes)
-        logging.debug(f" Frame {self.frame_count}: Tracked {len(tracked_objects)} objects, crossings: {crossing_count}".strip())
+        logger.debug(f"Frame {self.frame_count}: Tracked {len(tracked_objects)} objects, crossings: {crossing_count}")
 
         with self.lock:
             self.person_boxes = person_boxes
@@ -442,7 +371,7 @@ class LineCrossingDetector:
         caps = sample.get_caps()
         
         
-        logging.debug(f" Passing frame {self.frame_count} to _process_frame_for_detection, frame id: {id(frame)}".strip())
+        logger.debug(f"Passing frame {self.frame_count} to _process_frame_for_detection, frame id: {id(frame)}")
         self._process_frame_for_detection(frame)
 
         if self.frame_count % 30 == 1:
@@ -450,7 +379,7 @@ class LineCrossingDetector:
                 det = len(self.person_boxes)
                 trk = len(self.tracked_objects)
                 c_count = self.crossing_count
-            logging.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
+            logger.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
 
         return Gst.FlowReturn.OK
 
@@ -541,14 +470,14 @@ class LineCrossingDetector:
                 f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
             )
             
-        logging.info(f" Pipeline: {pipeline_str}".strip())
+        logger.info(f"Pipeline: {pipeline_str}")
         self.pipeline = Gst.parse_launch(pipeline_str)
         
         overlay = self.pipeline.get_by_name("overlay")
         if overlay and cairo is not None:
             overlay.connect("draw", self._draw_overlay)
         elif overlay:
-            logging.warning(f" Python cairo not available; Cairo overlay callback disabled".strip())
+            logger.warning("Python cairo not available; Cairo overlay callback disabled")
             
         ml_sink = self.pipeline.get_by_name("ml_sink")
         if ml_sink:
@@ -559,7 +488,7 @@ class LineCrossingDetector:
         bus.connect("message", self._on_bus_message)
 
     def _run_cv2_fallback(self):
-        logging.info(f" GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.".strip())
+        logger.info("GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.")
         cap = cv2.VideoCapture(self.video_src)
         if not cap.isOpened():
             raise RuntimeError(f"Could not open video source: {self.video_src}")
@@ -581,7 +510,7 @@ class LineCrossingDetector:
             while True:
                 ok, frame = cap.read()
                 if not ok:
-                    logging.info(f" End of stream".strip())
+                    logger.info("End of stream")
                     break
 
                 if frame.shape[1] != DISPLAY_WIDTH or frame.shape[0] != DISPLAY_HEIGHT:
@@ -607,7 +536,7 @@ class LineCrossingDetector:
                         preview_frame = cv2.resize(overlay_frame, (PREVIEW_WIDTH, PREVIEW_HEIGHT))
                     cv2.imshow("Line Crossing Debug", preview_frame)
                     if cv2.waitKey(1) & 0xFF == ord("q"):
-                        logging.info(f" Stopped by user".strip())
+                        logger.info("Stopped by user")
                         break
 
                 if self.frame_count % 30 == 1:
@@ -615,7 +544,7 @@ class LineCrossingDetector:
                         det = len(self.person_boxes)
                         trk = len(self.tracked_objects)
                         c_count = self.crossing_count
-                    logging.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
+                    logger.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
         finally:
             self.system_monitor.stop()
             cap.release()
@@ -624,7 +553,7 @@ class LineCrossingDetector:
             if self.preview_enabled:
                 cv2.destroyAllWindows()
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
-            print(f"\n[INFO] Done! Total crossings: {self.crossing_count}")
+            logger.info(f"Done! Total crossings: {self.crossing_count}")
 
     def _start_rtsp_server(self):
         self.server = GstRtspServer.RTSPServer()
@@ -641,17 +570,17 @@ class LineCrossingDetector:
         mounts = self.server.get_mount_points()
         mounts.add_factory("/video", factory)
         self.server.attach(None)
-        logging.info(f"[RTSP] Server running at rtsp://0.0.0.0:{GST_RTSP_PORT}/video".strip())
+        logger.info(f"[RTSP] Server running at rtsp://0.0.0.0:{GST_RTSP_PORT}/video")
 
     def run(self):
-        print(f"\n[INFO] Input: {'Camera' if self.is_camera else 'Video'} {self.video_src}")
-        logging.info(f" Output: {self.output_file if self.output_file else 'Display only'}".strip())
-        logging.info(f" Line: {LINE_START} -> {LINE_END}".strip())
+        logger.info(f"Input: {'Camera' if self.is_camera else 'Video'} {self.video_src}")
+        logger.info(f"Output: {self.output_file if self.output_file else 'Display only'}")
+        logger.info(f"Line: {LINE_START} -> {LINE_END}")
         if self.use_tiling:
             tile_x0, _, tile_x1, _ = self._get_tile_bounds()
-            logging.info(f" Tiling: right-half ROI x={tile_x0}-{tile_x1} (padding={self.tile_padding})".strip())
+            logger.info(f"Tiling: right-half ROI x={tile_x0}-{tile_x1} (padding={self.tile_padding})")
         else:
-            logging.info(f" Tiling: disabled".strip())
+            logger.info("Tiling: disabled")
 
         if not GST_AVAILABLE:
             self._run_cv2_fallback()
@@ -661,19 +590,19 @@ class LineCrossingDetector:
         self._build_pipeline()
         self._start_rtsp_server()
         
-        logging.info(f" Starting pipeline...".strip())
+        logger.info("Starting pipeline...")
         self.system_monitor.start()
         self.pipeline.set_state(Gst.State.PLAYING)
         
         try:
             self.loop.run()
         except KeyboardInterrupt:
-            print("\n[INFO] Stopped")
+            logger.info("Stopped by user")
         finally:
             self.system_monitor.stop()
             self.pipeline.set_state(Gst.State.NULL)
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
-            print(f"\n[INFO] Done! Total crossings: {self.crossing_count}")
+            logger.info(f"Done! Total crossings: {self.crossing_count}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -700,7 +629,7 @@ if __name__ == "__main__":
         os.environ["XDG_RUNTIME_DIR"] = "/run/user/0"
         os.environ.setdefault("WAYLAND_DISPLAY", "wayland-0")
     else:
-        logging.info(f" GStreamer bindings not available on this machine; using OpenCV fallback.".strip())
+        logger.info("GStreamer bindings not available on this machine; using OpenCV fallback.")
     
     LineCrossingDetector(
         args.model, args.video, args.output,

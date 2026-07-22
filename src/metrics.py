@@ -5,8 +5,11 @@ from pathlib import Path
 import csv
 import json
 import logging
+import numpy as np
 
 logger = logging.getLogger(__name__)
+
+from configs.settings import PROFILING_WARMUP_FRAMES
 
 class PipelineProfiler:
     def __init__(self, stage_names):
@@ -15,6 +18,7 @@ class PipelineProfiler:
         self.counts = {name: 0 for name in self.stage_names}
         self.frame_count = 0
         self._current_frame_ns = {name: 0 for name in self.stage_names}
+        self._frame_history = []
 
     @contextmanager
     def stage(self, name):
@@ -53,6 +57,109 @@ class PipelineProfiler:
             self._current_frame_ns[name] = 0
         return snapshot
 
+    def record_frame(self, profiling_enabled=False):
+        if not profiling_enabled or self.frame_count <= PROFILING_WARMUP_FRAMES:
+            for name in self.stage_names:
+                self._current_frame_ns[name] = 0
+            return
+
+        frame_data = {
+            name: self._current_frame_ns[name] / 1e6 for name in self.stage_names
+        }
+        frame_data["total_ms"] = sum(frame_data.values())
+        self._frame_history.append(frame_data)
+        
+        for name in self.stage_names:
+            self._current_frame_ns[name] = 0
+
+    def compute_statistics(self):
+        if not self._frame_history:
+            return None
+        
+        stats = {}
+        for key in list(self.stage_names) + ["total_ms"]:
+            values = [frame[key] for frame in self._frame_history]
+            stats[key] = {
+                "avg": float(np.mean(values)),
+                "min": float(np.min(values)),
+                "max": float(np.max(values)),
+                "median": float(np.median(values)),
+                "p95": float(np.percentile(values, 95))
+            }
+        
+        total_avg = stats["total_ms"]["avg"]
+        if total_avg > 0:
+            for name in self.stage_names:
+                stats[name]["contrib_pct"] = (stats[name]["avg"] / total_avg) * 100
+        else:
+            for name in self.stage_names:
+                stats[name]["contrib_pct"] = 0.0
+
+        return stats
+
+    def format_profiling_summary(self):
+        stats = self.compute_statistics()
+        if not stats:
+            return "No profiling data collected."
+
+        total_frames = len(self._frame_history)
+        total_avg = stats["total_ms"]["avg"]
+        avg_fps = (1000.0 / total_avg) if total_avg > 0 else 0.0
+        
+        lines = [
+            "=" * 50,
+            "Performance Profiling Summary",
+            "=" * 50,
+            "",
+            f"Frames Profiled: {total_frames}",
+            ""
+        ]
+        
+        # We try to use the exact names from stage_names, but format them nicely
+        name_map = {
+            "decode": "Decode",
+            "appsink": "Appsink",
+            "preprocess": "Preprocessing",
+            "inference": "Inference",
+            "postprocess": "Post-processing",
+            "overlay": "Overlay",
+            "color_convert": "Color Conversion",
+            "output_write": "Encoding"
+        }
+        
+        for name in self.stage_names:
+            display_name = name_map.get(name, name.capitalize())
+            lines.append(f"Average {display_name} Time: {stats[name]['avg']:.2f} ms")
+        
+        lines.extend([
+            "",
+            f"Average Total Latency: {total_avg:.2f} ms/frame",
+            f"Average FPS: {avg_fps:.2f}",
+            "",
+            "Latency Statistics:"
+        ])
+        
+        lines.append(f"Minimum Latency: {stats['total_ms']['min']:.2f} ms")
+        lines.append(f"Maximum Latency: {stats['total_ms']['max']:.2f} ms")
+        lines.append(f"Median Latency: {stats['total_ms']['median']:.2f} ms")
+        lines.append(f"95th Percentile Latency: {stats['total_ms']['p95']:.2f} ms")
+        lines.extend(["", "Latency Contribution:"])
+        
+        bottlenecks = []
+        for name in self.stage_names:
+            display_name = name_map.get(name, name.capitalize())
+            pct = stats[name]["contrib_pct"]
+            lines.append(f"{display_name}: {pct:.1f}%")
+            bottlenecks.append((display_name, pct))
+            
+        bottlenecks.sort(key=lambda x: x[1], reverse=True)
+        
+        lines.extend(["", "Top 3 Bottlenecks:"])
+        for i in range(min(3, len(bottlenecks))):
+            lines.append(f"{i+1}. {bottlenecks[i][0]} ({bottlenecks[i][1]:.1f}%)")
+            
+        lines.extend(["", "=" * 50])
+        return "\n".join(lines)
 
 class MetricsRecorder:
     def __init__(self, config_metadata):

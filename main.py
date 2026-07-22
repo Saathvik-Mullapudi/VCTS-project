@@ -57,7 +57,7 @@ class LineCrossingDetector:
     
     def __init__(self, model_path, video_src, output_file=None, use_tiling=USE_TILING, tile_padding=TILE_PADDING,
                  metrics_csv_path="outputs/metrics/metrics.csv", metrics_json_path="outputs/metrics/metrics.json", preview_enabled=True,
-                 debug_mapping=False):
+                 debug_mapping=False, profiling_enabled=PROFILING_ENABLED):
         self.video_src = video_src
         self.output_file = output_file
         self.use_tiling = use_tiling
@@ -66,6 +66,7 @@ class LineCrossingDetector:
         self.metrics_json_path = metrics_json_path
         self.preview_enabled = preview_enabled
         self.debug_mapping = debug_mapping
+        self.profiling_enabled = profiling_enabled
         # Detect if the source is a camera. On Linux it's '/dev/video*', on Windows it's an integer index like '0'
         self.is_camera = video_src.isdigit() or video_src.startswith("/dev/video")
         self.last_fps_time = time.time()
@@ -93,13 +94,15 @@ class LineCrossingDetector:
         self.counter = LineCrossingCounter(LINE_START, LINE_END, self.in_w, self.in_h, DISPLAY_WIDTH, DISPLAY_HEIGHT)
         self.profiler = PipelineProfiler([
             "decode",
-            "resize",
+            "appsink",
+            "preprocess",
             "inference",
-            "nms",
+            "postprocess",
             "tracking",
-            "overlay_draw",
-            "output_write",
-            "imshow_display",
+            "line_crossing",
+            "overlay",
+            "color_convert",
+            "output_write"
         ])
         self.metrics_recorder = MetricsRecorder(self._build_metrics_metadata(model_path))
         self.system_monitor = SystemMonitor(
@@ -208,18 +211,25 @@ class LineCrossingDetector:
             frame_tile = frame_display[tile_y0:tile_y1, tile_x0:tile_x1]
             tile_h, tile_w = frame_tile.shape[:2]
             
-            person_boxes, person_scores, person_classes = self.detector.predict(frame_tile, tile_h, tile_w)
+            person_boxes, person_scores, person_classes = self.detector.predict(
+                frame_tile, tile_h, tile_w, profiler=self.profiler if self.profiling_enabled else None
+            )
             
             person_boxes_display = self._map_boxes_tile_to_display(person_boxes, tile_x0, tile_y0)
             person_boxes = self._map_boxes_tile_to_full_ml(person_boxes, tile_x0, tile_y0)
         else:
             frame_ml = frame_display
-            person_boxes, person_scores, person_classes = self.detector.predict(frame_ml, self.in_h, self.in_w)
+            person_boxes, person_scores, person_classes = self.detector.predict(
+                frame_ml, self.in_h, self.in_w, profiler=self.profiler if self.profiling_enabled else None
+            )
             
             person_boxes_display = self._map_boxes_ml_to_display(person_boxes)
 
-        tracked_objects, _ = self.tracker.update(person_boxes)
-        crossing_count = self.counter.update(tracked_objects, self.tracker, person_boxes)
+        with self.profiler.stage("tracking") if self.profiling_enabled else open(os.devnull, 'w') as _:
+            tracked_objects, _ = self.tracker.update(person_boxes)
+        
+        with self.profiler.stage("line_crossing") if self.profiling_enabled else open(os.devnull, 'w') as _:
+            crossing_count = self.counter.update(tracked_objects, self.tracker, person_boxes)
         logger.debug(f"Frame {self.frame_count}: Tracked {len(tracked_objects)} objects, crossings: {crossing_count}")
 
         with self.lock:
@@ -252,9 +262,10 @@ class LineCrossingDetector:
             self.actual_fps = self.fps if self.fps > 0 else 30.0
             self.last_fps_time = now
             
-        sample = appsink.emit("pull-sample")
-        if not sample:
-            return Gst.FlowReturn.OK
+        with self.profiler.stage("appsink") if self.profiling_enabled else open(os.devnull, 'w') as _:
+            sample = appsink.emit("pull-sample")
+            if not sample:
+                return Gst.FlowReturn.OK
             
         buf = sample.get_buffer()
         caps = sample.get_caps()
@@ -289,6 +300,7 @@ class LineCrossingDetector:
                 c_count = self.crossing_count
             logger.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
 
+        self.profiler.record_frame(self.profiling_enabled)
         return Gst.FlowReturn.OK
 
     def _draw_overlay(self, overlay, ctx, ts, dur):
@@ -343,7 +355,8 @@ class LineCrossingDetector:
         self.system_monitor.start()
         try:
             while True:
-                ok, frame = cap.read()
+                with self.profiler.stage("decode") if self.profiling_enabled else open(os.devnull, 'w') as _:
+                    ok, frame = cap.read()
                 if not ok:
                     logger.info("End of stream")
                     break
@@ -360,10 +373,13 @@ class LineCrossingDetector:
                     self.last_fps_time = now
 
                 self._process_frame_for_detection(frame)
-                overlay_frame = self._draw_overlay_cv(frame.copy())
+                
+                with self.profiler.stage("overlay") if self.profiling_enabled else open(os.devnull, 'w') as _:
+                    overlay_frame = self._draw_overlay_cv(frame.copy())
 
                 if writer is not None:
-                    writer.write(overlay_frame)
+                    with self.profiler.stage("output_write") if self.profiling_enabled else open(os.devnull, 'w') as _:
+                        writer.write(overlay_frame)
 
                 if self.preview_enabled:
                     preview_frame = overlay_frame
@@ -380,6 +396,8 @@ class LineCrossingDetector:
                         trk = len(self.tracked_objects)
                         c_count = self.crossing_count
                     logger.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
+                    
+                self.profiler.record_frame(self.profiling_enabled)
         finally:
             self.system_monitor.stop()
             cap.release()
@@ -389,6 +407,9 @@ class LineCrossingDetector:
                 cv2.destroyAllWindows()
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
             logger.info(f"Done! Total crossings: {self.crossing_count}")
+            
+            if self.profiling_enabled:
+                logger.info("\n" + self.profiler.format_profiling_summary())
 
     def _start_rtsp_server(self):
         from src.gst_pipeline import start_rtsp_server
@@ -425,6 +446,9 @@ class LineCrossingDetector:
             self.pipeline.set_state(Gst.State.NULL)
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
             logger.info(f"Done! Total crossings: {self.crossing_count}")
+            
+            if self.profiling_enabled:
+                logger.info("\n" + self.profiler.format_profiling_summary())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -443,6 +467,8 @@ if __name__ == "__main__":
                         help='Enable local display output (only use if board has a monitor attached)')
     parser.add_argument('--debug-mapping', action='store_true',
                         help='Print one tile-to-ML box mapping per inference frame')
+    parser.add_argument('--profile', action='store_true',
+                        help='Enable detailed latency profiling')
     args = parser.parse_args()
     
     if GST_AVAILABLE:
@@ -461,4 +487,5 @@ if __name__ == "__main__":
         metrics_json_path=args.metrics_json,
         preview_enabled=args.preview,
         debug_mapping=args.debug_mapping,
+        profiling_enabled=(PROFILING_ENABLED or args.profile),
     ).run()

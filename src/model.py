@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import contextlib
 
 logger = logging.getLogger(__name__)
 
@@ -85,12 +86,26 @@ class TFLitePersonDetector:
         self.interpreter.invoke()
         logger.info("Model ready")
 
-    def predict(self, frame_segment: np.ndarray, seg_h: int, seg_w: int):
-        input_tensor, scale, pad_x, pad_y = self.preprocessor.process(frame_segment)
-        self.interpreter.set_tensor(self.input_details[0]['index'], input_tensor)
-        self.interpreter.invoke()
-        output_data = self.interpreter.get_tensor(self.output_details[0]['index'])
-        return self.postprocessor.process(
-            output_data, (seg_h, seg_w), (self.in_h, self.in_w),
-            self.scale_params, scale, pad_x, pad_y
-        )
+    def predict(self, frame_segment: np.ndarray, seg_h: int, seg_w: int, profiler=None):
+        @contextlib.contextmanager
+        def _stage(name):
+            if profiler:
+                with profiler.stage(name):
+                    yield
+            else:
+                yield
+
+        with _stage("preprocess"):
+            input_tensor, scale, pad_x, pad_y = self.preprocessor.process(frame_segment)
+        
+        with _stage("inference"):
+            self.interpreter.set_tensor(self.input_details[0]['index'], input_tensor)
+            self.interpreter.invoke()
+            output_data = self.interpreter.get_tensor(self.output_details[0]['index'])
+        
+        with _stage("postprocess"):
+            result = self.postprocessor.process(
+                output_data, (seg_h, seg_w), (self.in_h, self.in_w),
+                self.scale_params, scale, pad_x, pad_y
+            )
+        return result

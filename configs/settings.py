@@ -36,6 +36,9 @@ TILE_PADDING = 120  # pixels to extend the tile left of frame center
 
 # Profiling
 PROFILE_PRINT_EVERY = 30
+PROFILING_ENABLED = False
+PROFILING_WARMUP_FRAMES = 50
+PROFILING_MIN_FRAMES = 100
 
 # System monitoring
 SYSTEM_MONITOR_INTERVAL = 1.0

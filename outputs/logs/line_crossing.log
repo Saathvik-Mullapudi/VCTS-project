@@ -620,3 +620,45 @@
 2026-07-15 15:58:38,349 [INFO] __main__ - [1921] det:0 trk:0 cross:21 fps:37.3
 2026-07-15 15:58:38,618 [INFO] __main__ - End of stream
 2026-07-15 15:58:38,641 [INFO] __main__ - Done! Total crossings: 21
+2026-07-15 17:42:46,522 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-15 17:42:47,114 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-15 17:42:47,118 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-15 17:42:47,118 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-15 17:42:47,120 [INFO] src.model - NPU unavailable, using CPU
+2026-07-15 17:42:47,128 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-15 17:42:47,129 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-15 17:42:47,174 [INFO] src.model - Model ready
+2026-07-15 17:42:47,175 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-15 17:42:47,175 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-15 17:42:47,175 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-15 17:42:47,175 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-15 17:42:47,176 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-15 17:42:47,197 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=60.6% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:47,275 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-15 17:42:47,890 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:51.6
+2026-07-15 17:42:48,202 [INFO] src.system_monitor - System Metrics: cpu=30.1% cores=[60.3%, 49.2%, 54.7%, 53.8%, 53.1%, 67.7%, 51.6%, 42.2%, 25.4%, 12.1%, 3.1%, 7.7%, 0.0%, 0.0%, 0.0%, 0.0%] ram=61.6% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:48,485 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:56.5
+2026-07-15 17:42:49,106 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:51.6
+2026-07-15 17:42:49,214 [INFO] src.system_monitor - System Metrics: cpu=28.6% cores=[43.3%, 35.4%, 50.8%, 52.3%, 49.2%, 41.5%, 50.8%, 63.6%, 38.5%, 21.5%, 6.2%, 1.6%, 0.0%, 0.0%, 0.0%, 0.0%] ram=61.6% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:49,834 [INFO] __main__ - [121] det:6 trk:7 cross:0 fps:40.9
+2026-07-15 17:42:49,904 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-15 17:42:50,052 [INFO] src.tracker - ID4 crossed! Total: 2
+2026-07-15 17:42:50,229 [INFO] src.system_monitor - System Metrics: cpu=30.1% cores=[56.7%, 32.3%, 56.1%, 44.6%, 47.7%, 50.8%, 56.9%, 49.2%, 33.8%, 28.1%, 13.6%, 12.1%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.0% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:50,564 [INFO] __main__ - [151] det:6 trk:7 cross:2 fps:47.1
+2026-07-15 17:42:51,065 [INFO] src.tracker - ID5 crossed! Total: 3
+2026-07-15 17:42:51,145 [INFO] src.tracker - ID0 crossed! Total: 4
+2026-07-15 17:42:51,244 [INFO] src.system_monitor - System Metrics: cpu=22.8% cores=[39.7%, 32.8%, 40.0%, 39.4%, 43.1%, 47.7%, 52.3%, 43.1%, 13.6%, 10.6%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.0% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:51,293 [INFO] __main__ - [181] det:4 trk:7 cross:4 fps:43.1
+2026-07-15 17:42:52,023 [INFO] __main__ - [211] det:5 trk:6 cross:4 fps:43.4
+2026-07-15 17:42:52,256 [INFO] src.system_monitor - System Metrics: cpu=20.2% cores=[49.3%, 32.3%, 35.4%, 44.6%, 40.0%, 43.3%, 40.9%, 27.7%, 6.2%, 3.1%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.0% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:52,753 [INFO] __main__ - [241] det:6 trk:6 cross:4 fps:41.4
+2026-07-15 17:42:53,271 [INFO] src.system_monitor - System Metrics: cpu=23.1% cores=[37.3%, 40.0%, 44.6%, 35.4%, 49.2%, 38.5%, 45.5%, 30.8%, 18.8%, 17.2%, 6.2%, 4.7%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.1% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:53,548 [INFO] __main__ - [271] det:5 trk:5 cross:4 fps:34.4
+2026-07-15 17:42:53,984 [INFO] src.tracker - ID3 crossed! Total: 5
+2026-07-15 17:42:54,284 [INFO] src.system_monitor - System Metrics: cpu=25.5% cores=[54.4%, 36.9%, 40.0%, 44.6%, 44.6%, 43.1%, 55.4%, 33.3%, 16.7%, 18.2%, 10.9%, 9.1%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.1% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:54,292 [INFO] __main__ - [301] det:3 trk:5 cross:5 fps:44.2
+2026-07-15 17:42:55,026 [INFO] __main__ - [331] det:3 trk:7 cross:5 fps:42.5
+2026-07-15 17:42:55,303 [INFO] src.system_monitor - System Metrics: cpu=22.1% cores=[46.2%, 23.1%, 43.9%, 54.5%, 53.0%, 40.0%, 40.0%, 40.9%, 6.2%, 6.2%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.1% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-15 17:42:55,764 [INFO] __main__ - [361] det:5 trk:6 cross:5 fps:42.1
+2026-07-15 17:42:56,314 [INFO] src.system_monitor - System Metrics: cpu=24.8% cores=[57.4%, 30.8%, 43.1%, 47.0%, 60.6%, 40.0%, 46.2%, 40.0%, 17.2%, 9.4%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=62.1% temp=n/a gpu=n/a npu=n/a power=n/a

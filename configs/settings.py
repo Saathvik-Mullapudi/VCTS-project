@@ -16,7 +16,7 @@ PREVIEW_WIDTH, PREVIEW_HEIGHT = 1280, 720
 SKIP_FRAMES = 2  # Process 1 frame, skip 2 (runs inference on every 3rd frame)
 
 # Detection parameters
-CONF_THRESHOLD = 0.5
+CONF_THRESHOLD = 0.3
 NMS_THRESHOLD = 0.45
 
 # Person class (COCO class 0)

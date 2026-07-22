@@ -20,6 +20,7 @@ class SystemMonitor:
         self._stop_event = threading.Event()
         self._thread = None
         self._last_energy_sample = {}
+        self._has_logged_info_sample = False
         self._prime_cpu_metrics()
 
     def _prime_cpu_metrics(self):
@@ -59,7 +60,12 @@ class SystemMonitor:
                         self._on_sample(sample)
                     except Exception:
                         pass
-                logger.info(f"System Metrics: {self.format_sample(sample)}")
+                formatted_sample = self.format_sample(sample)
+                if not self._has_logged_info_sample:
+                    logger.info(f"System Metrics: {formatted_sample}")
+                    self._has_logged_info_sample = True
+                else:
+                    logger.debug(f"System Metrics: {formatted_sample}")
                 next_sample = time.monotonic() + self.interval_sec
 
     def sample(self):

@@ -27,15 +27,16 @@ def monitor_element_pads(element, element_name):
 
 def print_key_element_caps(pipeline):
     """Print caps for all key elements we're interested in."""
-    def print_pad_caps(element, pad_name, element_label):
+    def print_pad_caps(element, pad_name, element_label, info=False):
         pad = element.get_static_pad(pad_name)
         if pad:
             caps = pad.get_current_caps()
-            logger.debug(f"=== {element_label} {pad_name.upper()} CAPS ===")
+            log = logger.info if info else logger.debug
+            log(f"=== {element_label} {pad_name.upper()} CAPS ===")
             if caps:
-                logger.debug(caps.to_string())
+                log(caps.to_string())
             else:
-                logger.debug("(no caps yet)")
+                log("(no caps yet)")
     
     it = pipeline.iterate_elements()
     while True:
@@ -50,13 +51,13 @@ def print_key_element_caps(pipeline):
         elif "imxvideoconvert" in element_name:
             print_pad_caps(element, "sink", element_name)
             print_pad_caps(element, "src", element_name)
-        elif "vpuenc" in element_name:
-            print_pad_caps(element, "sink", element_name)
+        elif "vpuenc" in element_name or element_name in ("file_enc", "stream_enc"):
+            print_pad_caps(element, "sink", f"before vpuenc_h264 ({element_name})", info=True)
         elif element_name == "ml_sink":
             print_pad_caps(element, "sink", "appsink (ml_sink)")
         elif element_name == "overlay":
             print_pad_caps(element, "sink", "cairooverlay")
-            print_pad_caps(element, "src", "cairooverlay")
+            print_pad_caps(element, "src", "after cairooverlay", info=True)
 
 def handle_bus_message(bus, message, pipeline, loop):
     t = message.type
@@ -95,12 +96,12 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
             f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
             f"tee name=out "
             f"out. ! queue max-size-buffers=10 leaky=downstream ! "
-            f"imxvideoconvert_g2d ! video/x-raw,format=RGB16 ! "
-            f"vpuenc_h264 bitrate={GST_BITRATE_FILE} ! h264parse ! mp4mux ! filesink location={output_file} "
+            f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
+            f"vpuenc_h264 name=file_enc bitrate={GST_BITRATE_FILE} ! h264parse ! mp4mux ! filesink location={output_file} "
             f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
             f"out. ! queue max-size-buffers=2 leaky=downstream ! "
-            f"imxvideoconvert_g2d ! video/x-raw,format=RGB16 ! "
-            f"vpuenc_h264 bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port={GST_UDP_PORT} "
+            f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
+            f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port={GST_UDP_PORT} "
             f"t. ! queue max-size-buffers=2 leaky=downstream ! "
             f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
         )
@@ -113,8 +114,8 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
             f"tee name=out "
             f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
             f"out. ! queue max-size-buffers=2 leaky=downstream ! "
-            f"imxvideoconvert_g2d ! video/x-raw,format=RGB16 ! "
-            f"vpuenc_h264 bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port={GST_UDP_PORT} "
+            f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
+            f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port={GST_UDP_PORT} "
             f"t. ! queue max-size-buffers=2 leaky=downstream ! "
             f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
         )

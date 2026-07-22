@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 import time
 import threading
 import cv2
+import numpy as np
 from datetime import datetime
 import argparse
 try:
@@ -257,8 +258,27 @@ class LineCrossingDetector:
             
         buf = sample.get_buffer()
         caps = sample.get_caps()
-        
-        
+        structure = caps.get_structure(0)
+        width = structure.get_value("width")
+        height = structure.get_value("height")
+        fmt = structure.get_value("format")
+
+        success, map_info = buf.map(Gst.MapFlags.READ)
+        if not success:
+            logger.warning("Could not map GStreamer frame buffer")
+            return Gst.FlowReturn.OK
+
+        try:
+            if fmt == "RGB":
+                frame = np.ndarray((height, width, 3), dtype=np.uint8, buffer=map_info.data).copy()
+            elif fmt in ("BGRx", "RGBx", "RGBA", "BGRA"):
+                frame = np.ndarray((height, width, 4), dtype=np.uint8, buffer=map_info.data)[:, :, :3].copy()
+            else:
+                logger.warning(f"Unsupported GStreamer frame format: {fmt}")
+                return Gst.FlowReturn.OK
+        finally:
+            buf.unmap(map_info)
+
         logger.debug(f"Passing frame {self.frame_count} to _process_frame_for_detection, frame id: {id(frame)}")
         self._process_frame_for_detection(frame)
 

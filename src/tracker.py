@@ -131,7 +131,7 @@ class LineCrossingCounter:
         line_s = (self.line_start[0] * sx, self.line_start[1] * sy)
         line_e = (self.line_end[0]   * sx, self.line_end[1]   * sy)
         
-        DEBOUNCE_FRAMES = 5  # Must be on new side for this many frames
+        DEBOUNCE_FRAMES = 3  # Must be on new side for this many frames
         BUFFER_PIXELS = 20   # Spatial padding in ML coords (~60px in display space)
         
         for (objectID, centroid) in tracked_objects.items():

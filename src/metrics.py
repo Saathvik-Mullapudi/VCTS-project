@@ -1,4 +1,5 @@
 import time
+import threading
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -11,154 +12,150 @@ logger = logging.getLogger(__name__)
 
 from configs.settings import PROFILING_WARMUP_FRAMES
 
-class PipelineProfiler:
+class ThroughputProfiler:
     def __init__(self, stage_names):
         self.stage_names = list(stage_names)
-        self.totals_ns = {name: 0 for name in self.stage_names}
-        self.counts = {name: 0 for name in self.stage_names}
-        self.frame_count = 0
-        self._current_frame_ns = {name: 0 for name in self.stage_names}
-        self._frame_history = []
+        self.received = {name: 0 for name in self.stage_names}
+        self.processed = {name: 0 for name in self.stage_names}
+        self.skipped = {name: 0 for name in self.stage_names}
+        self.dropped = {name: 0 for name in self.stage_names}
+        self.total_ns = {name: 0 for name in self.stage_names}
+        self._samples = {name: [] for name in self.stage_names}  # per-frame latency samples
+        self._lock = threading.Lock()
+        self.start_time = time.time()
+        self.profiling_enabled = False
+
+    def enable(self):
+        self.profiling_enabled = True
+        self.start_time = time.time()
+
+    def record_received(self, name):
+        if not self.profiling_enabled: return
+        with self._lock:
+            self.received[name] += 1
+
+    def record_processed(self, name, elapsed_ns=0):
+        if not self.profiling_enabled: return
+        with self._lock:
+            self.processed[name] += 1
+            self.total_ns[name] += elapsed_ns
+
+    def record_skipped(self, name):
+        if not self.profiling_enabled: return
+        with self._lock:
+            self.skipped[name] += 1
+
+    def record_dropped(self, name):
+        if not self.profiling_enabled: return
+        with self._lock:
+            self.dropped[name] += 1
 
     @contextmanager
     def stage(self, name):
+        if not self.profiling_enabled:
+            yield
+            return
+            
+        with self._lock:
+            self.received[name] += 1
+            
         start = time.perf_counter_ns()
         try:
             yield
         finally:
             elapsed = time.perf_counter_ns() - start
-            self.totals_ns[name] += elapsed
-            self._current_frame_ns[name] += elapsed
-            self.counts[name] += 1
+            with self._lock:
+                self.total_ns[name] += elapsed
+                self.processed[name] += 1
+                self._samples[name].append(elapsed / 1e6)  # store in ms
 
-    def mark_frame(self):
-        self.frame_count += 1
-
-    def average_ms(self, name):
-        count = self.counts.get(name, 0)
-        if count == 0:
-            return 0.0
-        return self.totals_ns[name] / count / 1e6
-
-    def snapshot(self):
-        return {name: self.average_ms(name) for name in self.stage_names}
-
-    def format_summary(self):
-        parts = [f"{name}:{self.average_ms(name):.2f}ms" for name in self.stage_names]
-        return " ".join(parts)
-
-    def snapshot_frame(self):
-        snapshot = {
-            f"{name}_ms": self._current_frame_ns[name] / 1e6
-            for name in self.stage_names
-        }
-        snapshot["stages_total_ms"] = sum(snapshot.values())
-        for name in self.stage_names:
-            self._current_frame_ns[name] = 0
-        return snapshot
-
-    def record_frame(self, profiling_enabled=False):
-        if not profiling_enabled or self.frame_count <= PROFILING_WARMUP_FRAMES:
-            for name in self.stage_names:
-                self._current_frame_ns[name] = 0
-            return
-
-        frame_data = {
-            name: self._current_frame_ns[name] / 1e6 for name in self.stage_names
-        }
-        frame_data["total_ms"] = sum(frame_data.values())
-        self._frame_history.append(frame_data)
-        
-        for name in self.stage_names:
-            self._current_frame_ns[name] = 0
-
-    def compute_statistics(self):
-        if not self._frame_history:
-            return None
-        
-        stats = {}
-        for key in list(self.stage_names) + ["total_ms"]:
-            values = [frame[key] for frame in self._frame_history]
-            stats[key] = {
-                "avg": float(np.mean(values)),
-                "min": float(np.min(values)),
-                "max": float(np.max(values)),
-                "median": float(np.median(values)),
-                "p95": float(np.percentile(values, 95))
-            }
-        
-        total_avg = stats["total_ms"]["avg"]
-        if total_avg > 0:
-            for name in self.stage_names:
-                stats[name]["contrib_pct"] = (stats[name]["avg"] / total_avg) * 100
-        else:
-            for name in self.stage_names:
-                stats[name]["contrib_pct"] = 0.0
-
-        return stats
-
-    def format_profiling_summary(self):
-        stats = self.compute_statistics()
-        if not stats:
+    def format_profiling_summary(self, input_fps):
+        if not self.profiling_enabled:
             return "No profiling data collected."
 
-        total_frames = len(self._frame_history)
-        total_avg = stats["total_ms"]["avg"]
-        avg_fps = (1000.0 / total_avg) if total_avg > 0 else 0.0
+        total_wall_time = max(0.001, time.time() - self.start_time)
         
         lines = [
-            "=" * 50,
-            "Performance Profiling Summary",
-            "=" * 50,
+            "=" * 80,
+            "Throughput Profiling Report",
+            "=" * 80,
+            f"Total Wall-Clock Run Time: {total_wall_time:.1f} seconds",
+            f"Input Video FPS: {input_fps:.1f}",
+            "Runtime FPS calculates: After Frame Skipping (Tracks processed ML frames only)",
+            "Skipped Frames Decoded/Rendered: YES (Handled by hardware branch)",
+            "=" * 80,
             "",
-            f"Frames Profiled: {total_frames}",
-            ""
+            f"{'Stage':<18} | {'Received':>8} | {'Processed':>9} | {'Skipped':>7} | {'Avg Time/Frame':>14} | {'Throughput (FPS)':>16}",
+            "-" * 80
         ]
         
-        # We try to use the exact names from stage_names, but format them nicely
         name_map = {
-            "decode": "Decode",
-            "appsink": "Appsink",
-            "preprocess": "Preprocessing",
-            "inference": "Inference",
-            "postprocess": "Post-processing",
-            "overlay": "Overlay",
-            "color_convert": "Color Conversion",
-            "output_write": "Encoding"
+            "decoder": "1. Decoder",
+            "appsink": "2. Appsink",
+            "frame_skipping": "3. Frame Skipping",
+            "color_convert": "4. Color Convert",
+            "preprocess": "5. Preprocess",
+            "inference": "6. Inference",
+            "postprocess": "7. Postprocess",
+            "tracking": "8. Tracking",
+            "line_crossing": "9. Line Crossing",
+            "overlay": "10. Overlay",
+            "encoder": "11. Encoder",
+            "output_write": "12. Output Writer"
         }
         
-        for name in self.stage_names:
-            display_name = name_map.get(name, name.capitalize())
-            lines.append(f"Average {display_name} Time: {stats[name]['avg']:.2f} ms")
+        with self._lock:
+            for name in self.stage_names:
+                display_name = name_map.get(name, name.capitalize())
+                recv = self.received.get(name, 0)
+                proc = self.processed.get(name, 0)
+                skip = self.skipped.get(name, 0)
+                
+                # Check for drops
+                if recv > proc + skip:
+                    self.dropped[name] = recv - proc - skip
+                drop = self.dropped.get(name, 0)
+                
+                # Time
+                t_ns = self.total_ns.get(name, 0)
+                avg_ms = (t_ns / proc / 1e6) if proc > 0 else 0
+                avg_str = f"{avg_ms:.2f} ms" if t_ns > 0 else "N/A (HW)"
+                
+                # Throughput
+                tput = proc / total_wall_time
+                tput_str = f"{tput:.1f} FPS"
+                
+                line = f"{display_name:<18} | {recv:>8} | {proc:>9} | {skip:>7} | {avg_str:>14} | {tput_str:>16}"
+                if drop > 0:
+                    line += f"  <-- ({drop} dropped!)"
+                lines.append(line)
         
+        lines.extend(["", "=" * 80])
+
+        # ── Latency Report ────────────────────────────────────────────────────
         lines.extend([
             "",
-            f"Average Total Latency: {total_avg:.2f} ms/frame",
-            f"Average FPS: {avg_fps:.2f}",
-            "",
-            "Latency Statistics:"
+            "=" * 80,
+            "Per-Stage Latency Report",
+            "=" * 80,
+            f"{'Stage':<18} | {'Avg (ms)':>8} | {'Min (ms)':>8} | {'Max (ms)':>8} | {'Median':>8} | {'p95 (ms)':>8}",
+            "-" * 80
         ])
-        
-        lines.append(f"Minimum Latency: {stats['total_ms']['min']:.2f} ms")
-        lines.append(f"Maximum Latency: {stats['total_ms']['max']:.2f} ms")
-        lines.append(f"Median Latency: {stats['total_ms']['median']:.2f} ms")
-        lines.append(f"95th Percentile Latency: {stats['total_ms']['p95']:.2f} ms")
-        lines.extend(["", "Latency Contribution:"])
-        
-        bottlenecks = []
-        for name in self.stage_names:
-            display_name = name_map.get(name, name.capitalize())
-            pct = stats[name]["contrib_pct"]
-            lines.append(f"{display_name}: {pct:.1f}%")
-            bottlenecks.append((display_name, pct))
-            
-        bottlenecks.sort(key=lambda x: x[1], reverse=True)
-        
-        lines.extend(["", "Top 3 Bottlenecks:"])
-        for i in range(min(3, len(bottlenecks))):
-            lines.append(f"{i+1}. {bottlenecks[i][0]} ({bottlenecks[i][1]:.1f}%)")
-            
-        lines.extend(["", "=" * 50])
+
+        with self._lock:
+            for name in self.stage_names:
+                display_name = name_map.get(name, name.capitalize())
+                samples = self._samples.get(name, [])
+                if len(samples) < 2:
+                    lines.append(f"{display_name:<18} | {'N/A':>8} | {'N/A':>8} | {'N/A':>8} | {'N/A':>8} | {'N/A':>8}")
+                    continue
+                arr = np.array(samples)
+                lines.append(
+                    f"{display_name:<18} | {np.mean(arr):>8.2f} | {np.min(arr):>8.2f} | "
+                    f"{np.max(arr):>8.2f} | {np.median(arr):>8.2f} | {np.percentile(arr, 95):>8.2f}"
+                )
+
+        lines.extend(["", "=" * 80])
         return "\n".join(lines)
 
 class MetricsRecorder:

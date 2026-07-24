@@ -1,4 +1,5 @@
 import logging
+# pyrefly: ignore [missing-import]
 import gi
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst
@@ -78,7 +79,8 @@ def handle_bus_message(bus, message, pipeline, loop):
 
 def build_pipeline(video_src: str, is_camera: bool, output_file: str, 
                    display_w: int, display_h: int, 
-                   draw_cb, sample_cb, bus_cb, has_cairo: bool):
+                   draw_cb, sample_cb, bus_cb, has_cairo: bool,
+                   profiler=None):
     from configs.settings import GST_BITRATE_FILE, GST_BITRATE_STREAM, GST_UDP_PORT
     
     if is_camera:
@@ -89,36 +91,26 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
     sink_str = "fakesink sync=false"
     
     if output_file:
-        pipeline_str = (
-            f"{source} ! "
-            f"imxvideoconvert_g2d ! video/x-raw,width={display_w},height={display_h},format=BGRx ! "
-            f"tee name=t "
-            f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
-            f"tee name=out "
-            f"out. ! queue max-size-buffers=10 leaky=downstream ! "
+        sink_str = (
             f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
-            f"vpuenc_h264 name=file_enc bitrate={GST_BITRATE_FILE} ! h264parse ! mp4mux ! filesink location={output_file} "
-            f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
-            f"out. ! queue max-size-buffers=2 leaky=downstream ! "
-            f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
-            f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port={GST_UDP_PORT} "
-            f"t. ! queue max-size-buffers=2 leaky=downstream ! "
-            f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
+            f"vpuenc_h264 name=file_enc bitrate={GST_BITRATE_FILE} ! h264parse ! mp4mux ! filesink name=file_out location={output_file} "
         )
     else:
-        pipeline_str = (
-            f"{source} ! "
-            f"imxvideoconvert_g2d ! video/x-raw,width={display_w},height={display_h},format=BGRx ! "
-            f"tee name=t "
-            f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
-            f"tee name=out "
-            f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
-            f"out. ! queue max-size-buffers=2 leaky=downstream ! "
-            f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
-            f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port={GST_UDP_PORT} "
-            f"t. ! queue max-size-buffers=2 leaky=downstream ! "
-            f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
-        )
+        sink_str = "fakesink "
+    
+    pipeline_str = (
+        f"{source} ! "
+        f"imxvideoconvert_g2d ! video/x-raw,width={display_w},height={display_h},format=BGRx ! "
+        f"tee name=t "
+        f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
+        f"tee name=out "
+        f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
+        f"out. ! queue max-size-buffers=2 leaky=downstream ! "
+        f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
+        f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
+        f"t. ! queue max-size-buffers=2 leaky=downstream ! "
+        f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
+    )
         
     logger.info(f"Pipeline: {pipeline_str}")
     pipeline = Gst.parse_launch(pipeline_str)

@@ -1100,3 +1100,1792 @@ Top 3 Bottlenecks:
 3. Decode (6.9%)
 
 ==================================================
+2026-07-22 14:34:47,148 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:34:48,197 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:34:48,199 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:34:48,199 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:34:48,210 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:34:48,221 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:34:48,221 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:34:48,264 [INFO] src.model - Model ready
+2026-07-22 14:34:48,265 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:34:48,265 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:34:48,265 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:34:48,265 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:34:48,266 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:34:48,332 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=78.2% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:34:48,438 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:34:49,048 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:52.6
+2026-07-22 14:34:49,662 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:52.9
+2026-07-22 14:34:50,270 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:47.8
+2026-07-22 14:34:50,818 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:34:50,973 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:44.1
+2026-07-22 14:34:51,190 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:34:51,732 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:38.4
+2026-07-22 14:34:52,017 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:34:52,089 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:34:52,458 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:45.2
+2026-07-22 14:34:53,196 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:42.5
+2026-07-22 14:34:53,934 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:42.7
+2026-07-22 14:34:54,139 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:34:54,693 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:40.5
+2026-07-22 14:34:54,904 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:34:55,439 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:42.7
+2026-07-22 14:34:56,194 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:44.8
+2026-07-22 14:34:56,909 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:42.4
+2026-07-22 14:34:57,129 [INFO] src.tracker - ID6 crossed! Total: 7
+2026-07-22 14:34:57,659 [INFO] __main__ - [391] det:6 trk:10 cross:7 fps:42.7
+2026-07-22 14:34:57,945 [INFO] src.tracker - ID15 crossed! Total: 8
+2026-07-22 14:34:58,432 [INFO] __main__ - [421] det:8 trk:9 cross:8 fps:36.6
+2026-07-22 14:34:59,182 [INFO] __main__ - [451] det:7 trk:8 cross:8 fps:43.8
+2026-07-22 14:34:59,462 [INFO] src.tracker - ID10 crossed! Total: 9
+2026-07-22 14:34:59,925 [INFO] __main__ - [481] det:6 trk:7 cross:9 fps:43.3
+2026-07-22 14:35:00,708 [INFO] __main__ - [511] det:8 trk:11 cross:9 fps:42.7
+2026-07-22 14:35:01,449 [INFO] __main__ - [541] det:5 trk:11 cross:9 fps:43.7
+2026-07-22 14:35:02,174 [INFO] __main__ - [571] det:3 trk:8 cross:9 fps:44.9
+2026-07-22 14:35:02,886 [INFO] __main__ - [601] det:3 trk:7 cross:9 fps:43.4
+2026-07-22 14:35:03,582 [INFO] __main__ - [631] det:2 trk:6 cross:9 fps:44.0
+2026-07-22 14:35:04,338 [INFO] __main__ - [661] det:4 trk:5 cross:9 fps:44.7
+2026-07-22 14:35:05,042 [INFO] __main__ - [691] det:4 trk:7 cross:9 fps:45.0
+2026-07-22 14:35:05,746 [INFO] __main__ - [721] det:7 trk:9 cross:9 fps:46.5
+2026-07-22 14:35:06,448 [INFO] __main__ - [751] det:5 trk:8 cross:9 fps:46.2
+2026-07-22 14:35:07,164 [INFO] __main__ - [781] det:4 trk:6 cross:9 fps:45.6
+2026-07-22 14:35:07,887 [INFO] __main__ - [811] det:7 trk:10 cross:9 fps:41.3
+2026-07-22 14:35:08,084 [INFO] src.tracker - ID26 crossed! Total: 10
+2026-07-22 14:35:08,084 [INFO] src.tracker - ID27 crossed! Total: 11
+2026-07-22 14:35:08,583 [INFO] __main__ - [841] det:7 trk:10 cross:11 fps:47.5
+2026-07-22 14:35:09,293 [INFO] __main__ - [871] det:9 trk:10 cross:11 fps:43.2
+2026-07-22 14:35:10,012 [INFO] __main__ - [901] det:9 trk:10 cross:11 fps:44.6
+2026-07-22 14:35:10,707 [INFO] __main__ - [931] det:7 trk:9 cross:11 fps:43.3
+2026-07-22 14:35:11,406 [INFO] __main__ - [961] det:7 trk:12 cross:11 fps:47.0
+2026-07-22 14:35:12,108 [INFO] __main__ - [991] det:7 trk:10 cross:11 fps:46.6
+2026-07-22 14:35:12,460 [INFO] src.tracker - ID27 crossed! Total: 12
+2026-07-22 14:35:12,534 [INFO] src.tracker - ID10 crossed! Total: 13
+2026-07-22 14:35:12,870 [INFO] __main__ - [1021] det:10 trk:12 cross:13 fps:40.3
+2026-07-22 14:35:13,158 [INFO] src.tracker - ID31 crossed! Total: 14
+2026-07-22 14:35:13,615 [INFO] __main__ - [1051] det:11 trk:12 cross:14 fps:40.8
+2026-07-22 14:35:14,348 [INFO] __main__ - [1081] det:8 trk:12 cross:14 fps:45.5
+2026-07-22 14:35:14,487 [INFO] src.tracker - ID35 crossed! Total: 15
+2026-07-22 14:35:15,062 [INFO] __main__ - [1111] det:9 trk:11 cross:15 fps:45.8
+2026-07-22 14:35:15,780 [INFO] __main__ - [1141] det:8 trk:10 cross:15 fps:43.0
+2026-07-22 14:35:16,473 [INFO] __main__ - [1171] det:7 trk:8 cross:15 fps:44.0
+2026-07-22 14:35:17,174 [INFO] __main__ - [1201] det:7 trk:8 cross:15 fps:45.3
+2026-07-22 14:35:17,896 [INFO] __main__ - [1231] det:4 trk:8 cross:15 fps:41.9
+2026-07-22 14:35:18,322 [INFO] src.tracker - ID10 crossed! Total: 16
+2026-07-22 14:35:18,620 [INFO] __main__ - [1261] det:4 trk:5 cross:16 fps:44.4
+2026-07-22 14:35:19,341 [INFO] __main__ - [1291] det:3 trk:6 cross:16 fps:41.7
+2026-07-22 14:35:20,049 [INFO] __main__ - [1321] det:5 trk:6 cross:16 fps:45.4
+2026-07-22 14:35:20,819 [INFO] __main__ - [1351] det:8 trk:8 cross:16 fps:44.0
+2026-07-22 14:35:21,357 [INFO] src.tracker - ID46 crossed! Total: 17
+2026-07-22 14:35:21,429 [INFO] src.tracker - ID49 crossed! Total: 18
+2026-07-22 14:35:21,593 [INFO] __main__ - [1381] det:8 trk:13 cross:18 fps:41.5
+2026-07-22 14:35:22,254 [INFO] src.tracker - ID35 crossed! Total: 19
+2026-07-22 14:35:22,346 [INFO] __main__ - [1411] det:9 trk:13 cross:19 fps:42.2
+2026-07-22 14:35:22,404 [INFO] src.tracker - ID10 crossed! Total: 20
+2026-07-22 14:35:22,702 [INFO] src.tracker - ID32 crossed! Total: 21
+2026-07-22 14:35:22,702 [INFO] src.tracker - ID50 crossed! Total: 22
+2026-07-22 14:35:23,085 [INFO] __main__ - [1441] det:9 trk:10 cross:22 fps:43.9
+2026-07-22 14:35:23,455 [INFO] src.tracker - ID51 crossed! Total: 23
+2026-07-22 14:35:23,851 [INFO] __main__ - [1471] det:7 trk:8 cross:23 fps:39.5
+2026-07-22 14:35:24,600 [INFO] __main__ - [1501] det:6 trk:8 cross:23 fps:42.2
+2026-07-22 14:35:25,333 [INFO] __main__ - [1531] det:8 trk:10 cross:23 fps:41.4
+2026-07-22 14:35:25,759 [INFO] src.tracker - ID52 crossed! Total: 24
+2026-07-22 14:35:26,076 [INFO] __main__ - [1561] det:8 trk:10 cross:24 fps:41.6
+2026-07-22 14:35:26,817 [INFO] __main__ - [1591] det:6 trk:9 cross:24 fps:45.8
+2026-07-22 14:35:27,013 [INFO] src.tracker - ID10 crossed! Total: 25
+2026-07-22 14:35:27,524 [INFO] __main__ - [1621] det:6 trk:7 cross:25 fps:45.3
+2026-07-22 14:35:28,262 [INFO] __main__ - [1651] det:7 trk:8 cross:25 fps:41.6
+2026-07-22 14:35:28,773 [INFO] src.tracker - ID41 crossed! Total: 26
+2026-07-22 14:35:28,773 [INFO] src.tracker - ID48 crossed! Total: 27
+2026-07-22 14:35:29,007 [INFO] __main__ - [1681] det:9 trk:10 cross:27 fps:43.1
+2026-07-22 14:35:29,647 [INFO] __main__ - [1711] det:0 trk:9 cross:27 fps:52.2
+2026-07-22 14:35:30,259 [INFO] __main__ - [1741] det:0 trk:0 cross:27 fps:49.5
+2026-07-22 14:35:30,873 [INFO] __main__ - [1771] det:0 trk:0 cross:27 fps:50.2
+2026-07-22 14:35:31,463 [INFO] __main__ - [1801] det:0 trk:0 cross:27 fps:53.8
+2026-07-22 14:35:32,122 [INFO] __main__ - [1831] det:0 trk:0 cross:27 fps:41.8
+2026-07-22 14:35:32,711 [INFO] __main__ - [1861] det:0 trk:0 cross:27 fps:50.9
+2026-07-22 14:35:33,299 [INFO] __main__ - [1891] det:0 trk:0 cross:27 fps:52.4
+2026-07-22 14:35:33,913 [INFO] __main__ - [1921] det:0 trk:0 cross:27 fps:53.5
+2026-07-22 14:35:34,101 [INFO] __main__ - End of stream
+2026-07-22 14:35:34,130 [INFO] __main__ - Done! Total crossings: 27
+2026-07-22 14:38:27,513 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:38:28,073 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:38:28,075 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:38:28,075 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:38:28,077 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:38:28,084 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:38:28,085 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:38:28,129 [INFO] src.model - Model ready
+2026-07-22 14:38:28,130 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:38:28,130 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:38:28,130 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:38:28,130 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:38:28,130 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:38:28,151 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=80.2% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:38:28,237 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:38:28,870 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:50.9
+2026-07-22 14:38:29,500 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:52.9
+2026-07-22 14:38:30,111 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:50.4
+2026-07-22 14:38:30,685 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:38:30,838 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:41.9
+2026-07-22 14:38:31,053 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:38:31,601 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:41.0
+2026-07-22 14:38:31,905 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:38:31,977 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:38:32,352 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:43.9
+2026-07-22 14:38:33,111 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:38.0
+2026-07-22 14:38:33,883 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:41.2
+2026-07-22 14:38:34,106 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:38:34,658 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:41.9
+2026-07-22 14:38:34,873 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:38:35,430 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:40.7
+2026-07-22 14:38:36,189 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:39.4
+2026-07-22 14:38:36,945 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:41.6
+2026-07-22 14:38:37,685 [INFO] __main__ - [391] det:6 trk:10 cross:6 fps:42.7
+2026-07-22 14:38:38,019 [INFO] src.tracker - ID15 crossed! Total: 7
+2026-07-22 14:38:38,515 [INFO] __main__ - [421] det:8 trk:9 cross:7 fps:39.9
+2026-07-22 14:38:39,273 [INFO] __main__ - [451] det:7 trk:8 cross:7 fps:42.5
+2026-07-22 14:38:40,035 [INFO] __main__ - [481] det:6 trk:7 cross:7 fps:44.1
+2026-07-22 14:38:40,768 [INFO] __main__ - [511] det:8 trk:11 cross:7 fps:44.6
+2026-07-22 14:38:41,520 [INFO] __main__ - [541] det:5 trk:11 cross:7 fps:44.3
+2026-07-22 14:38:42,253 [INFO] __main__ - [571] det:3 trk:8 cross:7 fps:42.4
+2026-07-22 14:38:42,974 [INFO] __main__ - [601] det:3 trk:7 cross:7 fps:43.4
+2026-07-22 14:38:43,719 [INFO] __main__ - [631] det:2 trk:6 cross:7 fps:42.4
+2026-07-22 14:38:44,465 [INFO] __main__ - [661] det:4 trk:5 cross:7 fps:44.3
+2026-07-22 14:38:45,204 [INFO] __main__ - [691] det:4 trk:7 cross:7 fps:44.2
+2026-07-22 14:38:45,921 [INFO] __main__ - [721] det:7 trk:9 cross:7 fps:45.8
+2026-07-22 14:38:46,673 [INFO] __main__ - [751] det:5 trk:8 cross:7 fps:43.8
+2026-07-22 14:38:47,439 [INFO] __main__ - [781] det:4 trk:6 cross:7 fps:40.5
+2026-07-22 14:38:48,205 [INFO] __main__ - [811] det:7 trk:10 cross:7 fps:41.9
+2026-07-22 14:38:48,426 [INFO] src.tracker - ID26 crossed! Total: 8
+2026-07-22 14:38:48,427 [INFO] src.tracker - ID27 crossed! Total: 9
+2026-07-22 14:38:48,725 [INFO] src.tracker - ID10 crossed! Total: 10
+2026-07-22 14:38:48,964 [INFO] __main__ - [841] det:7 trk:10 cross:10 fps:42.4
+2026-07-22 14:38:49,696 [INFO] __main__ - [871] det:9 trk:10 cross:10 fps:44.9
+2026-07-22 14:38:50,434 [INFO] __main__ - [901] det:9 trk:10 cross:10 fps:42.5
+2026-07-22 14:38:51,192 [INFO] __main__ - [931] det:7 trk:9 cross:10 fps:40.9
+2026-07-22 14:38:51,920 [INFO] __main__ - [961] det:7 trk:12 cross:10 fps:43.1
+2026-07-22 14:38:52,664 [INFO] __main__ - [991] det:7 trk:10 cross:10 fps:43.5
+2026-07-22 14:38:53,403 [INFO] __main__ - [1021] det:10 trk:12 cross:10 fps:43.7
+2026-07-22 14:38:53,695 [INFO] src.tracker - ID31 crossed! Total: 11
+2026-07-22 14:38:54,178 [INFO] __main__ - [1051] det:11 trk:12 cross:11 fps:40.4
+2026-07-22 14:38:54,917 [INFO] __main__ - [1081] det:8 trk:12 cross:11 fps:44.3
+2026-07-22 14:38:55,044 [INFO] src.tracker - ID35 crossed! Total: 12
+2026-07-22 14:38:55,664 [INFO] __main__ - [1111] det:9 trk:11 cross:12 fps:45.4
+2026-07-22 14:38:56,419 [INFO] __main__ - [1141] det:8 trk:10 cross:12 fps:41.7
+2026-07-22 14:38:57,181 [INFO] __main__ - [1171] det:7 trk:8 cross:12 fps:39.4
+2026-07-22 14:38:57,897 [INFO] __main__ - [1201] det:7 trk:8 cross:12 fps:42.7
+2026-07-22 14:38:58,663 [INFO] __main__ - [1231] det:4 trk:8 cross:12 fps:41.7
+2026-07-22 14:38:59,411 [INFO] __main__ - [1261] det:4 trk:5 cross:12 fps:42.6
+2026-07-22 14:39:00,179 [INFO] __main__ - [1291] det:3 trk:6 cross:12 fps:38.7
+2026-07-22 14:39:00,918 [INFO] __main__ - [1321] det:5 trk:6 cross:12 fps:44.6
+2026-07-22 14:39:01,679 [INFO] __main__ - [1351] det:8 trk:8 cross:12 fps:42.0
+2026-07-22 14:39:02,218 [INFO] src.tracker - ID46 crossed! Total: 13
+2026-07-22 14:39:02,292 [INFO] src.tracker - ID49 crossed! Total: 14
+2026-07-22 14:39:02,463 [INFO] __main__ - [1381] det:8 trk:13 cross:14 fps:39.9
+2026-07-22 14:39:03,279 [INFO] __main__ - [1411] det:9 trk:13 cross:14 fps:37.9
+2026-07-22 14:39:03,637 [INFO] src.tracker - ID32 crossed! Total: 15
+2026-07-22 14:39:03,638 [INFO] src.tracker - ID50 crossed! Total: 16
+2026-07-22 14:39:04,047 [INFO] __main__ - [1441] det:9 trk:10 cross:16 fps:40.1
+2026-07-22 14:39:04,445 [INFO] src.tracker - ID51 crossed! Total: 17
+2026-07-22 14:39:04,843 [INFO] __main__ - [1471] det:7 trk:8 cross:17 fps:40.8
+2026-07-22 14:39:05,637 [INFO] __main__ - [1501] det:6 trk:8 cross:17 fps:40.6
+2026-07-22 14:39:06,403 [INFO] __main__ - [1531] det:8 trk:10 cross:17 fps:41.0
+2026-07-22 14:39:06,759 [INFO] src.tracker - ID35 crossed! Total: 18
+2026-07-22 14:39:06,837 [INFO] src.tracker - ID52 crossed! Total: 19
+2026-07-22 14:39:07,153 [INFO] __main__ - [1561] det:8 trk:10 cross:19 fps:41.4
+2026-07-22 14:39:07,948 [INFO] __main__ - [1591] det:6 trk:9 cross:19 fps:40.1
+2026-07-22 14:39:08,698 [INFO] __main__ - [1621] det:6 trk:7 cross:19 fps:41.9
+2026-07-22 14:39:09,479 [INFO] __main__ - [1651] det:7 trk:8 cross:19 fps:39.8
+2026-07-22 14:39:09,998 [INFO] src.tracker - ID41 crossed! Total: 20
+2026-07-22 14:39:09,998 [INFO] src.tracker - ID48 crossed! Total: 21
+2026-07-22 14:39:10,261 [INFO] __main__ - [1681] det:9 trk:10 cross:21 fps:37.8
+2026-07-22 14:39:10,900 [INFO] __main__ - [1711] det:0 trk:9 cross:21 fps:48.1
+2026-07-22 14:39:11,533 [INFO] __main__ - [1741] det:0 trk:0 cross:21 fps:52.8
+2026-07-22 14:39:12,151 [INFO] __main__ - [1771] det:0 trk:0 cross:21 fps:51.4
+2026-07-22 14:39:12,764 [INFO] __main__ - [1801] det:0 trk:0 cross:21 fps:52.8
+2026-07-22 14:39:13,387 [INFO] __main__ - [1831] det:0 trk:0 cross:21 fps:50.3
+2026-07-22 14:39:14,030 [INFO] __main__ - [1861] det:0 trk:0 cross:21 fps:50.1
+2026-07-22 14:39:14,645 [INFO] __main__ - [1891] det:0 trk:0 cross:21 fps:52.0
+2026-07-22 14:39:15,273 [INFO] __main__ - [1921] det:0 trk:0 cross:21 fps:49.5
+2026-07-22 14:39:15,484 [INFO] __main__ - End of stream
+2026-07-22 14:39:15,503 [INFO] __main__ - Done! Total crossings: 21
+2026-07-22 14:43:19,849 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:43:20,371 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:43:20,374 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:43:20,374 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:43:20,376 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:43:20,385 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:43:20,385 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:43:20,432 [INFO] src.model - Model ready
+2026-07-22 14:43:20,433 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:43:20,433 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:43:20,433 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:43:20,434 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:43:20,434 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:43:20,453 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=78.5% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:43:20,568 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:43:21,228 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:46.6
+2026-07-22 14:43:21,873 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:48.7
+2026-07-22 14:43:22,498 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:51.7
+2026-07-22 14:43:23,049 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:43:23,218 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:40.8
+2026-07-22 14:43:23,432 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:43:23,978 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:40.9
+2026-07-22 14:43:24,272 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:43:24,346 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:43:24,736 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:41.8
+2026-07-22 14:43:25,502 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:41.1
+2026-07-22 14:43:26,292 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:38.8
+2026-07-22 14:43:26,513 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:43:27,091 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:38.7
+2026-07-22 14:43:27,331 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:43:27,882 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:41.0
+2026-07-22 14:43:28,626 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:41.9
+2026-07-22 14:43:29,374 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:41.5
+2026-07-22 14:43:30,138 [INFO] __main__ - [391] det:6 trk:10 cross:6 fps:40.6
+2026-07-22 14:43:30,443 [INFO] src.tracker - ID15 crossed! Total: 7
+2026-07-22 14:43:30,918 [INFO] __main__ - [421] det:8 trk:9 cross:7 fps:41.2
+2026-07-22 14:43:31,677 [INFO] __main__ - [451] det:7 trk:8 cross:7 fps:40.7
+2026-07-22 14:43:32,427 [INFO] __main__ - [481] det:6 trk:7 cross:7 fps:42.4
+2026-07-22 14:43:33,173 [INFO] __main__ - [511] det:8 trk:11 cross:7 fps:43.3
+2026-07-22 14:43:33,920 [INFO] __main__ - [541] det:5 trk:11 cross:7 fps:44.3
+2026-07-22 14:43:34,658 [INFO] __main__ - [571] det:3 trk:8 cross:7 fps:43.4
+2026-07-22 14:43:35,389 [INFO] __main__ - [601] det:3 trk:7 cross:7 fps:44.4
+2026-07-22 14:43:36,141 [INFO] __main__ - [631] det:2 trk:6 cross:7 fps:41.7
+2026-07-22 14:43:36,902 [INFO] __main__ - [661] det:4 trk:5 cross:7 fps:42.3
+2026-07-22 14:43:37,642 [INFO] __main__ - [691] det:4 trk:7 cross:7 fps:41.2
+2026-07-22 14:43:38,382 [INFO] __main__ - [721] det:7 trk:9 cross:7 fps:42.1
+2026-07-22 14:43:39,140 [INFO] __main__ - [751] det:5 trk:8 cross:7 fps:41.5
+2026-07-22 14:43:39,918 [INFO] __main__ - [781] det:4 trk:6 cross:7 fps:41.4
+2026-07-22 14:43:40,682 [INFO] __main__ - [811] det:7 trk:10 cross:7 fps:39.7
+2026-07-22 14:43:40,910 [INFO] src.tracker - ID26 crossed! Total: 8
+2026-07-22 14:43:40,911 [INFO] src.tracker - ID27 crossed! Total: 9
+2026-07-22 14:43:41,204 [INFO] src.tracker - ID10 crossed! Total: 10
+2026-07-22 14:43:41,440 [INFO] __main__ - [841] det:7 trk:10 cross:10 fps:42.9
+2026-07-22 14:43:42,206 [INFO] __main__ - [871] det:9 trk:10 cross:10 fps:41.9
+2026-07-22 14:43:42,968 [INFO] __main__ - [901] det:9 trk:10 cross:10 fps:39.9
+2026-07-22 14:43:43,715 [INFO] __main__ - [931] det:7 trk:9 cross:10 fps:41.0
+2026-07-22 14:43:44,443 [INFO] __main__ - [961] det:7 trk:12 cross:10 fps:43.2
+2026-07-22 14:43:45,151 [INFO] __main__ - [991] det:7 trk:10 cross:10 fps:44.8
+2026-07-22 14:43:45,937 [INFO] __main__ - [1021] det:10 trk:12 cross:10 fps:39.8
+2026-07-22 14:43:46,234 [INFO] src.tracker - ID31 crossed! Total: 11
+2026-07-22 14:43:46,708 [INFO] __main__ - [1051] det:11 trk:12 cross:11 fps:40.0
+2026-07-22 14:43:47,453 [INFO] __main__ - [1081] det:8 trk:12 cross:11 fps:41.8
+2026-07-22 14:43:47,594 [INFO] src.tracker - ID35 crossed! Total: 12
+2026-07-22 14:43:48,224 [INFO] __main__ - [1111] det:9 trk:11 cross:12 fps:39.5
+2026-07-22 14:43:48,984 [INFO] __main__ - [1141] det:8 trk:10 cross:12 fps:43.0
+2026-07-22 14:43:49,693 [INFO] __main__ - [1171] det:7 trk:8 cross:12 fps:43.4
+2026-07-22 14:43:50,391 [INFO] __main__ - [1201] det:7 trk:8 cross:12 fps:45.2
+2026-07-22 14:43:51,143 [INFO] __main__ - [1231] det:4 trk:8 cross:12 fps:41.2
+2026-07-22 14:43:51,887 [INFO] __main__ - [1261] det:4 trk:5 cross:12 fps:43.1
+2026-07-22 14:43:52,647 [INFO] __main__ - [1291] det:3 trk:6 cross:12 fps:40.8
+2026-07-22 14:43:53,412 [INFO] __main__ - [1321] det:5 trk:6 cross:12 fps:41.2
+2026-07-22 14:43:54,184 [INFO] __main__ - [1351] det:8 trk:8 cross:12 fps:40.2
+2026-07-22 14:43:54,714 [INFO] src.tracker - ID46 crossed! Total: 13
+2026-07-22 14:43:54,799 [INFO] src.tracker - ID49 crossed! Total: 14
+2026-07-22 14:43:54,983 [INFO] __main__ - [1381] det:8 trk:13 cross:14 fps:37.4
+2026-07-22 14:43:55,781 [INFO] __main__ - [1411] det:9 trk:13 cross:14 fps:38.9
+2026-07-22 14:43:56,141 [INFO] src.tracker - ID32 crossed! Total: 15
+2026-07-22 14:43:56,142 [INFO] src.tracker - ID50 crossed! Total: 16
+2026-07-22 14:43:56,544 [INFO] __main__ - [1441] det:9 trk:10 cross:16 fps:41.2
+2026-07-22 14:43:56,931 [INFO] src.tracker - ID51 crossed! Total: 17
+2026-07-22 14:43:57,317 [INFO] __main__ - [1471] det:7 trk:8 cross:17 fps:42.4
+2026-07-22 14:43:58,085 [INFO] __main__ - [1501] det:6 trk:8 cross:17 fps:42.6
+2026-07-22 14:43:58,872 [INFO] __main__ - [1531] det:8 trk:10 cross:17 fps:39.3
+2026-07-22 14:43:59,264 [INFO] src.tracker - ID35 crossed! Total: 18
+2026-07-22 14:43:59,340 [INFO] src.tracker - ID52 crossed! Total: 19
+2026-07-22 14:43:59,658 [INFO] __main__ - [1561] det:8 trk:10 cross:19 fps:42.5
+2026-07-22 14:44:00,445 [INFO] __main__ - [1591] det:6 trk:9 cross:19 fps:40.9
+2026-07-22 14:44:01,226 [INFO] __main__ - [1621] det:6 trk:7 cross:19 fps:41.2
+2026-07-22 14:44:01,997 [INFO] __main__ - [1651] det:7 trk:8 cross:19 fps:40.0
+2026-07-22 14:44:02,528 [INFO] src.tracker - ID41 crossed! Total: 20
+2026-07-22 14:44:02,528 [INFO] src.tracker - ID48 crossed! Total: 21
+2026-07-22 14:44:02,759 [INFO] __main__ - [1681] det:9 trk:10 cross:21 fps:42.8
+2026-07-22 14:44:03,405 [INFO] __main__ - [1711] det:0 trk:9 cross:21 fps:48.3
+2026-07-22 14:44:04,045 [INFO] __main__ - [1741] det:0 trk:0 cross:21 fps:49.3
+2026-07-22 14:44:04,661 [INFO] __main__ - [1771] det:0 trk:0 cross:21 fps:51.7
+2026-07-22 14:44:05,300 [INFO] __main__ - [1801] det:0 trk:0 cross:21 fps:49.2
+2026-07-22 14:44:05,957 [INFO] __main__ - [1831] det:0 trk:0 cross:21 fps:50.1
+2026-07-22 14:44:06,575 [INFO] __main__ - [1861] det:0 trk:0 cross:21 fps:52.6
+2026-07-22 14:44:07,190 [INFO] __main__ - [1891] det:0 trk:0 cross:21 fps:52.2
+2026-07-22 14:44:07,806 [INFO] __main__ - [1921] det:0 trk:0 cross:21 fps:52.9
+2026-07-22 14:44:08,026 [INFO] __main__ - End of stream
+2026-07-22 14:44:08,068 [INFO] __main__ - Done! Total crossings: 21
+2026-07-22 14:44:08,085 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1882
+
+Average Decode Time: 1.93 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.47 ms
+Average Inference Time: 9.89 ms
+Average Post-processing Time: 0.57 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.04 ms
+Average Overlay Time: 0.77 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 8.44 ms
+
+Average Total Latency: 22.14 ms/frame
+Average FPS: 45.16
+
+Latency Statistics:
+Minimum Latency: 6.83 ms
+Maximum Latency: 58.19 ms
+Median Latency: 11.87 ms
+95th Percentile Latency: 48.26 ms
+
+Latency Contribution:
+Decode: 8.7%
+Appsink: 0.0%
+Preprocessing: 2.1%
+Inference: 44.7%
+Post-processing: 2.6%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.5%
+Color Conversion: 0.0%
+Encoding: 38.1%
+
+Top 3 Bottlenecks:
+1. Inference (44.7%)
+2. Encoding (38.1%)
+3. Decode (8.7%)
+
+==================================================
+2026-07-22 14:44:15,456 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:44:15,982 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:44:15,985 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:44:15,985 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:44:15,988 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:44:15,996 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:44:15,999 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:44:16,048 [INFO] src.model - Model ready
+2026-07-22 14:44:16,049 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:44:16,049 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:44:16,049 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:44:16,049 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:44:16,049 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:44:16,073 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.0% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:44:16,170 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:44:16,826 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:48.2
+2026-07-22 14:44:17,499 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:45.0
+2026-07-22 14:44:18,144 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:46.6
+2026-07-22 14:44:18,722 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:44:18,891 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:41.3
+2026-07-22 14:44:19,132 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:44:19,714 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:38.8
+2026-07-22 14:44:20,006 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:44:20,081 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:44:20,491 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:40.3
+2026-07-22 14:44:21,291 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:39.9
+2026-07-22 14:44:22,097 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:39.6
+2026-07-22 14:44:22,326 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:44:22,928 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:37.8
+2026-07-22 14:44:23,159 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:44:23,753 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:38.4
+2026-07-22 14:44:24,573 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:37.7
+2026-07-22 14:44:25,376 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:40.4
+2026-07-22 14:44:26,198 [INFO] __main__ - [391] det:6 trk:10 cross:6 fps:38.4
+2026-07-22 14:44:26,520 [INFO] src.tracker - ID15 crossed! Total: 7
+2026-07-22 14:44:27,023 [INFO] __main__ - [421] det:8 trk:9 cross:7 fps:38.2
+2026-07-22 14:44:27,799 [INFO] __main__ - [451] det:7 trk:8 cross:7 fps:42.3
+2026-07-22 14:44:28,580 [INFO] __main__ - [481] det:6 trk:7 cross:7 fps:42.6
+2026-07-22 14:44:29,405 [INFO] __main__ - [511] det:8 trk:11 cross:7 fps:39.5
+2026-07-22 14:44:30,203 [INFO] __main__ - [541] det:5 trk:11 cross:7 fps:38.6
+2026-07-22 14:44:30,971 [INFO] __main__ - [571] det:3 trk:8 cross:7 fps:40.1
+2026-07-22 14:44:31,721 [INFO] __main__ - [601] det:3 trk:7 cross:7 fps:42.9
+2026-07-22 14:44:32,480 [INFO] __main__ - [631] det:2 trk:6 cross:7 fps:41.8
+2026-07-22 14:44:33,259 [INFO] __main__ - [661] det:4 trk:5 cross:7 fps:42.5
+2026-07-22 14:44:34,017 [INFO] __main__ - [691] det:4 trk:7 cross:7 fps:39.8
+2026-07-22 14:44:34,783 [INFO] __main__ - [721] det:7 trk:9 cross:7 fps:41.6
+2026-07-22 14:44:35,568 [INFO] __main__ - [751] det:5 trk:8 cross:7 fps:40.2
+2026-07-22 14:44:36,348 [INFO] __main__ - [781] det:4 trk:6 cross:7 fps:41.0
+2026-07-22 14:44:37,118 [INFO] __main__ - [811] det:7 trk:10 cross:7 fps:39.1
+2026-07-22 14:44:37,338 [INFO] src.tracker - ID26 crossed! Total: 8
+2026-07-22 14:44:37,338 [INFO] src.tracker - ID27 crossed! Total: 9
+2026-07-22 14:44:37,641 [INFO] src.tracker - ID10 crossed! Total: 10
+2026-07-22 14:44:37,892 [INFO] __main__ - [841] det:7 trk:10 cross:10 fps:40.7
+2026-07-22 14:44:38,671 [INFO] __main__ - [871] det:9 trk:10 cross:10 fps:40.8
+2026-07-22 14:44:39,458 [INFO] __main__ - [901] det:9 trk:10 cross:10 fps:40.0
+2026-07-22 14:44:40,248 [INFO] __main__ - [931] det:7 trk:9 cross:10 fps:40.1
+2026-07-22 14:44:41,004 [INFO] __main__ - [961] det:7 trk:12 cross:10 fps:41.3
+2026-07-22 14:44:41,750 [INFO] __main__ - [991] det:7 trk:10 cross:10 fps:42.9
+2026-07-22 14:44:42,546 [INFO] __main__ - [1021] det:10 trk:12 cross:10 fps:39.5
+2026-07-22 14:44:42,849 [INFO] src.tracker - ID31 crossed! Total: 11
+2026-07-22 14:44:43,353 [INFO] __main__ - [1051] det:11 trk:12 cross:11 fps:37.2
+2026-07-22 14:44:44,136 [INFO] __main__ - [1081] det:8 trk:12 cross:11 fps:40.6
+2026-07-22 14:44:44,285 [INFO] src.tracker - ID35 crossed! Total: 12
+2026-07-22 14:44:44,937 [INFO] __main__ - [1111] det:9 trk:11 cross:12 fps:40.4
+2026-07-22 14:44:45,723 [INFO] __main__ - [1141] det:8 trk:10 cross:12 fps:39.4
+2026-07-22 14:44:46,465 [INFO] __main__ - [1171] det:7 trk:8 cross:12 fps:41.0
+2026-07-22 14:44:47,215 [INFO] __main__ - [1201] det:7 trk:8 cross:12 fps:42.4
+2026-07-22 14:44:48,051 [INFO] __main__ - [1231] det:4 trk:8 cross:12 fps:35.8
+2026-07-22 14:44:48,829 [INFO] __main__ - [1261] det:4 trk:5 cross:12 fps:41.4
+2026-07-22 14:44:49,608 [INFO] __main__ - [1291] det:3 trk:6 cross:12 fps:38.9
+2026-07-22 14:44:50,396 [INFO] __main__ - [1321] det:5 trk:6 cross:12 fps:40.3
+2026-07-22 14:44:51,195 [INFO] __main__ - [1351] det:8 trk:8 cross:12 fps:40.3
+2026-07-22 14:44:51,777 [INFO] src.tracker - ID46 crossed! Total: 13
+2026-07-22 14:44:51,858 [INFO] src.tracker - ID49 crossed! Total: 14
+2026-07-22 14:44:52,043 [INFO] __main__ - [1381] det:8 trk:13 cross:14 fps:37.8
+2026-07-22 14:44:52,872 [INFO] __main__ - [1411] det:9 trk:13 cross:14 fps:35.9
+2026-07-22 14:44:53,252 [INFO] src.tracker - ID32 crossed! Total: 15
+2026-07-22 14:44:53,253 [INFO] src.tracker - ID50 crossed! Total: 16
+2026-07-22 14:44:53,665 [INFO] __main__ - [1441] det:9 trk:10 cross:16 fps:39.1
+2026-07-22 14:44:54,048 [INFO] src.tracker - ID51 crossed! Total: 17
+2026-07-22 14:44:54,459 [INFO] __main__ - [1471] det:7 trk:8 cross:17 fps:38.8
+2026-07-22 14:44:55,269 [INFO] __main__ - [1501] det:6 trk:8 cross:17 fps:38.9
+2026-07-22 14:44:56,081 [INFO] __main__ - [1531] det:8 trk:10 cross:17 fps:38.7
+2026-07-22 14:44:56,473 [INFO] src.tracker - ID35 crossed! Total: 18
+2026-07-22 14:44:56,555 [INFO] src.tracker - ID52 crossed! Total: 19
+2026-07-22 14:44:56,883 [INFO] __main__ - [1561] det:8 trk:10 cross:19 fps:41.0
+2026-07-22 14:44:57,738 [INFO] __main__ - [1591] det:6 trk:9 cross:19 fps:38.5
+2026-07-22 14:44:58,552 [INFO] __main__ - [1621] det:6 trk:7 cross:19 fps:38.7
+2026-07-22 14:44:59,382 [INFO] __main__ - [1651] det:7 trk:8 cross:19 fps:36.9
+2026-07-22 14:44:59,958 [INFO] src.tracker - ID41 crossed! Total: 20
+2026-07-22 14:44:59,958 [INFO] src.tracker - ID48 crossed! Total: 21
+2026-07-22 14:45:00,207 [INFO] __main__ - [1681] det:9 trk:10 cross:21 fps:40.4
+2026-07-22 14:45:00,901 [INFO] __main__ - [1711] det:0 trk:9 cross:21 fps:47.5
+2026-07-22 14:45:01,598 [INFO] __main__ - [1741] det:0 trk:0 cross:21 fps:44.2
+2026-07-22 14:45:02,257 [INFO] __main__ - [1771] det:0 trk:0 cross:21 fps:49.5
+2026-07-22 14:45:02,927 [INFO] __main__ - [1801] det:0 trk:0 cross:21 fps:49.1
+2026-07-22 14:45:03,581 [INFO] __main__ - [1831] det:0 trk:0 cross:21 fps:49.2
+2026-07-22 14:45:04,255 [INFO] __main__ - [1861] det:0 trk:0 cross:21 fps:48.4
+2026-07-22 14:45:04,921 [INFO] __main__ - [1891] det:0 trk:0 cross:21 fps:46.4
+2026-07-22 14:45:05,611 [INFO] __main__ - [1921] det:0 trk:0 cross:21 fps:45.9
+2026-07-22 14:45:05,825 [INFO] __main__ - End of stream
+2026-07-22 14:45:05,854 [INFO] __main__ - Done! Total crossings: 21
+2026-07-22 14:45:05,867 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1882
+
+Average Decode Time: 1.99 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.48 ms
+Average Inference Time: 10.59 ms
+Average Post-processing Time: 0.61 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.05 ms
+Average Overlay Time: 0.80 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 8.71 ms
+
+Average Total Latency: 23.26 ms/frame
+Average FPS: 43.00
+
+Latency Statistics:
+Minimum Latency: 7.22 ms
+Maximum Latency: 61.40 ms
+Median Latency: 12.18 ms
+95th Percentile Latency: 51.15 ms
+
+Latency Contribution:
+Decode: 8.6%
+Appsink: 0.0%
+Preprocessing: 2.1%
+Inference: 45.5%
+Post-processing: 2.6%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.4%
+Color Conversion: 0.0%
+Encoding: 37.4%
+
+Top 3 Bottlenecks:
+1. Inference (45.5%)
+2. Encoding (37.4%)
+3. Decode (8.6%)
+
+==================================================
+2026-07-22 14:45:12,086 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:45:12,629 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:45:12,633 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:45:12,633 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:45:12,635 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:45:12,644 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:45:12,645 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:45:12,698 [INFO] src.model - Model ready
+2026-07-22 14:45:12,698 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:45:12,699 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:45:12,699 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:45:12,699 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:45:12,699 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:45:12,720 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.2% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:45:12,859 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:45:13,656 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:40.1
+2026-07-22 14:45:14,410 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:44.4
+2026-07-22 14:45:15,137 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:40.4
+2026-07-22 14:45:15,781 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:45:15,960 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:37.2
+2026-07-22 14:45:16,211 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:45:16,852 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:37.0
+2026-07-22 14:45:17,179 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:45:17,266 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:45:17,698 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:39.2
+2026-07-22 14:45:18,568 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:35.1
+2026-07-22 14:45:19,443 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:34.8
+2026-07-22 14:45:19,689 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:45:20,326 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:35.6
+2026-07-22 14:45:20,565 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:45:21,191 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:36.9
+2026-07-22 14:45:22,073 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:35.8
+2026-07-22 14:45:22,898 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:39.3
+2026-07-22 14:45:23,725 [INFO] __main__ - [391] det:6 trk:10 cross:6 fps:39.1
+2026-07-22 14:45:24,047 [INFO] src.tracker - ID15 crossed! Total: 7
+2026-07-22 14:45:24,556 [INFO] __main__ - [421] det:8 trk:9 cross:7 fps:38.5
+2026-07-22 14:45:25,389 [INFO] __main__ - [451] det:7 trk:8 cross:7 fps:37.3
+2026-07-22 14:45:26,201 [INFO] __main__ - [481] det:6 trk:7 cross:7 fps:39.5
+2026-07-22 14:45:27,050 [INFO] __main__ - [511] det:8 trk:11 cross:7 fps:35.0
+2026-07-22 14:45:27,872 [INFO] __main__ - [541] det:5 trk:11 cross:7 fps:40.2
+2026-07-22 14:45:28,660 [INFO] __main__ - [571] det:3 trk:8 cross:7 fps:40.3
+2026-07-22 14:45:29,469 [INFO] __main__ - Stopped by user
+2026-07-22 14:45:29,501 [INFO] __main__ - Done! Total crossings: 7
+2026-07-22 14:45:29,506 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 550
+
+Average Decode Time: 2.00 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.51 ms
+Average Inference Time: 11.32 ms
+Average Post-processing Time: 0.64 ms
+Average Tracking Time: 0.04 ms
+Average Line_crossing Time: 0.05 ms
+Average Overlay Time: 0.82 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 9.72 ms
+
+Average Total Latency: 25.10 ms/frame
+Average FPS: 39.84
+
+Latency Statistics:
+Minimum Latency: 7.75 ms
+Maximum Latency: 64.36 ms
+Median Latency: 13.04 ms
+95th Percentile Latency: 54.27 ms
+
+Latency Contribution:
+Decode: 8.0%
+Appsink: 0.0%
+Preprocessing: 2.0%
+Inference: 45.1%
+Post-processing: 2.5%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.3%
+Color Conversion: 0.0%
+Encoding: 38.7%
+
+Top 3 Bottlenecks:
+1. Inference (45.1%)
+2. Encoding (38.7%)
+3. Decode (8.0%)
+
+==================================================
+2026-07-22 14:45:35,656 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:45:36,216 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:45:36,219 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:45:36,219 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:45:36,221 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:45:36,231 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:45:36,235 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:45:36,291 [INFO] src.model - Model ready
+2026-07-22 14:45:36,291 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:45:36,292 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:45:36,292 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:45:36,292 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:45:36,292 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:45:36,309 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.2% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:45:36,427 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:45:37,183 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:40.1
+2026-07-22 14:45:37,932 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:45.3
+2026-07-22 14:45:38,675 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:42.3
+2026-07-22 14:45:39,284 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:45:39,465 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:38.0
+2026-07-22 14:45:39,724 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:45:40,330 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:37.8
+2026-07-22 14:45:40,646 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:45:40,735 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:45:41,171 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:38.4
+2026-07-22 14:45:42,008 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:36.6
+2026-07-22 14:45:42,867 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:35.6
+2026-07-22 14:45:43,118 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:45:43,755 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:36.4
+2026-07-22 14:45:44,013 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:45:44,628 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:37.6
+2026-07-22 14:45:45,478 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:36.7
+2026-07-22 14:45:46,279 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:39.4
+2026-07-22 14:45:47,091 [INFO] __main__ - [391] det:6 trk:10 cross:6 fps:38.5
+2026-07-22 14:45:47,411 [INFO] src.tracker - ID15 crossed! Total: 7
+2026-07-22 14:45:47,924 [INFO] __main__ - [421] det:8 trk:9 cross:7 fps:39.0
+2026-07-22 14:45:48,730 [INFO] __main__ - [451] det:7 trk:8 cross:7 fps:39.1
+2026-07-22 14:45:49,533 [INFO] __main__ - [481] det:6 trk:7 cross:7 fps:38.9
+2026-07-22 14:45:50,332 [INFO] __main__ - [511] det:8 trk:11 cross:7 fps:39.4
+2026-07-22 14:45:51,123 [INFO] __main__ - [541] det:5 trk:11 cross:7 fps:39.8
+2026-07-22 14:45:51,914 [INFO] __main__ - [571] det:3 trk:8 cross:7 fps:41.0
+2026-07-22 14:45:52,713 [INFO] __main__ - [601] det:3 trk:7 cross:7 fps:41.2
+2026-07-22 14:45:53,512 [INFO] __main__ - [631] det:2 trk:6 cross:7 fps:39.4
+2026-07-22 14:45:54,315 [INFO] __main__ - [661] det:4 trk:5 cross:7 fps:40.9
+2026-07-22 14:45:55,124 [INFO] __main__ - [691] det:4 trk:7 cross:7 fps:36.8
+2026-07-22 14:45:55,899 [INFO] __main__ - [721] det:7 trk:9 cross:7 fps:41.9
+2026-07-22 14:45:56,716 [INFO] __main__ - [751] det:5 trk:8 cross:7 fps:39.2
+2026-07-22 14:45:57,524 [INFO] __main__ - [781] det:4 trk:6 cross:7 fps:39.4
+2026-07-22 14:45:58,307 [INFO] __main__ - [811] det:7 trk:10 cross:7 fps:38.5
+2026-07-22 14:45:58,558 [INFO] src.tracker - ID26 crossed! Total: 8
+2026-07-22 14:45:58,558 [INFO] src.tracker - ID27 crossed! Total: 9
+2026-07-22 14:45:58,897 [INFO] src.tracker - ID10 crossed! Total: 10
+2026-07-22 14:45:59,178 [INFO] __main__ - [841] det:7 trk:10 cross:10 fps:35.3
+2026-07-22 14:45:59,988 [INFO] __main__ - [871] det:9 trk:10 cross:10 fps:39.1
+2026-07-22 14:46:00,794 [INFO] __main__ - [901] det:9 trk:10 cross:10 fps:38.7
+2026-07-22 14:46:01,624 [INFO] __main__ - [931] det:7 trk:9 cross:10 fps:36.6
+2026-07-22 14:46:02,415 [INFO] __main__ - [961] det:7 trk:12 cross:10 fps:38.9
+2026-07-22 14:46:03,214 [INFO] __main__ - [991] det:7 trk:10 cross:10 fps:38.5
+2026-07-22 14:46:04,073 [INFO] __main__ - [1021] det:10 trk:12 cross:10 fps:36.4
+2026-07-22 14:46:04,417 [INFO] src.tracker - ID31 crossed! Total: 11
+2026-07-22 14:46:04,938 [INFO] __main__ - [1051] det:11 trk:12 cross:11 fps:37.1
+2026-07-22 14:46:05,793 [INFO] __main__ - [1081] det:8 trk:12 cross:11 fps:35.9
+2026-07-22 14:46:05,955 [INFO] src.tracker - ID35 crossed! Total: 12
+2026-07-22 14:46:06,634 [INFO] __main__ - [1111] det:9 trk:11 cross:12 fps:38.1
+2026-07-22 14:46:07,456 [INFO] __main__ - [1141] det:8 trk:10 cross:12 fps:38.2
+2026-07-22 14:46:08,250 [INFO] __main__ - [1171] det:7 trk:8 cross:12 fps:39.5
+2026-07-22 14:46:09,061 [INFO] __main__ - [1201] det:7 trk:8 cross:12 fps:39.8
+2026-07-22 14:46:09,930 [INFO] __main__ - [1231] det:4 trk:8 cross:12 fps:35.7
+2026-07-22 14:46:10,780 [INFO] __main__ - [1261] det:4 trk:5 cross:12 fps:38.4
+2026-07-22 14:46:11,631 [INFO] __main__ - [1291] det:3 trk:6 cross:12 fps:35.0
+2026-07-22 14:46:12,463 [INFO] __main__ - [1321] det:5 trk:6 cross:12 fps:37.3
+2026-07-22 14:46:13,316 [INFO] __main__ - [1351] det:8 trk:8 cross:12 fps:36.8
+2026-07-22 14:46:13,917 [INFO] src.tracker - ID46 crossed! Total: 13
+2026-07-22 14:46:14,008 [INFO] src.tracker - ID49 crossed! Total: 14
+2026-07-22 14:46:14,198 [INFO] __main__ - [1381] det:8 trk:13 cross:14 fps:35.4
+2026-07-22 14:46:15,080 [INFO] __main__ - [1411] det:9 trk:13 cross:14 fps:34.5
+2026-07-22 14:46:15,495 [INFO] src.tracker - ID32 crossed! Total: 15
+2026-07-22 14:46:15,496 [INFO] src.tracker - ID50 crossed! Total: 16
+2026-07-22 14:46:15,933 [INFO] __main__ - [1441] det:9 trk:10 cross:16 fps:36.6
+2026-07-22 14:46:16,354 [INFO] src.tracker - ID51 crossed! Total: 17
+2026-07-22 14:46:16,806 [INFO] __main__ - [1471] det:7 trk:8 cross:17 fps:36.0
+2026-07-22 14:46:17,659 [INFO] __main__ - [1501] det:6 trk:8 cross:17 fps:36.6
+2026-07-22 14:46:18,530 [INFO] __main__ - [1531] det:8 trk:10 cross:17 fps:36.0
+2026-07-22 14:46:18,953 [INFO] src.tracker - ID35 crossed! Total: 18
+2026-07-22 14:46:19,042 [INFO] src.tracker - ID52 crossed! Total: 19
+2026-07-22 14:46:19,399 [INFO] __main__ - [1561] det:8 trk:10 cross:19 fps:37.1
+2026-07-22 14:46:20,246 [INFO] __main__ - [1591] det:6 trk:9 cross:19 fps:37.6
+2026-07-22 14:46:21,111 [INFO] __main__ - [1621] det:6 trk:7 cross:19 fps:36.6
+2026-07-22 14:46:21,968 [INFO] __main__ - [1651] det:7 trk:8 cross:19 fps:34.3
+2026-07-22 14:46:22,563 [INFO] src.tracker - ID41 crossed! Total: 20
+2026-07-22 14:46:22,564 [INFO] src.tracker - ID48 crossed! Total: 21
+2026-07-22 14:46:22,821 [INFO] __main__ - [1681] det:9 trk:10 cross:21 fps:37.7
+2026-07-22 14:46:23,521 [INFO] __main__ - [1711] det:0 trk:9 cross:21 fps:46.0
+2026-07-22 14:46:24,199 [INFO] __main__ - [1741] det:0 trk:0 cross:21 fps:48.4
+2026-07-22 14:46:24,881 [INFO] __main__ - [1771] det:0 trk:0 cross:21 fps:46.6
+2026-07-22 14:46:25,565 [INFO] __main__ - [1801] det:0 trk:0 cross:21 fps:44.5
+2026-07-22 14:46:26,251 [INFO] __main__ - [1831] det:0 trk:0 cross:21 fps:46.9
+2026-07-22 14:46:26,943 [INFO] __main__ - [1861] det:0 trk:0 cross:21 fps:48.0
+2026-07-22 14:46:27,654 [INFO] __main__ - [1891] det:0 trk:0 cross:21 fps:44.3
+2026-07-22 14:46:28,375 [INFO] __main__ - [1921] det:0 trk:0 cross:21 fps:43.7
+2026-07-22 14:46:28,614 [INFO] __main__ - End of stream
+2026-07-22 14:46:28,646 [INFO] __main__ - Done! Total crossings: 21
+2026-07-22 14:46:28,659 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1882
+
+Average Decode Time: 1.94 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.50 ms
+Average Inference Time: 11.28 ms
+Average Post-processing Time: 0.62 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.05 ms
+Average Overlay Time: 0.81 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 9.17 ms
+
+Average Total Latency: 24.40 ms/frame
+Average FPS: 40.99
+
+Latency Statistics:
+Minimum Latency: 7.06 ms
+Maximum Latency: 67.67 ms
+Median Latency: 12.68 ms
+95th Percentile Latency: 54.09 ms
+
+Latency Contribution:
+Decode: 8.0%
+Appsink: 0.0%
+Preprocessing: 2.0%
+Inference: 46.3%
+Post-processing: 2.5%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.3%
+Color Conversion: 0.0%
+Encoding: 37.6%
+
+Top 3 Bottlenecks:
+1. Inference (46.3%)
+2. Encoding (37.6%)
+3. Decode (8.0%)
+
+==================================================
+2026-07-22 14:46:36,377 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 14:46:36,981 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 14:46:36,984 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 14:46:36,984 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 14:46:36,986 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 14:46:36,994 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 14:46:36,996 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 14:46:37,055 [INFO] src.model - Model ready
+2026-07-22 14:46:37,056 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 14:46:37,056 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 14:46:37,057 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 14:46:37,057 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 14:46:37,057 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 14:46:37,078 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.5% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 14:46:37,201 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 14:46:38,027 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:40.6
+2026-07-22 14:46:38,776 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:44.6
+2026-07-22 14:46:39,500 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:40.3
+2026-07-22 14:46:40,143 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 14:46:40,332 [INFO] __main__ - [121] det:9 trk:10 cross:1 fps:35.2
+2026-07-22 14:46:40,613 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 14:46:41,240 [INFO] __main__ - [151] det:7 trk:10 cross:2 fps:36.7
+2026-07-22 14:46:41,573 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 14:46:41,660 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 14:46:42,108 [INFO] __main__ - [181] det:5 trk:9 cross:4 fps:37.8
+2026-07-22 14:46:42,976 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:35.7
+2026-07-22 14:46:43,862 [INFO] __main__ - [241] det:6 trk:9 cross:4 fps:35.4
+2026-07-22 14:46:44,116 [INFO] src.tracker - ID10 crossed! Total: 5
+2026-07-22 14:46:44,772 [INFO] __main__ - [271] det:6 trk:9 cross:5 fps:34.7
+2026-07-22 14:46:45,024 [INFO] src.tracker - ID11 crossed! Total: 6
+2026-07-22 14:46:45,672 [INFO] __main__ - [301] det:6 trk:8 cross:6 fps:34.3
+2026-07-22 14:46:46,510 [INFO] __main__ - [331] det:4 trk:7 cross:6 fps:37.3
+2026-07-22 14:46:47,350 [INFO] __main__ - [361] det:10 trk:10 cross:6 fps:38.0
+2026-07-22 14:46:48,188 [INFO] __main__ - [391] det:6 trk:10 cross:6 fps:35.9
+2026-07-22 14:46:48,522 [INFO] src.tracker - ID15 crossed! Total: 7
+2026-07-22 14:46:49,044 [INFO] __main__ - [421] det:8 trk:9 cross:7 fps:37.1
+2026-07-22 14:46:49,875 [INFO] __main__ - [451] det:7 trk:8 cross:7 fps:38.0
+2026-07-22 14:46:50,700 [INFO] __main__ - [481] det:6 trk:7 cross:7 fps:38.3
+2026-07-22 14:46:51,512 [INFO] __main__ - [511] det:8 trk:11 cross:7 fps:38.6
+2026-07-22 14:46:52,336 [INFO] __main__ - [541] det:5 trk:11 cross:7 fps:38.6
+2026-07-22 14:46:53,160 [INFO] __main__ - [571] det:3 trk:8 cross:7 fps:38.4
+2026-07-22 14:46:53,960 [INFO] __main__ - [601] det:3 trk:7 cross:7 fps:40.5
+2026-07-22 14:46:54,807 [INFO] __main__ - [631] det:2 trk:6 cross:7 fps:39.3
+2026-07-22 14:46:55,640 [INFO] __main__ - [661] det:4 trk:5 cross:7 fps:38.7
+2026-07-22 14:46:56,458 [INFO] __main__ - [691] det:4 trk:7 cross:7 fps:38.7
+2026-07-22 14:46:57,279 [INFO] __main__ - [721] det:7 trk:9 cross:7 fps:38.9
+2026-07-22 14:46:58,102 [INFO] __main__ - [751] det:5 trk:8 cross:7 fps:38.2
+2026-07-22 14:46:58,913 [INFO] __main__ - [781] det:4 trk:6 cross:7 fps:40.5
+2026-07-22 14:46:59,727 [INFO] __main__ - [811] det:7 trk:10 cross:7 fps:38.8
+2026-07-22 14:46:59,970 [INFO] src.tracker - ID26 crossed! Total: 8
+2026-07-22 14:46:59,970 [INFO] src.tracker - ID27 crossed! Total: 9
+2026-07-22 14:47:00,292 [INFO] src.tracker - ID10 crossed! Total: 10
+2026-07-22 14:47:00,551 [INFO] __main__ - [841] det:7 trk:10 cross:10 fps:38.2
+2026-07-22 14:47:01,358 [INFO] __main__ - [871] det:9 trk:10 cross:10 fps:39.4
+2026-07-22 14:47:02,188 [INFO] __main__ - [901] det:9 trk:10 cross:10 fps:39.5
+2026-07-22 14:47:02,996 [INFO] __main__ - [931] det:7 trk:9 cross:10 fps:38.7
+2026-07-22 14:47:03,548 [INFO] __main__ - Stopped by user
+2026-07-22 14:47:03,580 [INFO] __main__ - Done! Total crossings: 10
+2026-07-22 14:47:03,587 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 901
+
+Average Decode Time: 1.99 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.50 ms
+Average Inference Time: 11.37 ms
+Average Post-processing Time: 0.65 ms
+Average Tracking Time: 0.04 ms
+Average Line_crossing Time: 0.05 ms
+Average Overlay Time: 0.82 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 9.66 ms
+
+Average Total Latency: 25.09 ms/frame
+Average FPS: 39.86
+
+Latency Statistics:
+Minimum Latency: 7.58 ms
+Maximum Latency: 72.22 ms
+Median Latency: 12.79 ms
+95th Percentile Latency: 55.02 ms
+
+Latency Contribution:
+Decode: 7.9%
+Appsink: 0.0%
+Preprocessing: 2.0%
+Inference: 45.3%
+Post-processing: 2.6%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.3%
+Color Conversion: 0.0%
+Encoding: 38.5%
+
+Top 3 Bottlenecks:
+1. Inference (45.3%)
+2. Encoding (38.5%)
+3. Decode (7.9%)
+
+==================================================
+2026-07-22 15:04:10,078 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 15:04:10,653 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 15:04:10,656 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 15:04:10,657 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 15:04:10,658 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 15:04:10,666 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 15:04:10,667 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 15:04:10,716 [INFO] src.model - Model ready
+2026-07-22 15:04:10,716 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 15:04:10,717 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 15:04:10,717 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 15:04:10,717 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 15:04:10,717 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 15:04:10,736 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=75.2% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 15:04:10,904 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 15:04:12,807 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:16.4
+2026-07-22 15:04:14,745 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:14.9
+2026-07-22 15:04:16,800 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:15.4
+2026-07-22 15:04:18,373 [INFO] src.tracker - ID0 crossed! Total: 1
+2026-07-22 15:04:18,373 [INFO] src.tracker - ID1 crossed! Total: 2
+2026-07-22 15:04:18,374 [INFO] src.tracker - ID2 crossed! Total: 3
+2026-07-22 15:04:18,587 [INFO] src.tracker - ID6 crossed! Total: 4
+2026-07-22 15:04:18,873 [INFO] __main__ - [121] det:9 trk:10 cross:4 fps:13.9
+2026-07-22 15:04:19,481 [INFO] src.tracker - ID3 crossed! Total: 5
+2026-07-22 15:04:19,482 [INFO] src.tracker - ID4 crossed! Total: 6
+2026-07-22 15:04:19,482 [INFO] src.tracker - ID7 crossed! Total: 7
+2026-07-22 15:04:21,076 [INFO] __main__ - [151] det:7 trk:10 cross:7 fps:14.2
+2026-07-22 15:04:21,681 [INFO] src.tracker - ID8 crossed! Total: 8
+2026-07-22 15:04:23,270 [INFO] __main__ - [181] det:5 trk:9 cross:8 fps:13.9
+2026-07-22 15:04:25,460 [INFO] __main__ - [211] det:6 trk:8 cross:8 fps:13.9
+2026-07-22 15:04:27,611 [INFO] __main__ - [241] det:6 trk:9 cross:8 fps:14.2
+2026-07-22 15:04:29,853 [INFO] __main__ - [271] det:6 trk:9 cross:8 fps:14.1
+2026-07-22 15:04:32,211 [INFO] __main__ - [301] det:6 trk:8 cross:8 fps:13.7
+2026-07-22 15:04:34,382 [INFO] __main__ - [331] det:4 trk:6 cross:8 fps:13.9
+2026-07-22 15:04:36,662 [INFO] __main__ - [361] det:10 trk:9 cross:8 fps:14.5
+2026-07-22 15:04:37,369 [INFO] src.tracker - ID11 crossed! Total: 9
+2026-07-22 15:04:37,370 [INFO] src.tracker - ID13 crossed! Total: 10
+2026-07-22 15:04:37,370 [INFO] src.tracker - ID14 crossed! Total: 11
+2026-07-22 15:04:39,003 [INFO] __main__ - [391] det:6 trk:9 cross:11 fps:13.3
+2026-07-22 15:04:41,183 [INFO] __main__ - [421] det:8 trk:9 cross:11 fps:14.2
+2026-07-22 15:04:43,383 [INFO] __main__ - [451] det:7 trk:8 cross:11 fps:13.9
+2026-07-22 15:04:44,594 [INFO] src.tracker - ID12 crossed! Total: 12
+2026-07-22 15:04:45,536 [INFO] __main__ - [481] det:6 trk:7 cross:12 fps:13.9
+2026-07-22 15:04:47,278 [INFO] src.tracker - ID15 crossed! Total: 13
+2026-07-22 15:04:47,736 [INFO] src.tracker - ID17 crossed! Total: 14
+2026-07-22 15:04:47,785 [INFO] __main__ - [511] det:8 trk:11 cross:14 fps:14.0
+2026-07-22 15:04:49,971 [INFO] __main__ - [541] det:5 trk:11 cross:14 fps:13.9
+2026-07-22 15:04:52,064 [INFO] __main__ - [571] det:3 trk:8 cross:14 fps:14.6
+2026-07-22 15:04:53,942 [INFO] src.tracker - ID7 crossed! Total: 15
+2026-07-22 15:04:54,218 [INFO] __main__ - [601] det:3 trk:7 cross:15 fps:14.3
+2026-07-22 15:04:56,393 [INFO] __main__ - [631] det:2 trk:6 cross:15 fps:14.5
+2026-07-22 15:04:58,483 [INFO] __main__ - [661] det:4 trk:4 cross:15 fps:15.5
+2026-07-22 15:05:00,115 [INFO] src.tracker - ID2 crossed! Total: 16
+2026-07-22 15:05:00,586 [INFO] __main__ - [691] det:4 trk:7 cross:16 fps:14.0
+2026-07-22 15:05:02,801 [INFO] __main__ - [721] det:7 trk:9 cross:16 fps:15.3
+2026-07-22 15:05:05,038 [INFO] __main__ - [751] det:5 trk:8 cross:16 fps:13.3
+2026-07-22 15:05:06,929 [INFO] src.tracker - ID24 crossed! Total: 17
+2026-07-22 15:05:07,170 [INFO] __main__ - [781] det:4 trk:6 cross:17 fps:15.2
+2026-07-22 15:05:07,550 [INFO] src.tracker - ID22 crossed! Total: 18
+2026-07-22 15:05:07,550 [INFO] src.tracker - ID23 crossed! Total: 19
+2026-07-22 15:05:07,731 [INFO] src.tracker - ID20 crossed! Total: 20
+2026-07-22 15:05:09,330 [INFO] __main__ - [811] det:7 trk:10 cross:20 fps:13.9
+2026-07-22 15:05:09,508 [INFO] src.tracker - ID25 crossed! Total: 21
+2026-07-22 15:05:09,508 [INFO] src.tracker - ID26 crossed! Total: 22
+2026-07-22 15:05:09,946 [INFO] src.tracker - ID29 crossed! Total: 23
+2026-07-22 15:05:11,513 [INFO] __main__ - [841] det:7 trk:10 cross:23 fps:14.0
+2026-07-22 15:05:13,697 [INFO] __main__ - [871] det:9 trk:10 cross:23 fps:14.3
+2026-07-22 15:05:15,818 [INFO] __main__ - [901] det:9 trk:10 cross:23 fps:13.8
+2026-07-22 15:05:17,936 [INFO] __main__ - [931] det:7 trk:9 cross:23 fps:14.3
+2026-07-22 15:05:20,010 [INFO] __main__ - [961] det:7 trk:12 cross:23 fps:14.6
+2026-07-22 15:05:22,118 [INFO] __main__ - [991] det:7 trk:10 cross:23 fps:15.6
+2026-07-22 15:05:24,411 [INFO] __main__ - [1021] det:10 trk:12 cross:23 fps:13.7
+2026-07-22 15:05:25,221 [INFO] src.tracker - ID36 crossed! Total: 24
+2026-07-22 15:05:25,449 [INFO] src.tracker - ID31 crossed! Total: 25
+2026-07-22 15:05:26,579 [INFO] __main__ - [1051] det:11 trk:12 cross:25 fps:14.0
+2026-07-22 15:05:27,205 [INFO] src.tracker - ID37 crossed! Total: 26
+2026-07-22 15:05:28,838 [INFO] __main__ - [1081] det:8 trk:12 cross:26 fps:12.8
+2026-07-22 15:05:29,225 [INFO] src.tracker - ID30 crossed! Total: 27
+2026-07-22 15:05:29,225 [INFO] src.tracker - ID34 crossed! Total: 28
+2026-07-22 15:05:29,836 [INFO] src.tracker - ID19 crossed! Total: 29
+2026-07-22 15:05:29,837 [INFO] src.tracker - ID35 crossed! Total: 30
+2026-07-22 15:05:30,964 [INFO] __main__ - [1111] det:9 trk:11 cross:30 fps:14.6
+2026-07-22 15:05:33,099 [INFO] __main__ - [1141] det:8 trk:10 cross:30 fps:14.6
+2026-07-22 15:05:35,107 [INFO] __main__ - [1171] det:7 trk:8 cross:30 fps:14.8
+2026-07-22 15:05:37,245 [INFO] __main__ - [1201] det:7 trk:8 cross:30 fps:14.3
+2026-07-22 15:05:39,428 [INFO] __main__ - [1231] det:4 trk:8 cross:30 fps:14.0
+2026-07-22 15:05:41,602 [INFO] __main__ - [1261] det:4 trk:5 cross:30 fps:13.6
+2026-07-22 15:05:43,606 [INFO] src.tracker - ID41 crossed! Total: 31
+2026-07-22 15:05:43,896 [INFO] __main__ - [1291] det:3 trk:6 cross:31 fps:13.4
+2026-07-22 15:05:46,123 [INFO] __main__ - [1321] det:5 trk:6 cross:31 fps:13.9
+2026-07-22 15:05:48,362 [INFO] __main__ - [1351] det:8 trk:8 cross:31 fps:14.1
+2026-07-22 15:05:49,892 [INFO] src.tracker - ID2 crossed! Total: 32
+2026-07-22 15:05:50,660 [INFO] __main__ - [1381] det:8 trk:13 cross:32 fps:13.0
+2026-07-22 15:05:52,990 [INFO] __main__ - [1411] det:9 trk:13 cross:32 fps:13.0
+2026-07-22 15:05:53,602 [INFO] src.tracker - ID49 crossed! Total: 33
+2026-07-22 15:05:54,040 [INFO] src.tracker - ID40 crossed! Total: 34
+2026-07-22 15:05:54,040 [INFO] src.tracker - ID44 crossed! Total: 35
+2026-07-22 15:05:55,179 [INFO] src.tracker - ID50 crossed! Total: 36
+2026-07-22 15:05:55,238 [INFO] __main__ - [1441] det:9 trk:10 cross:36 fps:13.4
+2026-07-22 15:05:57,508 [INFO] __main__ - [1471] det:7 trk:8 cross:36 fps:12.8
+2026-07-22 15:05:58,795 [INFO] src.tracker - ID47 crossed! Total: 37
+2026-07-22 15:05:59,724 [INFO] __main__ - [1501] det:6 trk:8 cross:37 fps:14.0
+2026-07-22 15:06:01,910 [INFO] __main__ - [1531] det:8 trk:10 cross:37 fps:14.3
+2026-07-22 15:06:03,580 [INFO] src.tracker - ID34 crossed! Total: 38
+2026-07-22 15:06:04,062 [INFO] __main__ - [1561] det:8 trk:10 cross:38 fps:14.1
+2026-07-22 15:06:06,263 [INFO] __main__ - [1591] det:6 trk:10 cross:38 fps:13.7
+2026-07-22 15:06:08,456 [INFO] __main__ - [1621] det:6 trk:8 cross:38 fps:13.8
+2026-07-22 15:06:10,646 [INFO] __main__ - [1651] det:7 trk:9 cross:38 fps:13.9
+2026-07-22 15:06:12,140 [INFO] src.tracker - ID55 crossed! Total: 39
+2026-07-22 15:06:12,141 [INFO] src.tracker - ID56 crossed! Total: 40
+2026-07-22 15:06:12,789 [INFO] __main__ - [1681] det:9 trk:10 cross:40 fps:15.6
+2026-07-22 15:06:14,698 [INFO] __main__ - [1711] det:0 trk:9 cross:40 fps:16.5
+2026-07-22 15:06:16,746 [INFO] __main__ - [1741] det:0 trk:0 cross:40 fps:13.6
+2026-07-22 15:06:19,026 [INFO] __main__ - [1771] det:0 trk:0 cross:40 fps:13.6
+2026-07-22 15:06:21,266 [INFO] __main__ - [1801] det:0 trk:0 cross:40 fps:13.3
+2026-07-22 15:06:23,500 [INFO] __main__ - [1831] det:0 trk:0 cross:40 fps:14.2
+2026-07-22 15:06:25,817 [INFO] __main__ - [1861] det:0 trk:0 cross:40 fps:13.4
+2026-07-22 15:06:28,079 [INFO] __main__ - [1891] det:0 trk:0 cross:40 fps:14.0
+2026-07-22 15:06:30,347 [INFO] __main__ - [1921] det:0 trk:0 cross:40 fps:13.2
+2026-07-22 15:06:31,143 [INFO] __main__ - End of stream
+2026-07-22 15:06:31,176 [INFO] __main__ - Done! Total crossings: 40
+2026-07-22 15:06:31,186 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1882
+
+Average Decode Time: 2.31 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.67 ms
+Average Inference Time: 13.21 ms
+Average Post-processing Time: 0.65 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.03 ms
+Average Overlay Time: 0.83 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 9.03 ms
+
+Average Total Latency: 26.76 ms/frame
+Average FPS: 37.36
+
+Latency Statistics:
+Minimum Latency: 7.09 ms
+Maximum Latency: 126.36 ms
+Median Latency: 12.79 ms
+95th Percentile Latency: 64.78 ms
+
+Latency Contribution:
+Decode: 8.6%
+Appsink: 0.0%
+Preprocessing: 2.5%
+Inference: 49.4%
+Post-processing: 2.4%
+Tracking: 0.1%
+Line_crossing: 0.1%
+Overlay: 3.1%
+Color Conversion: 0.0%
+Encoding: 33.7%
+
+Top 3 Bottlenecks:
+1. Inference (49.4%)
+2. Encoding (33.7%)
+3. Decode (8.6%)
+
+==================================================
+2026-07-22 15:19:08,525 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 15:19:09,104 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 15:19:09,107 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 15:19:09,107 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 15:19:09,110 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 15:19:09,122 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 15:19:09,124 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 15:19:09,172 [INFO] src.model - Model ready
+2026-07-22 15:19:09,173 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 15:19:09,173 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 15:19:09,173 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 15:19:09,173 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 15:19:09,173 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 15:19:09,194 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=76.7% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 15:19:09,310 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 15:19:10,725 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:20.9
+2026-07-22 15:19:12,121 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:20.9
+2026-07-22 15:19:13,554 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:21.1
+2026-07-22 15:19:14,666 [INFO] src.tracker - ID0 crossed! Total: 1
+2026-07-22 15:19:14,666 [INFO] src.tracker - ID1 crossed! Total: 2
+2026-07-22 15:19:14,666 [INFO] src.tracker - ID2 crossed! Total: 3
+2026-07-22 15:19:14,812 [INFO] src.tracker - ID6 crossed! Total: 4
+2026-07-22 15:19:14,974 [INFO] __main__ - [121] det:9 trk:10 cross:4 fps:20.9
+2026-07-22 15:19:15,383 [INFO] src.tracker - ID3 crossed! Total: 5
+2026-07-22 15:19:15,383 [INFO] src.tracker - ID4 crossed! Total: 6
+2026-07-22 15:19:15,383 [INFO] src.tracker - ID7 crossed! Total: 7
+2026-07-22 15:19:16,460 [INFO] __main__ - [151] det:7 trk:10 cross:7 fps:20.6
+2026-07-22 15:19:16,876 [INFO] src.tracker - ID8 crossed! Total: 8
+2026-07-22 15:19:17,891 [INFO] __main__ - [181] det:5 trk:9 cross:8 fps:21.1
+2026-07-22 15:19:19,323 [INFO] __main__ - [211] det:6 trk:8 cross:8 fps:21.5
+2026-07-22 15:19:20,781 [INFO] __main__ - [241] det:6 trk:9 cross:8 fps:20.2
+2026-07-22 15:19:22,268 [INFO] __main__ - [271] det:6 trk:9 cross:8 fps:20.8
+2026-07-22 15:19:23,734 [INFO] __main__ - [301] det:6 trk:8 cross:8 fps:21.0
+2026-07-22 15:19:25,133 [INFO] __main__ - [331] det:4 trk:6 cross:8 fps:21.3
+2026-07-22 15:19:26,563 [INFO] __main__ - [361] det:10 trk:9 cross:8 fps:21.2
+2026-07-22 15:19:26,993 [INFO] src.tracker - ID11 crossed! Total: 9
+2026-07-22 15:19:26,993 [INFO] src.tracker - ID13 crossed! Total: 10
+2026-07-22 15:19:26,993 [INFO] src.tracker - ID14 crossed! Total: 11
+2026-07-22 15:19:28,027 [INFO] __main__ - [391] det:6 trk:9 cross:11 fps:20.6
+2026-07-22 15:19:28,555 [INFO] __main__ - Stopped by user
+2026-07-22 15:19:28,596 [INFO] __main__ - Done! Total crossings: 11
+2026-07-22 15:19:28,604 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 351
+
+Average Decode Time: 2.16 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.55 ms
+Average Inference Time: 10.81 ms
+Average Post-processing Time: 0.59 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.04 ms
+Average Overlay Time: 0.76 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 8.72 ms
+
+Average Total Latency: 23.68 ms/frame
+Average FPS: 42.24
+
+Latency Statistics:
+Minimum Latency: 7.02 ms
+Maximum Latency: 112.74 ms
+Median Latency: 12.29 ms
+95th Percentile Latency: 52.82 ms
+
+Latency Contribution:
+Decode: 9.1%
+Appsink: 0.0%
+Preprocessing: 2.3%
+Inference: 45.7%
+Post-processing: 2.5%
+Tracking: 0.1%
+Line_crossing: 0.1%
+Overlay: 3.2%
+Color Conversion: 0.0%
+Encoding: 36.9%
+
+Top 3 Bottlenecks:
+1. Inference (45.7%)
+2. Encoding (36.9%)
+3. Decode (9.1%)
+
+==================================================
+2026-07-22 15:19:35,248 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 15:19:35,806 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 15:19:35,809 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 15:19:35,809 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 15:19:35,811 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 15:19:35,818 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 15:19:35,819 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 15:19:35,863 [INFO] src.model - Model ready
+2026-07-22 15:19:35,863 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 15:19:35,863 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 15:19:35,863 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 15:19:35,865 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 15:19:35,865 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 15:19:35,879 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=76.9% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 15:19:35,988 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 15:19:37,386 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:21.2
+2026-07-22 15:19:38,832 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:21.5
+2026-07-22 15:19:40,239 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:21.4
+2026-07-22 15:19:41,391 [INFO] src.tracker - ID0 crossed! Total: 1
+2026-07-22 15:19:41,392 [INFO] src.tracker - ID1 crossed! Total: 2
+2026-07-22 15:19:41,392 [INFO] src.tracker - ID2 crossed! Total: 3
+2026-07-22 15:19:41,539 [INFO] src.tracker - ID6 crossed! Total: 4
+2026-07-22 15:19:41,708 [INFO] __main__ - [121] det:9 trk:10 cross:4 fps:20.7
+2026-07-22 15:19:42,142 [INFO] src.tracker - ID3 crossed! Total: 5
+2026-07-22 15:19:42,142 [INFO] src.tracker - ID4 crossed! Total: 6
+2026-07-22 15:19:42,143 [INFO] src.tracker - ID7 crossed! Total: 7
+2026-07-22 15:19:43,192 [INFO] __main__ - [151] det:7 trk:10 cross:7 fps:20.2
+2026-07-22 15:19:43,614 [INFO] src.tracker - ID8 crossed! Total: 8
+2026-07-22 15:19:44,669 [INFO] __main__ - [181] det:5 trk:9 cross:8 fps:20.2
+2026-07-22 15:19:46,139 [INFO] __main__ - [211] det:6 trk:8 cross:8 fps:20.1
+2026-07-22 15:19:47,600 [INFO] __main__ - [241] det:6 trk:9 cross:8 fps:21.0
+2026-07-22 15:19:49,083 [INFO] __main__ - [271] det:6 trk:9 cross:8 fps:20.2
+2026-07-22 15:19:50,549 [INFO] __main__ - [301] det:6 trk:8 cross:8 fps:20.5
+2026-07-22 15:19:52,000 [INFO] __main__ - [331] det:4 trk:6 cross:8 fps:20.8
+2026-07-22 15:19:53,444 [INFO] __main__ - [361] det:10 trk:9 cross:8 fps:20.9
+2026-07-22 15:19:53,872 [INFO] src.tracker - ID11 crossed! Total: 9
+2026-07-22 15:19:53,872 [INFO] src.tracker - ID13 crossed! Total: 10
+2026-07-22 15:19:53,872 [INFO] src.tracker - ID14 crossed! Total: 11
+2026-07-22 15:19:54,896 [INFO] __main__ - [391] det:6 trk:9 cross:11 fps:20.3
+2026-07-22 15:19:56,334 [INFO] __main__ - [421] det:8 trk:9 cross:11 fps:21.7
+2026-07-22 15:19:57,824 [INFO] __main__ - [451] det:7 trk:8 cross:11 fps:19.7
+2026-07-22 15:19:58,685 [INFO] src.tracker - ID12 crossed! Total: 12
+2026-07-22 15:19:59,276 [INFO] __main__ - [481] det:6 trk:7 cross:12 fps:21.2
+2026-07-22 15:20:00,431 [INFO] src.tracker - ID15 crossed! Total: 13
+2026-07-22 15:20:00,711 [INFO] src.tracker - ID17 crossed! Total: 14
+2026-07-22 15:20:00,724 [INFO] __main__ - [511] det:8 trk:11 cross:14 fps:20.8
+2026-07-22 15:20:02,182 [INFO] __main__ - [541] det:5 trk:11 cross:14 fps:19.6
+2026-07-22 15:20:03,621 [INFO] __main__ - [571] det:3 trk:8 cross:14 fps:20.8
+2026-07-22 15:20:04,905 [INFO] src.tracker - ID7 crossed! Total: 15
+2026-07-22 15:20:05,070 [INFO] __main__ - [601] det:3 trk:7 cross:15 fps:20.8
+2026-07-22 15:20:06,553 [INFO] __main__ - [631] det:2 trk:6 cross:15 fps:19.9
+2026-07-22 15:20:07,977 [INFO] __main__ - [661] det:4 trk:4 cross:15 fps:21.5
+2026-07-22 15:20:09,124 [INFO] src.tracker - ID2 crossed! Total: 16
+2026-07-22 15:20:09,417 [INFO] __main__ - [691] det:4 trk:7 cross:16 fps:21.4
+2026-07-22 15:20:10,852 [INFO] __main__ - [721] det:7 trk:9 cross:16 fps:21.7
+2026-07-22 15:20:12,300 [INFO] __main__ - [751] det:5 trk:8 cross:16 fps:20.4
+2026-07-22 15:20:13,623 [INFO] src.tracker - ID24 crossed! Total: 17
+2026-07-22 15:20:13,781 [INFO] __main__ - [781] det:4 trk:6 cross:17 fps:21.4
+2026-07-22 15:20:14,054 [INFO] src.tracker - ID22 crossed! Total: 18
+2026-07-22 15:20:14,054 [INFO] src.tracker - ID23 crossed! Total: 19
+2026-07-22 15:20:14,200 [INFO] src.tracker - ID20 crossed! Total: 20
+2026-07-22 15:20:15,227 [INFO] __main__ - [811] det:7 trk:10 cross:20 fps:20.8
+2026-07-22 15:20:15,355 [INFO] src.tracker - ID25 crossed! Total: 21
+2026-07-22 15:20:15,356 [INFO] src.tracker - ID26 crossed! Total: 22
+2026-07-22 15:20:15,653 [INFO] src.tracker - ID29 crossed! Total: 23
+2026-07-22 15:20:16,687 [INFO] __main__ - [841] det:7 trk:10 cross:23 fps:21.1
+2026-07-22 15:20:18,152 [INFO] __main__ - [871] det:9 trk:10 cross:23 fps:19.8
+2026-07-22 15:20:19,648 [INFO] __main__ - [901] det:9 trk:10 cross:23 fps:21.3
+2026-07-22 15:20:21,098 [INFO] __main__ - [931] det:7 trk:9 cross:23 fps:20.9
+2026-07-22 15:20:22,553 [INFO] __main__ - [961] det:7 trk:12 cross:23 fps:20.9
+2026-07-22 15:20:24,010 [INFO] __main__ - [991] det:7 trk:10 cross:23 fps:21.4
+2026-07-22 15:20:25,458 [INFO] __main__ - [1021] det:10 trk:12 cross:23 fps:21.7
+2026-07-22 15:20:26,044 [INFO] src.tracker - ID36 crossed! Total: 24
+2026-07-22 15:20:26,185 [INFO] src.tracker - ID31 crossed! Total: 25
+2026-07-22 15:20:26,966 [INFO] __main__ - [1051] det:11 trk:12 cross:25 fps:19.0
+2026-07-22 15:20:27,406 [INFO] src.tracker - ID37 crossed! Total: 26
+2026-07-22 15:20:28,446 [INFO] __main__ - [1081] det:8 trk:12 cross:26 fps:21.0
+2026-07-22 15:20:28,726 [INFO] src.tracker - ID30 crossed! Total: 27
+2026-07-22 15:20:28,726 [INFO] src.tracker - ID34 crossed! Total: 28
+2026-07-22 15:20:29,169 [INFO] src.tracker - ID19 crossed! Total: 29
+2026-07-22 15:20:29,169 [INFO] src.tracker - ID35 crossed! Total: 30
+2026-07-22 15:20:29,896 [INFO] __main__ - [1111] det:9 trk:11 cross:30 fps:20.8
+2026-07-22 15:20:30,385 [INFO] __main__ - Stopped by user
+2026-07-22 15:20:30,424 [INFO] __main__ - Done! Total crossings: 30
+2026-07-22 15:20:30,433 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1071
+
+Average Decode Time: 2.24 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.57 ms
+Average Inference Time: 11.10 ms
+Average Post-processing Time: 0.62 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.04 ms
+Average Overlay Time: 0.86 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 8.83 ms
+
+Average Total Latency: 24.28 ms/frame
+Average FPS: 41.19
+
+Latency Statistics:
+Minimum Latency: 7.26 ms
+Maximum Latency: 94.88 ms
+Median Latency: 12.33 ms
+95th Percentile Latency: 54.62 ms
+
+Latency Contribution:
+Decode: 9.2%
+Appsink: 0.0%
+Preprocessing: 2.3%
+Inference: 45.7%
+Post-processing: 2.5%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.5%
+Color Conversion: 0.0%
+Encoding: 36.4%
+
+Top 3 Bottlenecks:
+1. Inference (45.7%)
+2. Encoding (36.4%)
+3. Decode (9.2%)
+
+==================================================
+2026-07-22 16:01:16,307 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 16:01:16,892 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 16:01:16,896 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 16:01:16,896 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 16:01:16,898 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 16:01:16,906 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 16:01:16,906 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 16:01:16,982 [INFO] src.model - Model ready
+2026-07-22 16:01:16,982 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 16:01:16,984 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 16:01:16,984 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 16:01:16,984 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 16:01:16,984 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 16:01:17,008 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=78.2% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 16:01:17,122 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 16:01:18,765 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:18.2
+2026-07-22 16:01:20,418 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:18.6
+2026-07-22 16:01:22,040 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:19.0
+2026-07-22 16:01:23,323 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 16:01:23,462 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 16:01:23,619 [INFO] __main__ - [121] det:9 trk:10 cross:2 fps:20.7
+2026-07-22 16:01:23,834 [INFO] __main__ - Stopped by user
+2026-07-22 16:01:23,869 [INFO] __main__ - Done! Total crossings: 2
+2026-07-22 16:01:23,873 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 75
+
+Average Decode Time: 2.47 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.68 ms
+Average Inference Time: 14.71 ms
+Average Post-processing Time: 0.81 ms
+Average Tracking Time: 0.02 ms
+Average Line_crossing Time: 0.02 ms
+Average Overlay Time: 0.88 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 9.81 ms
+
+Average Total Latency: 29.38 ms/frame
+Average FPS: 34.03
+
+Latency Statistics:
+Minimum Latency: 9.74 ms
+Maximum Latency: 75.30 ms
+Median Latency: 13.58 ms
+95th Percentile Latency: 69.58 ms
+
+Latency Contribution:
+Decode: 8.4%
+Appsink: 0.0%
+Preprocessing: 2.3%
+Inference: 50.0%
+Post-processing: 2.7%
+Tracking: 0.1%
+Line_crossing: 0.1%
+Overlay: 3.0%
+Color Conversion: 0.0%
+Encoding: 33.4%
+
+Top 3 Bottlenecks:
+1. Inference (50.0%)
+2. Encoding (33.4%)
+3. Decode (8.4%)
+
+==================================================
+2026-07-22 16:01:31,140 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 16:01:31,695 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 16:01:31,698 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 16:01:31,698 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 16:01:31,700 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 16:01:31,707 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 16:01:31,707 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 16:01:31,749 [INFO] src.model - Model ready
+2026-07-22 16:01:31,750 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 16:01:31,750 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 16:01:31,750 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 16:01:31,750 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 16:01:31,750 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 16:01:31,762 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.3% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 16:01:31,875 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 16:01:33,299 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:21.4
+2026-07-22 16:01:34,717 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:21.3
+2026-07-22 16:01:36,118 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:21.0
+2026-07-22 16:01:37,243 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 16:01:37,389 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 16:01:37,557 [INFO] __main__ - [121] det:9 trk:10 cross:2 fps:20.3
+2026-07-22 16:01:38,986 [INFO] __main__ - [151] det:7 trk:8 cross:2 fps:20.9
+2026-07-22 16:01:39,545 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 16:01:39,696 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 16:01:40,435 [INFO] __main__ - [181] det:5 trk:5 cross:4 fps:20.7
+2026-07-22 16:01:41,922 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:20.2
+2026-07-22 16:01:42,641 [INFO] src.tracker - ID13 crossed! Total: 5
+2026-07-22 16:01:43,378 [INFO] __main__ - [241] det:6 trk:9 cross:5 fps:20.8
+2026-07-22 16:01:43,788 [INFO] src.tracker - ID10 crossed! Total: 6
+2026-07-22 16:01:44,836 [INFO] __main__ - [271] det:6 trk:7 cross:6 fps:19.8
+2026-07-22 16:01:45,264 [INFO] src.tracker - ID3 crossed! Total: 7
+2026-07-22 16:01:46,261 [INFO] __main__ - [301] det:6 trk:7 cross:7 fps:21.5
+2026-07-22 16:01:47,557 [INFO] src.tracker - ID16 crossed! Total: 8
+2026-07-22 16:01:47,718 [INFO] __main__ - [331] det:4 trk:6 cross:8 fps:20.7
+2026-07-22 16:01:49,129 [INFO] __main__ - [361] det:10 trk:11 cross:8 fps:21.6
+2026-07-22 16:01:49,548 [INFO] src.tracker - ID20 crossed! Total: 9
+2026-07-22 16:01:50,576 [INFO] __main__ - [391] det:6 trk:10 cross:9 fps:19.9
+2026-07-22 16:01:52,029 [INFO] __main__ - [421] det:8 trk:9 cross:9 fps:20.4
+2026-07-22 16:01:53,476 [INFO] __main__ - [451] det:7 trk:8 cross:9 fps:20.0
+2026-07-22 16:01:54,959 [INFO] __main__ - [481] det:6 trk:8 cross:9 fps:20.4
+2026-07-22 16:01:55,530 [INFO] src.tracker - ID23 crossed! Total: 10
+2026-07-22 16:01:56,410 [INFO] __main__ - [511] det:8 trk:11 cross:10 fps:20.7
+2026-07-22 16:01:57,872 [INFO] __main__ - [541] det:5 trk:9 cross:10 fps:21.0
+2026-07-22 16:01:59,307 [INFO] __main__ - [571] det:3 trk:7 cross:10 fps:21.4
+2026-07-22 16:01:59,745 [INFO] __main__ - Stopped by user
+2026-07-22 16:01:59,778 [INFO] __main__ - Done! Total crossings: 10
+2026-07-22 16:01:59,785 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 529
+
+Average Decode Time: 2.21 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.56 ms
+Average Inference Time: 10.74 ms
+Average Post-processing Time: 0.61 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.04 ms
+Average Overlay Time: 0.84 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 8.85 ms
+
+Average Total Latency: 23.89 ms/frame
+Average FPS: 41.86
+
+Latency Statistics:
+Minimum Latency: 7.06 ms
+Maximum Latency: 68.12 ms
+Median Latency: 12.46 ms
+95th Percentile Latency: 53.09 ms
+
+Latency Contribution:
+Decode: 9.3%
+Appsink: 0.0%
+Preprocessing: 2.4%
+Inference: 45.0%
+Post-processing: 2.6%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.5%
+Color Conversion: 0.0%
+Encoding: 37.0%
+
+Top 3 Bottlenecks:
+1. Inference (45.0%)
+2. Encoding (37.0%)
+3. Decode (9.3%)
+
+==================================================
+2026-07-22 16:02:25,566 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 16:02:26,480 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 16:02:26,485 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 16:02:26,485 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 16:02:26,490 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 16:02:26,507 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 16:02:26,507 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 16:02:26,588 [INFO] src.model - Model ready
+2026-07-22 16:02:26,589 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 16:02:26,589 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 16:02:26,589 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 16:02:26,589 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 16:02:26,590 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 16:02:26,616 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.4% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 16:02:26,825 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 16:02:28,518 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:18.2
+2026-07-22 16:02:30,313 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:17.4
+2026-07-22 16:02:32,081 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:17.4
+2026-07-22 16:02:33,473 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 16:02:33,658 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 16:02:33,867 [INFO] __main__ - [121] det:9 trk:10 cross:2 fps:17.2
+2026-07-22 16:02:35,006 [INFO] __main__ - Stopped by user
+2026-07-22 16:02:35,070 [INFO] __main__ - Done! Total crossings: 2
+2026-07-22 16:02:35,083 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 88
+
+Average Decode Time: 4.20 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.90 ms
+Average Inference Time: 17.69 ms
+Average Post-processing Time: 0.95 ms
+Average Tracking Time: 0.03 ms
+Average Line_crossing Time: 0.05 ms
+Average Overlay Time: 1.29 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 14.69 ms
+
+Average Total Latency: 39.80 ms/frame
+Average FPS: 25.13
+
+Latency Statistics:
+Minimum Latency: 12.01 ms
+Maximum Latency: 96.35 ms
+Median Latency: 23.91 ms
+95th Percentile Latency: 87.63 ms
+
+Latency Contribution:
+Decode: 10.5%
+Appsink: 0.0%
+Preprocessing: 2.3%
+Inference: 44.4%
+Post-processing: 2.4%
+Tracking: 0.1%
+Line_crossing: 0.1%
+Overlay: 3.3%
+Color Conversion: 0.0%
+Encoding: 36.9%
+
+Top 3 Bottlenecks:
+1. Inference (44.4%)
+2. Encoding (36.9%)
+3. Decode (10.5%)
+
+==================================================
+2026-07-22 16:02:54,131 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 16:02:55,034 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 16:02:55,038 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 16:02:55,039 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 16:02:55,042 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 16:02:55,056 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 16:02:55,060 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 16:02:55,147 [INFO] src.model - Model ready
+2026-07-22 16:02:55,149 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 16:02:55,149 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 16:02:55,149 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 16:02:55,149 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 16:02:55,150 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 16:02:55,172 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=78.1% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 16:02:55,349 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 16:02:57,097 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:17.5
+2026-07-22 16:02:58,806 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:18.4
+2026-07-22 16:03:00,497 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:18.7
+2026-07-22 16:03:01,908 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 16:03:02,086 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 16:03:02,283 [INFO] __main__ - [121] det:9 trk:10 cross:2 fps:17.5
+2026-07-22 16:03:04,113 [INFO] __main__ - [151] det:7 trk:8 cross:2 fps:17.6
+2026-07-22 16:03:04,790 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 16:03:04,975 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 16:03:05,906 [INFO] __main__ - [181] det:5 trk:5 cross:4 fps:16.8
+2026-07-22 16:03:07,700 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:17.2
+2026-07-22 16:03:08,618 [INFO] src.tracker - ID13 crossed! Total: 5
+2026-07-22 16:03:09,561 [INFO] __main__ - [241] det:6 trk:9 cross:5 fps:16.5
+2026-07-22 16:03:10,067 [INFO] src.tracker - ID10 crossed! Total: 6
+2026-07-22 16:03:11,357 [INFO] __main__ - [271] det:6 trk:7 cross:6 fps:16.2
+2026-07-22 16:03:11,862 [INFO] src.tracker - ID3 crossed! Total: 7
+2026-07-22 16:03:13,149 [INFO] __main__ - [301] det:6 trk:7 cross:7 fps:17.1
+2026-07-22 16:03:14,753 [INFO] src.tracker - ID16 crossed! Total: 8
+2026-07-22 16:03:14,951 [INFO] __main__ - [331] det:4 trk:6 cross:8 fps:16.3
+2026-07-22 16:03:16,757 [INFO] __main__ - [361] det:10 trk:11 cross:8 fps:16.5
+2026-07-22 16:03:17,272 [INFO] src.tracker - ID20 crossed! Total: 9
+2026-07-22 16:03:18,552 [INFO] __main__ - [391] det:6 trk:10 cross:9 fps:17.2
+2026-07-22 16:03:20,403 [INFO] __main__ - [421] det:8 trk:9 cross:9 fps:16.6
+2026-07-22 16:03:22,309 [INFO] __main__ - [451] det:7 trk:8 cross:9 fps:15.9
+2026-07-22 16:03:24,191 [INFO] __main__ - [481] det:6 trk:8 cross:9 fps:16.4
+2026-07-22 16:03:24,905 [INFO] src.tracker - ID23 crossed! Total: 10
+2026-07-22 16:03:26,049 [INFO] __main__ - [511] det:8 trk:11 cross:10 fps:16.6
+2026-07-22 16:03:27,851 [INFO] __main__ - [541] det:5 trk:9 cross:10 fps:17.6
+2026-07-22 16:03:29,708 [INFO] __main__ - [571] det:3 trk:7 cross:10 fps:16.9
+2026-07-22 16:03:31,505 [INFO] __main__ - [601] det:3 trk:5 cross:10 fps:17.6
+2026-07-22 16:03:33,310 [INFO] __main__ - [631] det:2 trk:4 cross:10 fps:16.7
+2026-07-22 16:03:35,126 [INFO] __main__ - [661] det:4 trk:4 cross:10 fps:17.8
+2026-07-22 16:03:36,935 [INFO] __main__ - [691] det:4 trk:7 cross:10 fps:16.1
+2026-07-22 16:03:38,760 [INFO] __main__ - [721] det:7 trk:8 cross:10 fps:16.9
+2026-07-22 16:03:40,589 [INFO] __main__ - [751] det:5 trk:9 cross:10 fps:16.4
+2026-07-22 16:03:42,398 [INFO] __main__ - [781] det:4 trk:5 cross:10 fps:17.3
+2026-07-22 16:03:44,255 [INFO] __main__ - [811] det:7 trk:9 cross:10 fps:15.5
+2026-07-22 16:03:44,416 [INFO] src.tracker - ID36 crossed! Total: 11
+2026-07-22 16:03:44,416 [INFO] src.tracker - ID37 crossed! Total: 12
+2026-07-22 16:03:46,068 [INFO] __main__ - [841] det:7 trk:8 cross:12 fps:17.6
+2026-07-22 16:03:47,895 [INFO] __main__ - [871] det:9 trk:12 cross:12 fps:16.7
+2026-07-22 16:03:49,707 [INFO] __main__ - [901] det:9 trk:10 cross:12 fps:17.2
+2026-07-22 16:03:51,551 [INFO] __main__ - [931] det:7 trk:8 cross:12 fps:16.6
+2026-07-22 16:03:51,703 [INFO] src.tracker - ID41 crossed! Total: 13
+2026-07-22 16:03:53,353 [INFO] __main__ - [961] det:7 trk:10 cross:13 fps:16.8
+2026-07-22 16:03:55,198 [INFO] __main__ - [991] det:7 trk:8 cross:13 fps:16.2
+2026-07-22 16:03:55,926 [INFO] src.tracker - ID10 crossed! Total: 14
+2026-07-22 16:03:57,061 [INFO] __main__ - [1021] det:10 trk:12 cross:14 fps:16.8
+2026-07-22 16:03:57,775 [INFO] src.tracker - ID46 crossed! Total: 15
+2026-07-22 16:03:58,959 [INFO] __main__ - [1051] det:11 trk:11 cross:15 fps:15.3
+2026-07-22 16:04:00,785 [INFO] __main__ - [1081] det:8 trk:13 cross:15 fps:17.3
+2026-07-22 16:04:01,117 [INFO] src.tracker - ID50 crossed! Total: 16
+2026-07-22 16:04:01,117 [INFO] src.tracker - ID54 crossed! Total: 17
+2026-07-22 16:04:01,118 [INFO] src.tracker - ID55 crossed! Total: 18
+2026-07-22 16:04:01,661 [INFO] src.tracker - ID51 crossed! Total: 19
+2026-07-22 16:04:02,589 [INFO] __main__ - [1111] det:9 trk:9 cross:19 fps:16.4
+2026-07-22 16:04:03,691 [INFO] src.tracker - ID59 crossed! Total: 20
+2026-07-22 16:04:04,221 [INFO] src.tracker - ID58 crossed! Total: 21
+2026-07-22 16:04:04,416 [INFO] __main__ - [1141] det:8 trk:10 cross:21 fps:17.8
+2026-07-22 16:04:06,210 [INFO] __main__ - [1171] det:7 trk:7 cross:21 fps:17.1
+2026-07-22 16:04:08,021 [INFO] __main__ - [1201] det:7 trk:8 cross:21 fps:16.8
+2026-07-22 16:04:09,925 [INFO] __main__ - [1231] det:4 trk:7 cross:21 fps:16.3
+2026-07-22 16:04:11,772 [INFO] __main__ - [1261] det:4 trk:5 cross:21 fps:16.5
+2026-07-22 16:04:13,632 [INFO] __main__ - [1291] det:3 trk:7 cross:21 fps:16.2
+2026-07-22 16:04:15,472 [INFO] __main__ - [1321] det:5 trk:5 cross:21 fps:16.4
+2026-07-22 16:04:17,404 [INFO] __main__ - [1351] det:8 trk:9 cross:21 fps:14.7
+2026-07-22 16:04:18,868 [INFO] src.tracker - ID73 crossed! Total: 22
+2026-07-22 16:04:18,869 [INFO] src.tracker - ID74 crossed! Total: 23
+2026-07-22 16:04:19,259 [INFO] __main__ - [1381] det:8 trk:12 cross:23 fps:16.4
+2026-07-22 16:04:20,893 [INFO] src.tracker - ID64 crossed! Total: 24
+2026-07-22 16:04:21,114 [INFO] __main__ - [1411] det:9 trk:11 cross:24 fps:15.8
+2026-07-22 16:04:21,687 [INFO] src.tracker - ID65 crossed! Total: 25
+2026-07-22 16:04:22,042 [INFO] src.tracker - ID71 crossed! Total: 26
+2026-07-22 16:04:22,043 [INFO] src.tracker - ID75 crossed! Total: 27
+2026-07-22 16:04:22,979 [INFO] src.tracker - ID68 crossed! Total: 28
+2026-07-22 16:04:22,980 [INFO] src.tracker - ID76 crossed! Total: 29
+2026-07-22 16:04:22,980 [INFO] src.tracker - ID78 crossed! Total: 30
+2026-07-22 16:04:23,006 [INFO] __main__ - [1441] det:9 trk:12 cross:30 fps:16.0
+2026-07-22 16:04:24,811 [INFO] __main__ - [1471] det:7 trk:9 cross:30 fps:17.3
+2026-07-22 16:04:24,977 [INFO] src.tracker - ID79 crossed! Total: 31
+2026-07-22 16:04:25,905 [INFO] src.tracker - ID66 crossed! Total: 32
+2026-07-22 16:04:25,906 [INFO] src.tracker - ID77 crossed! Total: 33
+2026-07-22 16:04:26,086 [INFO] src.tracker - ID10 crossed! Total: 34
+2026-07-22 16:04:26,666 [INFO] __main__ - [1501] det:6 trk:7 cross:34 fps:17.3
+2026-07-22 16:04:28,531 [INFO] __main__ - [1531] det:8 trk:9 cross:34 fps:16.8
+2026-07-22 16:04:30,359 [INFO] __main__ - [1561] det:8 trk:9 cross:34 fps:16.1
+2026-07-22 16:04:32,228 [INFO] __main__ - [1591] det:6 trk:6 cross:34 fps:16.4
+2026-07-22 16:04:34,098 [INFO] __main__ - [1621] det:6 trk:8 cross:34 fps:15.8
+2026-07-22 16:04:35,923 [INFO] __main__ - [1651] det:7 trk:8 cross:34 fps:17.0
+2026-07-22 16:04:37,198 [INFO] src.tracker - ID83 crossed! Total: 35
+2026-07-22 16:04:37,199 [INFO] src.tracker - ID85 crossed! Total: 36
+2026-07-22 16:04:37,766 [INFO] __main__ - [1681] det:9 trk:11 cross:36 fps:17.0
+2026-07-22 16:04:39,539 [INFO] __main__ - [1711] det:0 trk:0 cross:36 fps:16.8
+2026-07-22 16:04:41,262 [INFO] __main__ - [1741] det:0 trk:0 cross:36 fps:17.9
+2026-07-22 16:04:43,013 [INFO] __main__ - [1771] det:0 trk:0 cross:36 fps:17.5
+2026-07-22 16:04:44,791 [INFO] __main__ - [1801] det:0 trk:0 cross:36 fps:17.5
+2026-07-22 16:04:46,572 [INFO] __main__ - [1831] det:0 trk:0 cross:36 fps:16.9
+2026-07-22 16:04:48,368 [INFO] __main__ - [1861] det:0 trk:0 cross:36 fps:16.8
+2026-07-22 16:04:50,133 [INFO] __main__ - [1891] det:0 trk:0 cross:36 fps:17.0
+2026-07-22 16:04:51,877 [INFO] __main__ - [1921] det:0 trk:0 cross:36 fps:17.5
+2026-07-22 16:04:52,494 [INFO] __main__ - End of stream
+2026-07-22 16:04:52,566 [INFO] __main__ - Done! Total crossings: 36
+2026-07-22 16:04:52,600 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1882
+
+Average Decode Time: 3.63 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.90 ms
+Average Inference Time: 18.26 ms
+Average Post-processing Time: 1.01 ms
+Average Tracking Time: 0.05 ms
+Average Line_crossing Time: 0.06 ms
+Average Overlay Time: 1.33 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 16.24 ms
+
+Average Total Latency: 41.48 ms/frame
+Average FPS: 24.11
+
+Latency Statistics:
+Minimum Latency: 11.03 ms
+Maximum Latency: 149.66 ms
+Median Latency: 23.47 ms
+95th Percentile Latency: 89.82 ms
+
+Latency Contribution:
+Decode: 8.8%
+Appsink: 0.0%
+Preprocessing: 2.2%
+Inference: 44.0%
+Post-processing: 2.4%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.2%
+Color Conversion: 0.0%
+Encoding: 39.1%
+
+Top 3 Bottlenecks:
+1. Inference (44.0%)
+2. Encoding (39.1%)
+3. Decode (8.8%)
+
+==================================================
+2026-07-22 16:05:20,156 [WARNING] tensorflow - From C:\Users\saath\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-07-22 16:05:21,069 [INFO] src.model - Using TensorFlow for TFLite (Windows mode)
+2026-07-22 16:05:21,074 [INFO] __main__ - GStreamer bindings not available on this machine; using OpenCV fallback.
+2026-07-22 16:05:21,074 [INFO] src.model - Loading: models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
+2026-07-22 16:05:21,078 [INFO] src.model - NPU unavailable, using CPU
+2026-07-22 16:05:21,092 [INFO] src.model - Model input dtype: <class 'numpy.int8'>, output dtype: <class 'numpy.int8'>
+2026-07-22 16:05:21,092 [WARNING] src.model - Model input does not look like a fully quantized int8/uint8 TFLite model
+2026-07-22 16:05:21,185 [INFO] src.model - Model ready
+2026-07-22 16:05:21,186 [INFO] __main__ - Input: Video data/videos/vid.mp4
+2026-07-22 16:05:21,186 [INFO] __main__ - Output: outputs/videos/output.mp4
+2026-07-22 16:05:21,186 [INFO] __main__ - Line: (691, 496) -> (1593, 648)
+2026-07-22 16:05:21,187 [INFO] __main__ - Tiling: right-half ROI x=691-1920 (padding=120)
+2026-07-22 16:05:21,187 [INFO] __main__ - GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.
+2026-07-22 16:05:21,217 [INFO] src.system_monitor - System Metrics: cpu=0.0% cores=[0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%, 0.0%] ram=77.4% temp=n/a gpu=n/a npu=n/a power=n/a
+2026-07-22 16:05:21,394 [INFO] __main__ - [1] det:0 trk:0 cross:0 fps:0.0
+2026-07-22 16:05:23,125 [INFO] __main__ - [31] det:0 trk:0 cross:0 fps:18.2
+2026-07-22 16:05:24,854 [INFO] __main__ - [61] det:0 trk:0 cross:0 fps:17.6
+2026-07-22 16:05:26,604 [INFO] __main__ - [91] det:0 trk:0 cross:0 fps:17.5
+2026-07-22 16:05:28,008 [INFO] src.tracker - ID2 crossed! Total: 1
+2026-07-22 16:05:28,194 [INFO] src.tracker - ID6 crossed! Total: 2
+2026-07-22 16:05:28,395 [INFO] __main__ - [121] det:9 trk:10 cross:2 fps:17.3
+2026-07-22 16:05:30,247 [INFO] __main__ - [151] det:7 trk:8 cross:2 fps:16.1
+2026-07-22 16:05:30,971 [INFO] src.tracker - ID0 crossed! Total: 3
+2026-07-22 16:05:31,162 [INFO] src.tracker - ID9 crossed! Total: 4
+2026-07-22 16:05:32,080 [INFO] __main__ - [181] det:5 trk:5 cross:4 fps:17.5
+2026-07-22 16:05:33,948 [INFO] __main__ - [211] det:6 trk:8 cross:4 fps:15.8
+2026-07-22 16:05:34,842 [INFO] src.tracker - ID13 crossed! Total: 5
+2026-07-22 16:05:35,761 [INFO] __main__ - [241] det:6 trk:9 cross:5 fps:17.0
+2026-07-22 16:05:36,287 [INFO] src.tracker - ID10 crossed! Total: 6
+2026-07-22 16:05:37,620 [INFO] __main__ - [271] det:6 trk:7 cross:6 fps:16.8
+2026-07-22 16:05:38,151 [INFO] src.tracker - ID3 crossed! Total: 7
+2026-07-22 16:05:39,430 [INFO] __main__ - [301] det:6 trk:7 cross:7 fps:17.1
+2026-07-22 16:05:41,108 [INFO] src.tracker - ID16 crossed! Total: 8
+2026-07-22 16:05:41,313 [INFO] __main__ - [331] det:4 trk:6 cross:8 fps:16.1
+2026-07-22 16:05:43,180 [INFO] __main__ - [361] det:10 trk:11 cross:8 fps:17.0
+2026-07-22 16:05:43,732 [INFO] src.tracker - ID20 crossed! Total: 9
+2026-07-22 16:05:45,028 [INFO] __main__ - [391] det:6 trk:10 cross:9 fps:16.9
+2026-07-22 16:05:46,903 [INFO] __main__ - [421] det:8 trk:9 cross:9 fps:16.4
+2026-07-22 16:05:48,788 [INFO] __main__ - [451] det:7 trk:8 cross:9 fps:16.8
+2026-07-22 16:05:50,631 [INFO] __main__ - [481] det:6 trk:8 cross:9 fps:16.6
+2026-07-22 16:05:51,331 [INFO] src.tracker - ID23 crossed! Total: 10
+2026-07-22 16:05:52,436 [INFO] __main__ - [511] det:8 trk:11 cross:10 fps:16.8
+2026-07-22 16:05:54,248 [INFO] __main__ - [541] det:5 trk:9 cross:10 fps:16.3
+2026-07-22 16:05:56,116 [INFO] __main__ - [571] det:3 trk:7 cross:10 fps:16.7
+2026-07-22 16:05:57,934 [INFO] __main__ - [601] det:3 trk:5 cross:10 fps:17.0
+2026-07-22 16:05:59,792 [INFO] __main__ - [631] det:2 trk:4 cross:10 fps:16.7
+2026-07-22 16:06:01,562 [INFO] __main__ - [661] det:4 trk:4 cross:10 fps:17.1
+2026-07-22 16:06:03,400 [INFO] __main__ - [691] det:4 trk:7 cross:10 fps:16.4
+2026-07-22 16:06:05,229 [INFO] __main__ - [721] det:7 trk:8 cross:10 fps:16.6
+2026-07-22 16:06:07,080 [INFO] __main__ - [751] det:5 trk:9 cross:10 fps:16.8
+2026-07-22 16:06:08,896 [INFO] __main__ - [781] det:4 trk:5 cross:10 fps:17.3
+2026-07-22 16:06:10,757 [INFO] __main__ - [811] det:7 trk:9 cross:10 fps:15.8
+2026-07-22 16:06:10,909 [INFO] src.tracker - ID36 crossed! Total: 11
+2026-07-22 16:06:10,910 [INFO] src.tracker - ID37 crossed! Total: 12
+2026-07-22 16:06:12,491 [INFO] __main__ - [841] det:7 trk:8 cross:12 fps:17.8
+2026-07-22 16:06:14,279 [INFO] __main__ - [871] det:9 trk:12 cross:12 fps:16.5
+2026-07-22 16:06:16,116 [INFO] __main__ - [901] det:9 trk:10 cross:12 fps:16.8
+2026-07-22 16:06:17,922 [INFO] __main__ - [931] det:7 trk:8 cross:12 fps:17.3
+2026-07-22 16:06:18,092 [INFO] src.tracker - ID41 crossed! Total: 13
+2026-07-22 16:06:19,781 [INFO] __main__ - [961] det:7 trk:10 cross:13 fps:16.2
+2026-07-22 16:06:21,564 [INFO] __main__ - [991] det:7 trk:8 cross:13 fps:17.1
+2026-07-22 16:06:22,304 [INFO] src.tracker - ID10 crossed! Total: 14
+2026-07-22 16:06:23,454 [INFO] __main__ - [1021] det:10 trk:12 cross:14 fps:16.1
+2026-07-22 16:06:24,168 [INFO] src.tracker - ID46 crossed! Total: 15
+2026-07-22 16:06:25,320 [INFO] __main__ - [1051] det:11 trk:11 cross:15 fps:15.6
+2026-07-22 16:06:27,191 [INFO] __main__ - [1081] det:8 trk:13 cross:15 fps:16.6
+2026-07-22 16:06:27,535 [INFO] src.tracker - ID50 crossed! Total: 16
+2026-07-22 16:06:27,535 [INFO] src.tracker - ID54 crossed! Total: 17
+2026-07-22 16:06:27,535 [INFO] src.tracker - ID55 crossed! Total: 18
+2026-07-22 16:06:28,089 [INFO] src.tracker - ID51 crossed! Total: 19
+2026-07-22 16:06:29,044 [INFO] __main__ - [1111] det:9 trk:9 cross:19 fps:16.7
+2026-07-22 16:06:30,134 [INFO] src.tracker - ID59 crossed! Total: 20
+2026-07-22 16:06:30,680 [INFO] src.tracker - ID58 crossed! Total: 21
+2026-07-22 16:06:30,884 [INFO] __main__ - [1141] det:8 trk:10 cross:21 fps:17.0
+2026-07-22 16:06:32,713 [INFO] __main__ - [1171] det:7 trk:7 cross:21 fps:17.7
+2026-07-22 16:06:34,597 [INFO] __main__ - [1201] det:7 trk:8 cross:21 fps:16.5
+2026-07-22 16:06:36,449 [INFO] __main__ - [1231] det:4 trk:7 cross:21 fps:16.6
+2026-07-22 16:06:38,293 [INFO] __main__ - [1261] det:4 trk:5 cross:21 fps:16.8
+2026-07-22 16:06:40,133 [INFO] __main__ - [1291] det:3 trk:7 cross:21 fps:16.3
+2026-07-22 16:06:41,987 [INFO] __main__ - [1321] det:5 trk:5 cross:21 fps:16.0
+2026-07-22 16:06:43,828 [INFO] __main__ - [1351] det:8 trk:9 cross:21 fps:17.0
+2026-07-22 16:06:45,310 [INFO] src.tracker - ID73 crossed! Total: 22
+2026-07-22 16:06:45,310 [INFO] src.tracker - ID74 crossed! Total: 23
+2026-07-22 16:06:45,707 [INFO] __main__ - [1381] det:8 trk:12 cross:23 fps:16.2
+2026-07-22 16:06:47,387 [INFO] src.tracker - ID64 crossed! Total: 24
+2026-07-22 16:06:47,592 [INFO] __main__ - [1411] det:9 trk:11 cross:24 fps:16.6
+2026-07-22 16:06:48,147 [INFO] src.tracker - ID65 crossed! Total: 25
+2026-07-22 16:06:48,556 [INFO] src.tracker - ID71 crossed! Total: 26
+2026-07-22 16:06:48,557 [INFO] src.tracker - ID75 crossed! Total: 27
+2026-07-22 16:06:49,451 [INFO] src.tracker - ID68 crossed! Total: 28
+2026-07-22 16:06:49,452 [INFO] src.tracker - ID76 crossed! Total: 29
+2026-07-22 16:06:49,452 [INFO] src.tracker - ID78 crossed! Total: 30
+2026-07-22 16:06:49,477 [INFO] __main__ - [1441] det:9 trk:12 cross:30 fps:17.1
+2026-07-22 16:06:51,357 [INFO] __main__ - [1471] det:7 trk:9 cross:30 fps:16.3
+2026-07-22 16:06:51,520 [INFO] src.tracker - ID79 crossed! Total: 31
+2026-07-22 16:06:52,473 [INFO] src.tracker - ID66 crossed! Total: 32
+2026-07-22 16:06:52,474 [INFO] src.tracker - ID77 crossed! Total: 33
+2026-07-22 16:06:52,653 [INFO] src.tracker - ID10 crossed! Total: 34
+2026-07-22 16:06:53,254 [INFO] __main__ - [1501] det:6 trk:7 cross:34 fps:16.5
+2026-07-22 16:06:55,120 [INFO] __main__ - [1531] det:8 trk:9 cross:34 fps:16.5
+2026-07-22 16:06:56,990 [INFO] __main__ - [1561] det:8 trk:9 cross:34 fps:15.8
+2026-07-22 16:06:58,815 [INFO] __main__ - [1591] det:6 trk:6 cross:34 fps:16.5
+2026-07-22 16:07:00,657 [INFO] __main__ - [1621] det:6 trk:8 cross:34 fps:16.2
+2026-07-22 16:07:02,412 [INFO] __main__ - [1651] det:7 trk:8 cross:34 fps:17.4
+2026-07-22 16:07:03,682 [INFO] src.tracker - ID83 crossed! Total: 35
+2026-07-22 16:07:03,683 [INFO] src.tracker - ID85 crossed! Total: 36
+2026-07-22 16:07:04,302 [INFO] __main__ - [1681] det:9 trk:11 cross:36 fps:15.6
+2026-07-22 16:07:05,992 [INFO] __main__ - [1711] det:0 trk:0 cross:36 fps:18.1
+2026-07-22 16:07:07,699 [INFO] __main__ - [1741] det:0 trk:0 cross:36 fps:17.8
+2026-07-22 16:07:09,444 [INFO] __main__ - [1771] det:0 trk:0 cross:36 fps:17.4
+2026-07-22 16:07:11,201 [INFO] __main__ - [1801] det:0 trk:0 cross:36 fps:17.5
+2026-07-22 16:07:12,991 [INFO] __main__ - [1831] det:0 trk:0 cross:36 fps:20.1
+2026-07-22 16:07:14,647 [INFO] __main__ - [1861] det:0 trk:0 cross:36 fps:17.8
+2026-07-22 16:07:16,422 [INFO] __main__ - [1891] det:0 trk:0 cross:36 fps:15.7
+2026-07-22 16:07:18,034 [INFO] __main__ - [1921] det:0 trk:0 cross:36 fps:20.6
+2026-07-22 16:07:18,674 [INFO] __main__ - End of stream
+2026-07-22 16:07:18,818 [INFO] __main__ - Done! Total crossings: 36
+2026-07-22 16:07:18,848 [INFO] __main__ - 
+==================================================
+Performance Profiling Summary
+==================================================
+
+Frames Profiled: 1882
+
+Average Decode Time: 3.69 ms
+Average Appsink Time: 0.00 ms
+Average Preprocessing Time: 0.94 ms
+Average Inference Time: 18.38 ms
+Average Post-processing Time: 1.03 ms
+Average Tracking Time: 0.05 ms
+Average Line_crossing Time: 0.07 ms
+Average Overlay Time: 1.33 ms
+Average Color Conversion Time: 0.00 ms
+Average Encoding Time: 16.32 ms
+
+Average Total Latency: 41.81 ms/frame
+Average FPS: 23.92
+
+Latency Statistics:
+Minimum Latency: 7.25 ms
+Maximum Latency: 185.46 ms
+Median Latency: 24.12 ms
+95th Percentile Latency: 91.68 ms
+
+Latency Contribution:
+Decode: 8.8%
+Appsink: 0.0%
+Preprocessing: 2.2%
+Inference: 44.0%
+Post-processing: 2.5%
+Tracking: 0.1%
+Line_crossing: 0.2%
+Overlay: 3.2%
+Color Conversion: 0.0%
+Encoding: 39.0%
+
+Top 3 Bottlenecks:
+1. Inference (44.0%)
+2. Encoding (39.0%)
+3. Decode (8.8%)
+
+==================================================

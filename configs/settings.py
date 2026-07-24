@@ -23,8 +23,8 @@ NMS_THRESHOLD = 0.45
 PERSON_CLASS_IDS = [0]
 
 # Tracking
-MAX_DISAPPEARED = 15
-MAX_TRACK_DISTANCE = 120
+MAX_DISAPPEARED = 8   # Inference frames before ID is dropped (~1.7s at 14fps with skip=2)
+MAX_TRACK_DISTANCE = 150  # Max pixel jump between inference frames
 
 # Line crossing for data/videos/vid.mp4 (1920x1080 display space)
 LINE_START = (691, 496)
@@ -34,11 +34,12 @@ LINE_END = (1593, 648)
 USE_TILING = True
 TILE_PADDING = 120  # pixels to extend the tile left of frame center
 
-# Profiling
+# Profiling & Playback
 PROFILE_PRINT_EVERY = 30
 PROFILING_ENABLED = False
 PROFILING_WARMUP_FRAMES = 50
 PROFILING_MIN_FRAMES = 100
+REALTIME_PLAYBACK = False  # Simulates live camera speed for .mp4 files
 
 # System monitoring
 SYSTEM_MONITOR_INTERVAL = 1.0
@@ -55,7 +56,7 @@ PREPROCESS_PAD_COLOR = 114        # Grey padding color used in YOLO preprocessin
 PREPROCESS_INT8_OFFSET = 128      # Offset for int8 quantization
 
 # Tracker constants
-TRACKER_FOOT_POINT_MAX_DIST = 120 # Maximum pixel distance to associate a foot point with a tracked centroid
+TRACKER_FOOT_POINT_MAX_DIST = 150 # Maximum pixel distance to associate a foot point with a tracked centroid
 
 # GStreamer Pipeline parameters
 GST_UDP_PORT = 5004               # Local UDP port for RTP streaming

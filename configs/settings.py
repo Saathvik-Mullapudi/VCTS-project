@@ -12,9 +12,6 @@ DISPLAY_WIDTH, DISPLAY_HEIGHT = 1920, 1080
 ML_INPUT_WIDTH, ML_INPUT_HEIGHT = 640, 360
 PREVIEW_WIDTH, PREVIEW_HEIGHT = 1280, 720
 
-# Performance
-SKIP_FRAMES = 2  # Process 1 frame, skip 2 (runs inference on every 3rd frame)
-
 # Detection parameters
 CONF_THRESHOLD = 0.3
 NMS_THRESHOLD = 0.45
@@ -23,8 +20,8 @@ NMS_THRESHOLD = 0.45
 PERSON_CLASS_IDS = [0]
 
 # Tracking
-MAX_DISAPPEARED = 8   # Inference frames before ID is dropped (~1.7s at 14fps with skip=2)
-MAX_TRACK_DISTANCE = 150  # Max pixel jump between inference frames
+MAX_DISAPPEARED = 15   # Inference frames before ID is dropped
+MAX_TRACK_DISTANCE = 400  # Max pixel jump between inference frames
 
 # Line crossing for data/videos/vid.mp4 (1920x1080 display space)
 LINE_START = (691, 496)

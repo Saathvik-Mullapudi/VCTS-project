@@ -85,8 +85,11 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
     
     if is_camera:
         source = f"v4l2src device={video_src} ! video/x-raw,framerate=30/1"
+    elif video_src.startswith("udp://"):
+        port = video_src.split(":")[-1]
+        source = f"udpsrc port={port} ! tsdemux name=demux ! h264parse ! vpudec name=decoder ! imxvideoconvert_g2d ! video/x-raw,format=BGRx"
     else:
-        source = f"filesrc location={video_src} ! qtdemux ! h264parse ! vpudec ! imxvideoconvert_g2d ! video/x-raw,format=BGRx"
+        source = f"filesrc location={video_src} ! qtdemux name=demux ! h264parse ! vpudec name=decoder ! imxvideoconvert_g2d ! video/x-raw,format=BGRx"
         
     sink_str = "fakesink sync=false"
     
@@ -109,7 +112,7 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
         f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
         f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
         f"t. ! queue max-size-buffers=2 leaky=downstream ! "
-        f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=2 sync=false"
+        f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=1 sync=false"
     )
         
     logger.info(f"Pipeline: {pipeline_str}")
@@ -147,6 +150,7 @@ def start_rtsp_server(udp_port, rtsp_port):
     from gi.repository import GstRtspServer
 
     server = GstRtspServer.RTSPServer()
+    server.set_address("0.0.0.0")
     server.set_service(rtsp_port)
 
     factory = GstRtspServer.RTSPMediaFactory()
@@ -154,7 +158,7 @@ def start_rtsp_server(udp_port, rtsp_port):
     # Bridge the UDP stream from the main pipeline into the RTSP server
     factory.set_launch(
         f'( udpsrc port={udp_port} caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96" ! '
-        'rtph264pay name=pay0 pt=96 )'
+        'rtph264depay ! rtph264pay name=pay0 pt=96 config-interval=1 )'
     )
 
     mounts = server.get_mount_points()

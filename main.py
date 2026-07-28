@@ -73,6 +73,9 @@ class LineCrossingDetector:
         self.frame_count = 0
         self.fps = 0.0
         self.actual_fps = 30.0
+        self.video_frame_count = 0
+        self.video_last_fps_time = time.time()
+        self.video_fps = 0.0
         # Read the true encoded FPS of the video file before the pipeline starts
         if not self.is_camera:
             _probe = cv2.VideoCapture(video_src)
@@ -81,6 +84,7 @@ class LineCrossingDetector:
         else:
             self.source_fps = 0.0
         self.lock = threading.Lock()
+
         
         self.person_boxes = []
         self.person_boxes_display = []
@@ -101,15 +105,18 @@ class LineCrossingDetector:
         )
         self.counter = LineCrossingCounter(LINE_START, LINE_END, self.in_w, self.in_h, DISPLAY_WIDTH, DISPLAY_HEIGHT)
         self.profiler = ThroughputProfiler([
+            "demux",
+            "decoder",
             "appsink",
-            "frame_skipping",
             "color_convert",
             "preprocess",
             "inference",
             "postprocess",
             "tracking",
             "line_crossing",
-            "overlay"
+            "overlay",
+            "encoder",
+            "output_write"
         ])
         if profiling_enabled:
             self.profiler.enable()
@@ -128,7 +135,6 @@ class LineCrossingDetector:
             "output_file": self.output_file,
             "use_tiling": self.use_tiling,
             "tile_padding": self.tile_padding,
-            "skip_frames": SKIP_FRAMES,
             "conf_threshold": CONF_THRESHOLD,
             "nms_threshold": NMS_THRESHOLD,
             "display_width": DISPLAY_WIDTH,
@@ -145,8 +151,8 @@ class LineCrossingDetector:
 
     def _get_tile_bounds(self):
         """Right-half ROI with optional left padding (display coordinates)."""
-        x0 = max(0, DISPLAY_WIDTH // 2 - self.tile_padding)
-        x0 = min(x0, LINE_START[0])
+        # Ensure the tile extends `tile_padding` pixels to the left of the crossing line
+        x0 = max(0, min(DISPLAY_WIDTH // 2, LINE_START[0]) - self.tile_padding)
         return x0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT
 
     def _map_boxes_tile_to_full_ml(self, boxes, tile_x0, tile_y0):
@@ -208,13 +214,6 @@ class LineCrossingDetector:
 
     def _process_frame_for_detection(self, frame):
         logger.debug(f"_process_frame_for_detection called for frame {self.frame_count}, frame id: {id(frame)}")
-        
-        self.profiler.record_received("frame_skipping")
-        if self.frame_count % (SKIP_FRAMES + 1) != 1:
-            self.profiler.record_skipped("frame_skipping")
-            logger.debug(f"Skipping frame {self.frame_count} (not inference frame)")
-            return
-        self.profiler.record_processed("frame_skipping")
 
         frame_display = frame
 
@@ -250,6 +249,8 @@ class LineCrossingDetector:
             self.person_scores = person_scores
             self.tracked_objects = tracked_objects
             self.crossing_count = crossing_count
+
+
 
     def _draw_overlay_cv(self, frame):
         with self.lock:
@@ -302,7 +303,7 @@ class LineCrossingDetector:
             finally:
                 buf.unmap(map_info)
 
-        logger.debug(f"Passing frame {self.frame_count} to _process_frame_for_detection, frame id: {id(frame)}")
+        logger.debug(f"Processing frame {self.frame_count} synchronously, frame id: {id(frame)}")
         self._process_frame_for_detection(frame)
 
         if self.frame_count % 30 == 1:
@@ -310,11 +311,17 @@ class LineCrossingDetector:
                 det = len(self.person_boxes)
                 trk = len(self.tracked_objects)
                 c_count = self.crossing_count
-            logger.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
+            logger.info(f"[Video Frame {self.video_frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.video_fps:.1f} (AI running at {self.fps:.1f} fps)")
 
         return Gst.FlowReturn.OK
 
     def _draw_overlay(self, overlay, ctx, ts, dur):
+        self.video_frame_count += 1
+        if self.video_frame_count % 30 == 0:
+            now = time.time()
+            self.video_fps = 30 / (now - self.video_last_fps_time) if (now - self.video_last_fps_time) > 0 else 0
+            self.video_last_fps_time = now
+            
         with self.profiler.stage("overlay") if self.profiling_enabled else open(os.devnull, 'w') as _:
             with self.lock:
                 boxes = list(self.person_boxes_display)
@@ -382,7 +389,6 @@ class LineCrossingDetector:
                     frame = cv2.resize(frame, (DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
                 self.frame_count += 1
-                self.profiler.mark_frame()
                 if self.frame_count % 10 == 0:
                     now = time.time()
                     self.fps = 10 / (now - self.last_fps_time) if (now - self.last_fps_time) > 0 else 0
@@ -470,7 +476,7 @@ class LineCrossingDetector:
             logger.info(f"Done! Total crossings: {self.crossing_count}")
             
             if self.profiling_enabled:
-                report_fps = self.source_fps if self.source_fps > 0 else self.actual_fps
+                report_fps = self.source_fps if self.source_fps > 0 else self.video_fps
                 logger.info("\n" + self.profiler.format_profiling_summary(report_fps))
 
 if __name__ == "__main__":

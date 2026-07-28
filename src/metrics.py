@@ -81,8 +81,7 @@ class ThroughputProfiler:
             "=" * 80,
             f"Total Wall-Clock Run Time: {total_wall_time:.1f} seconds",
             f"Input Video FPS: {input_fps:.1f}",
-            "Runtime FPS calculates: After Frame Skipping (Tracks processed ML frames only)",
-            "Skipped Frames Decoded/Rendered: YES (Handled by hardware branch)",
+            "Runtime FPS: processed inference frames only (latest-frame buffer on GStreamer path)",
             "=" * 80,
             "",
             f"{'Stage':<18} | {'Received':>8} | {'Processed':>9} | {'Skipped':>7} | {'Avg Time/Frame':>14} | {'Throughput (FPS)':>16}",
@@ -90,16 +89,16 @@ class ThroughputProfiler:
         ]
         
         name_map = {
+            "demux": "0. Demux",
             "decoder": "1. Decoder",
             "appsink": "2. Appsink",
-            "frame_skipping": "3. Frame Skipping",
-            "color_convert": "4. Color Convert",
-            "preprocess": "5. Preprocess",
-            "inference": "6. Inference",
-            "postprocess": "7. Postprocess",
-            "tracking": "8. Tracking",
-            "line_crossing": "9. Line Crossing",
-            "overlay": "10. Overlay",
+            "color_convert": "3. Color Convert",
+            "preprocess": "4. Preprocess",
+            "inference": "5. Inference",
+            "postprocess": "6. Postprocess",
+            "tracking": "7. Tracking",
+            "line_crossing": "8. Line Crossing",
+            "overlay": "9. Overlay",
             "encoder": "11. Encoder",
             "output_write": "12. Output Writer"
         }

@@ -56,7 +56,7 @@ PREPROCESS_INT8_OFFSET = 128      # Offset for int8 quantization
 TRACKER_FOOT_POINT_MAX_DIST = 150 # Maximum pixel distance to associate a foot point with a tracked centroid
 
 # GStreamer Pipeline parameters
-GST_UDP_PORT = 5004               # Local UDP port for RTP streaming
+GST_UDP_PORT = 5006               # Local UDP port for RTP streaming
 GST_RTSP_PORT = "8554"            # Port for the RTSP server
 GST_BITRATE_FILE = 8000           # H264 encoding bitrate for saving to disk
 GST_BITRATE_STREAM = 5000         # H264 encoding bitrate for UDP/RTSP streaming

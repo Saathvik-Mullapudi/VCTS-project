@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 import time
 import threading
 import cv2
-import numpy as np
 from datetime import datetime
 import argparse
 try:
@@ -26,7 +25,29 @@ except ImportError:
 
 
 
-from configs.settings import *
+from configs.settings import (
+    # Paths / defaults (used in argparse)
+    DEFAULT_MODEL, DEFAULT_SOURCE, DEFAULT_OUTPUT,
+    # Display geometry (used in drawing + pipeline build)
+    DISPLAY_WIDTH, DISPLAY_HEIGHT,
+    PREVIEW_WIDTH, PREVIEW_HEIGHT,
+    # Detection thresholds (used in metrics metadata)
+    CONF_THRESHOLD, NMS_THRESHOLD,
+    # Tracking config (used in CentroidTracker init)
+    MAX_DISAPPEARED, MAX_TRACK_DISTANCE,
+    # Line geometry (used in counter init + drawing)
+    LINE_START, LINE_END,
+    # Tiling config (used in argparse + __init__ defaults)
+    USE_TILING, TILE_PADDING,
+    # Profiling flag (used in argparse + profiler enable)
+    PROFILING_ENABLED,
+    # Playback pacing (used in cv2 fallback loop)
+    REALTIME_PLAYBACK,
+    # Infrastructure (used in SystemMonitor + VideoWriter)
+    SYSTEM_MONITOR_INTERVAL, WINDOWS_OUTPUT_CODEC,
+    # GStreamer ports (used in _start_rtsp_server)
+    GST_UDP_PORT, GST_RTSP_PORT,
+)
 
 # ---------------------------------------------------------------------------
 # GStreamer Python bindings (optional - only available on Linux / i.MX8).
@@ -36,8 +57,8 @@ try:
     import gi
     gi.require_version("Gst", "1.0")
     gi.require_version("GstApp", "1.0")
-    gi.require_version("GstRtspServer", "1.0")
-    from gi.repository import Gst, GLib, GstRtspServer
+    gi.require_version("GstRtspServer", "1.0")  # needed by gst_pipeline.py
+    from gi.repository import Gst, GLib
     GST_AVAILABLE = True
 except (ImportError, ValueError):
     GST_AVAILABLE = False
@@ -58,6 +79,22 @@ class LineCrossingDetector:
     def __init__(self, model_path, video_src, output_file=None, use_tiling=USE_TILING, tile_padding=TILE_PADDING,
                  metrics_csv_path="outputs/metrics/metrics.csv", metrics_json_path="outputs/metrics/metrics.json", preview_enabled=True,
                  debug_mapping=False, profiling_enabled=PROFILING_ENABLED):
+        # [SE PRACTICE: Single Responsibility — __init__ is a table of contents,
+        #  not an implementation. Each _init_* method does one setup job.]
+        self._init_config(video_src, output_file, use_tiling, tile_padding,
+                         metrics_csv_path, metrics_json_path,
+                         preview_enabled, debug_mapping, profiling_enabled)
+        self._init_state(video_src)
+        self._init_subsystems(model_path, profiling_enabled)
+
+    # -----------------------------------------------------------------------
+    # INIT JOB 1: Store all user-supplied config and detect source type.
+    # [SE PRACTICE: Single Responsibility]
+    # -----------------------------------------------------------------------
+    def _init_config(self, video_src, output_file, use_tiling, tile_padding,
+                     metrics_csv_path, metrics_json_path,
+                     preview_enabled, debug_mapping, profiling_enabled):
+        """Assign all constructor arguments to instance attributes."""
         self.video_src = video_src
         self.output_file = output_file
         self.use_tiling = use_tiling
@@ -69,13 +106,23 @@ class LineCrossingDetector:
         self.profiling_enabled = profiling_enabled
         # Detect if the source is a camera. On Linux it's '/dev/video*', on Windows it's an integer index like '0'
         self.is_camera = video_src.isdigit() or video_src.startswith("/dev/video")
+
+    # -----------------------------------------------------------------------
+    # INIT JOB 2: Initialise all mutable runtime state to safe zero values.
+    # [SE PRACTICE: Single Responsibility — all state is declared here,
+    #  so you know exactly what data the class owns by reading one method.]
+    # -----------------------------------------------------------------------
+    def _init_state(self, video_src):
+        """Initialise runtime counters, locks, and detection result buffers."""
+        # FPS tracking (AI inference thread)
         self.last_fps_time = time.time()
-        self.frame_count = 0
-        self.fps = 0.0
-        self.actual_fps = 30.0
-        self.video_frame_count = 0
-        self.video_last_fps_time = time.time()
-        self.video_fps = 0.0
+        self.frame_count   = 0
+        self.fps           = 0.0
+        self.actual_fps    = 30.0
+        # FPS tracking (video / GStreamer overlay thread)
+        self.video_frame_count    = 0
+        self.video_last_fps_time  = time.time()
+        self.video_fps            = 0.0
         # Read the true encoded FPS of the video file before the pipeline starts
         if not self.is_camera:
             _probe = cv2.VideoCapture(video_src)
@@ -83,45 +130,47 @@ class LineCrossingDetector:
             _probe.release()
         else:
             self.source_fps = 0.0
+        # Thread safety
         self.lock = threading.Lock()
-
-        
-        self.person_boxes = []
+        # Detection result buffers (written by AI thread, read by overlay thread)
+        self.person_boxes         = []
         self.person_boxes_display = []
-        self.person_scores = []
-        self.tracked_objects = {}
-        self.track_foot_points = []
-        self.crossing_count = 0
-        
-        # Load model
-        self.detector = TFLitePersonDetector(model_path)
+        self.person_scores        = []
+        self.tracked_objects      = {}
+        self.track_foot_points    = []
+        self.crossing_count       = 0
+
+    # -----------------------------------------------------------------------
+    # INIT JOB 3: Load the AI model and wire up all monitoring infrastructure.
+    # [SE PRACTICE: Single Responsibility — heavy I/O and wiring are isolated
+    #  so __init__ stays readable and unit-testing _init_config/_init_state
+    #  doesn't require loading a 10MB TFLite model.]
+    # -----------------------------------------------------------------------
+    def _init_subsystems(self, model_path, profiling_enabled):
+        """Load the AI model, tracker, counter, profiler, and system monitor."""
+        # AI model (heavy — loads TFLite + optionally the NPU delegate)
+        self.detector  = TFLitePersonDetector(model_path)
         self.in_h, self.in_w = self.detector.in_h, self.detector.in_w
-        self.npu_status = self.detector.npu_status
-        
-        # Initialize tracker and counter
+        self.npu_status      = self.detector.npu_status
+        # Object tracker and line-crossing counter
         self.tracker = CentroidTracker(
             maxDisappeared=MAX_DISAPPEARED,
             maxDistance=MAX_TRACK_DISTANCE,
         )
-        self.counter = LineCrossingCounter(LINE_START, LINE_END, self.in_w, self.in_h, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        self.counter = LineCrossingCounter(
+            LINE_START, LINE_END, self.in_w, self.in_h, DISPLAY_WIDTH, DISPLAY_HEIGHT
+        )
+        # Profiler (stage timings for each pipeline step)
         self.profiler = ThroughputProfiler([
-            "demux",
-            "decoder",
-            "appsink",
-            "color_convert",
-            "preprocess",
-            "inference",
-            "postprocess",
-            "tracking",
-            "line_crossing",
-            "overlay",
-            "encoder",
-            "output_write"
+            "demux", "decoder", "appsink", "color_convert",
+            "preprocess", "inference", "postprocess",
+            "tracking", "line_crossing", "overlay", "encoder", "output_write"
         ])
         if profiling_enabled:
             self.profiler.enable()
+        # Metrics recorder and system health monitor
         self.metrics_recorder = MetricsRecorder(self._build_metrics_metadata(model_path))
-        self.system_monitor = SystemMonitor(
+        self.system_monitor   = SystemMonitor(
             interval_sec=SYSTEM_MONITOR_INTERVAL,
             frame_number_fn=lambda: self.frame_count,
             on_sample=self.metrics_recorder.add_system_record,
@@ -149,92 +198,16 @@ class LineCrossingDetector:
     
 
 
-    def _get_tile_bounds(self):
-        """Right-half ROI with optional left padding (display coordinates)."""
-        # Ensure the tile extends `tile_padding` pixels to the left of the crossing line
-        x0 = max(0, min(DISPLAY_WIDTH // 2, LINE_START[0]) - self.tile_padding)
-        return x0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT
-
-    def _map_boxes_tile_to_full_ml(self, boxes, tile_x0, tile_y0):
-        """Map detections from tile pixel space to full-frame ML coordinates."""
-        if not boxes:
-            return boxes
-        ml_scale_x = self.in_w / DISPLAY_WIDTH
-        ml_scale_y = self.in_h / DISPLAY_HEIGHT
-        mapped = []
-        for x1, y1, x2, y2 in boxes:
-            dx1 = tile_x0 + x1
-            dy1 = tile_y0 + y1
-            dx2 = tile_x0 + x2
-            dy2 = tile_y0 + y2
-            mapped.append([
-                int(dx1 * ml_scale_x),
-                int(dy1 * ml_scale_y),
-                int(dx2 * ml_scale_x),
-                int(dy2 * ml_scale_y),
-            ])
-        if self.debug_mapping and mapped:
-            logger.debug(
-                f"[MAP] tile_x0={tile_x0} tile_y0={tile_y0} "
-                f"tile_box={boxes[0]} mapped_ml={mapped[0]}"
-            )
-        return mapped
-
-    def _map_boxes_tile_to_display(self, boxes, tile_x0, tile_y0):
-        """Map detections from tile pixel space directly to display coordinates."""
-        if not boxes:
-            return boxes
-        mapped = []
-        for x1, y1, x2, y2 in boxes:
-            mapped.append([
-                int(tile_x0 + x1),
-                int(tile_y0 + y1),
-                int(tile_x0 + x2),
-                int(tile_y0 + y2),
-            ])
-        return mapped
-
-    def _map_boxes_ml_to_display(self, boxes):
-        """Map full-frame ML coordinates to display coordinates."""
-        if not boxes:
-            return boxes
-        scale_x = DISPLAY_WIDTH / self.in_w
-        scale_y = DISPLAY_HEIGHT / self.in_h
-        return [
-            [
-                int(x1 * scale_x),
-                int(y1 * scale_y),
-                int(x2 * scale_x),
-                int(y2 * scale_y),
-            ]
-            for x1, y1, x2, y2 in boxes
-        ]
-
-
-
     def _process_frame_for_detection(self, frame):
         logger.debug(f"_process_frame_for_detection called for frame {self.frame_count}, frame id: {id(frame)}")
 
-        frame_display = frame
-
-        if self.use_tiling:
-            tile_x0, tile_y0, tile_x1, tile_y1 = self._get_tile_bounds()
-            frame_tile = frame_display[tile_y0:tile_y1, tile_x0:tile_x1]
-            tile_h, tile_w = frame_tile.shape[:2]
-            
-            person_boxes, person_scores, person_classes = self.detector.predict(
-                frame_tile, tile_h, tile_w, profiler=self.profiler if self.profiling_enabled else None
-            )
-            
-            person_boxes_display = self._map_boxes_tile_to_display(person_boxes, tile_x0, tile_y0)
-            person_boxes = self._map_boxes_tile_to_full_ml(person_boxes, tile_x0, tile_y0)
-        else:
-            frame_ml = frame_display
-            person_boxes, person_scores, person_classes = self.detector.predict(
-                frame_ml, self.in_h, self.in_w, profiler=self.profiler if self.profiling_enabled else None
-            )
-            
-            person_boxes_display = self._map_boxes_ml_to_display(person_boxes)
+        person_boxes, person_boxes_display, person_scores, person_classes = self.detector.predict(
+            frame=frame,
+            use_tiling=self.use_tiling,
+            tile_padding=self.tile_padding,
+            line_start_x=LINE_START[0],
+            profiler=self.profiler if self.profiling_enabled else None
+        )
 
         with self.profiler.stage("tracking") if self.profiling_enabled else open(os.devnull, 'w') as _:
             tracked_objects, _ = self.tracker.update(person_boxes)
@@ -250,7 +223,10 @@ class LineCrossingDetector:
             self.tracked_objects = tracked_objects
             self.crossing_count = crossing_count
 
-
+    def _get_tile_bounds(self):
+        # We keep this helper *only* for the renderer to draw the red box
+        x0 = max(0, min(DISPLAY_WIDTH // 2, LINE_START[0]) - self.tile_padding)
+        return x0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT
 
     def _draw_overlay_cv(self, frame):
         with self.lock:
@@ -265,67 +241,92 @@ class LineCrossingDetector:
             tile_bounds=tile_bounds,
         )
 
-    def _on_new_sample(self, appsink):
-        self.frame_count += 1
-        
+    # -----------------------------------------------------------------------
+    # JOB 1: FPS Counter — only tracks timing, touches nothing else.
+    # [SE PRACTICE: Single Responsibility]
+    # -----------------------------------------------------------------------
+    def _update_ai_fps(self):
+        """Compute AI inference FPS every 10 frames using a rolling window."""
         if self.frame_count % 10 == 0:
             now = time.time()
-            self.fps = 10 / (now - self.last_fps_time) if (now - self.last_fps_time) > 0 else 0
+            elapsed = now - self.last_fps_time
+            self.fps = (10 / elapsed) if elapsed > 0 else 0
             self.actual_fps = self.fps if self.fps > 0 else 30.0
             self.last_fps_time = now
-            
+
+    # -----------------------------------------------------------------------
+    # JOB 2: Sample Puller — only pulls the raw GstSample from the appsink.
+    # [SE PRACTICE: Single Responsibility]
+    # -----------------------------------------------------------------------
+    def _pull_gst_sample(self, appsink):
+        """Pull a GstSample from the appsink. Returns the sample or None."""
         with self.profiler.stage("appsink") if self.profiling_enabled else open(os.devnull, 'w') as _:
             sample = appsink.emit("pull-sample")
-            if not sample:
-                return Gst.FlowReturn.OK
-            
-        buf = sample.get_buffer()
-        caps = sample.get_caps()
-        structure = caps.get_structure(0)
-        width = structure.get_value("width")
-        height = structure.get_value("height")
-        fmt = structure.get_value("format")
+        return sample
+
+    # -----------------------------------------------------------------------
+    # JOB 3: Frame Converter — delegate to gst_pipeline.extract_frame_from_sample.
+    # [SE PRACTICE: Separation of Concerns]
+    # GstBuffer unpacking is a GStreamer detail; it belongs in gst_pipeline.py.
+    # The profiler wrapper stays here so the caller controls the timing boundary.
+    # -----------------------------------------------------------------------
+
+    # -----------------------------------------------------------------------
+    # JOB 4 (Orchestrator): Wire the 3 helpers above + call detection + log.
+    # [SE PRACTICE: Orchestrator Pattern — no logic here, only delegation]
+    # -----------------------------------------------------------------------
+    def _on_new_sample(self, appsink):
+        """GStreamer appsink callback. Orchestrates pull → convert → detect."""
+        from src.gst_pipeline import extract_frame_from_sample
+
+        self.frame_count += 1
+        self._update_ai_fps()
+
+        sample = self._pull_gst_sample(appsink)
+        if not sample:
+            return Gst.FlowReturn.OK
 
         with self.profiler.stage("color_convert") if self.profiling_enabled else open(os.devnull, 'w') as _:
-            success, map_info = buf.map(Gst.MapFlags.READ)
-            if not success:
-                logger.warning("Could not map GStreamer frame buffer")
-                return Gst.FlowReturn.OK
+            frame = extract_frame_from_sample(sample)
+        if frame is None:
+            return Gst.FlowReturn.OK
 
-            try:
-                if fmt == "RGB":
-                    frame = np.ndarray((height, width, 3), dtype=np.uint8, buffer=map_info.data).copy()
-                elif fmt in ("BGRx", "RGBx", "RGBA", "BGRA"):
-                    frame = np.ndarray((height, width, 4), dtype=np.uint8, buffer=map_info.data)[:, :, :3].copy()
-                else:
-                    logger.warning(f"Unsupported GStreamer frame format: {fmt}")
-                    return Gst.FlowReturn.OK
-            finally:
-                buf.unmap(map_info)
-
-        logger.debug(f"Processing frame {self.frame_count} synchronously, frame id: {id(frame)}")
+        logger.debug(f"Processing frame {self.frame_count}, frame id: {id(frame)}")
         self._process_frame_for_detection(frame)
 
         if self.frame_count % 30 == 1:
             with self.lock:
-                det = len(self.person_boxes)
-                trk = len(self.tracked_objects)
+                det     = len(self.person_boxes)
+                trk     = len(self.tracked_objects)
                 c_count = self.crossing_count
-            logger.info(f"[Video Frame {self.video_frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.video_fps:.1f} (AI running at {self.fps:.1f} fps)")
+            logger.info(
+                f"[Video Frame {self.video_frame_count}] "
+                f"det:{det} trk:{trk} cross:{c_count} "
+                f"fps:{self.video_fps:.1f} (AI: {self.fps:.1f} fps)"
+            )
 
         return Gst.FlowReturn.OK
 
-    def _draw_overlay(self, overlay, ctx, ts, dur):
-        self.video_frame_count += 1
+    # -----------------------------------------------------------------------
+    # FPS HELPER (video/overlay thread) — mirrors _update_ai_fps exactly.
+    # [SE PRACTICE: Single Responsibility + DRY (Don't Repeat Yourself)]
+    # -----------------------------------------------------------------------
+    def _update_video_fps(self):
+        """Compute GStreamer video render FPS every 30 frames using a rolling window."""
         if self.video_frame_count % 30 == 0:
             now = time.time()
-            self.video_fps = 30 / (now - self.video_last_fps_time) if (now - self.video_last_fps_time) > 0 else 0
+            elapsed = now - self.video_last_fps_time
+            self.video_fps = (30 / elapsed) if elapsed > 0 else 0
             self.video_last_fps_time = now
-            
+
+    def _draw_overlay(self, overlay, ctx, ts, dur):
+        self.video_frame_count += 1
+        self._update_video_fps()
+
         with self.profiler.stage("overlay") if self.profiling_enabled else open(os.devnull, 'w') as _:
             with self.lock:
-                boxes = list(self.person_boxes_display)
-                tracked = dict(self.tracked_objects)
+                boxes    = list(self.person_boxes_display)
+                tracked  = dict(self.tracked_objects)
                 crossings = self.crossing_count
             tile_bounds = self._get_tile_bounds() if self.use_tiling else None
             draw_overlay_cairo(
@@ -335,12 +336,18 @@ class LineCrossingDetector:
                 tile_bounds=tile_bounds,
             )
 
+    # [SE PRACTICE: Avoid Hidden State in Closures]
+    # The bus callback is now a proper named method, not a hidden closure.
+    # This means VS Code F12 (Go to Definition) can navigate to it, and
+    # Shift+F12 (Find References) can find every place it is used.
+    def _on_bus_message(self, bus, msg):
+        """Handle GStreamer bus messages (EOS, ERROR, STATE_CHANGED)."""
+        from src.gst_pipeline import handle_bus_message
+        handle_bus_message(bus, msg, self.pipeline, self.loop)
+
     def _build_pipeline(self):
-        from src.gst_pipeline import build_pipeline, handle_bus_message
-        
-        def bus_callback(bus, msg):
-            handle_bus_message(bus, msg, self.pipeline, self.loop)
-            
+        from src.gst_pipeline import build_pipeline
+
         self.pipeline = build_pipeline(
             video_src=self.video_src,
             is_camera=self.is_camera,
@@ -349,12 +356,59 @@ class LineCrossingDetector:
             display_h=DISPLAY_HEIGHT,
             draw_cb=self._draw_overlay,
             sample_cb=self._on_new_sample,
-            bus_cb=bus_callback,
+            bus_cb=self._on_bus_message,
             has_cairo=(cairo is not None),
             profiler=self.profiler if self.profiling_enabled else None
         )
 
+    # -----------------------------------------------------------------------
+    # HELPER: VideoWriter factory — one job: create the writer or return None.
+    # [SE PRACTICE: Single Responsibility]
+    # -----------------------------------------------------------------------
+    def _create_video_writer(self, output_fps):
+        """Create and return a cv2.VideoWriter if an output file is configured."""
+        if not self.output_file:
+            return None
+        fourcc = cv2.VideoWriter_fourcc(*WINDOWS_OUTPUT_CODEC)
+        return cv2.VideoWriter(
+            self.output_file, fourcc, output_fps, (DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        )
+
+    # -----------------------------------------------------------------------
+    # HELPER: Frame writer — one job: write one annotated frame to disk.
+    # [SE PRACTICE: Single Responsibility]
+    # -----------------------------------------------------------------------
+    def _write_output_frame(self, writer, frame):
+        """Write a single annotated frame to the VideoWriter (if active)."""
+        if writer is not None:
+            with self.profiler.stage("output_write") if self.profiling_enabled else open(os.devnull, 'w') as _:
+                writer.write(frame)
+
+    # -----------------------------------------------------------------------
+    # HELPER: Preview display — one job: show window + throttle + handle 'q'.
+    # Returns True if the user pressed 'q' to quit.
+    # [SE PRACTICE: Single Responsibility]
+    # -----------------------------------------------------------------------
+    def _show_preview_frame(self, frame, frame_budget_ms, frame_start):
+        """
+        Downscale and display the frame in a cv2 window.
+        Sleeps to respect real-time playback budget.
+        Returns True if the user pressed 'q' to stop.
+        """
+        preview = frame
+        if frame.shape[1] > PREVIEW_WIDTH or frame.shape[0] > PREVIEW_HEIGHT:
+            preview = cv2.resize(frame, (PREVIEW_WIDTH, PREVIEW_HEIGHT))
+        cv2.imshow("Line Crossing Debug", preview)
+        elapsed_ms = (time.perf_counter() - frame_start) * 1000
+        sleep_ms = max(1, int(frame_budget_ms - elapsed_ms)) if frame_budget_ms > 0 else 1
+        return (cv2.waitKey(sleep_ms) & 0xFF) == ord("q")
+
+    # -----------------------------------------------------------------------
+    # ORCHESTRATOR: cv2 fallback loop — no logic, only delegation to helpers.
+    # [SE PRACTICE: Orchestrator Pattern]
+    # -----------------------------------------------------------------------
     def _run_cv2_fallback(self):
+        """Windows/debug fallback when GStreamer is unavailable."""
         logger.info("GStreamer unavailable. Running OpenCV/TFLite fallback for local debugging.")
         cap = cv2.VideoCapture(self.video_src)
         if not cap.isOpened():
@@ -362,23 +416,14 @@ class LineCrossingDetector:
 
         src_fps = cap.get(cv2.CAP_PROP_FPS)
         output_fps = src_fps if src_fps and src_fps > 0 else 30.0
-        writer = None
-        if self.output_file:
-            fourcc = cv2.VideoWriter_fourcc(*WINDOWS_OUTPUT_CODEC)
-            writer = cv2.VideoWriter(
-                self.output_file,
-                fourcc,
-                output_fps,
-                (DISPLAY_WIDTH, DISPLAY_HEIGHT),
-            )
+        frame_budget_ms = (1000.0 / output_fps) if (REALTIME_PLAYBACK and not self.is_camera) else 0
+        writer = self._create_video_writer(output_fps)
 
         self.system_monitor.start()
         try:
-            fps = cap.get(cv2.CAP_PROP_FPS)
-            frame_budget_ms = (1000.0 / fps) if (REALTIME_PLAYBACK and not self.is_camera and fps > 0) else 0
-
             while cap.isOpened():
                 frame_start = time.perf_counter()
+
                 with self.profiler.stage("decode") if self.profiling_enabled else open(os.devnull, 'w') as _:
                     ok, frame = cap.read()
                 if not ok:
@@ -389,29 +434,17 @@ class LineCrossingDetector:
                     frame = cv2.resize(frame, (DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
                 self.frame_count += 1
-                if self.frame_count % 10 == 0:
-                    now = time.time()
-                    self.fps = 10 / (now - self.last_fps_time) if (now - self.last_fps_time) > 0 else 0
-                    self.actual_fps = self.fps if self.fps > 0 else output_fps
-                    self.last_fps_time = now
+                self._update_ai_fps()  # reuse the same FPS helper as GStreamer path
 
                 self._process_frame_for_detection(frame)
-                
+
                 with self.profiler.stage("overlay") if self.profiling_enabled else open(os.devnull, 'w') as _:
                     overlay_frame = self._draw_overlay_cv(frame.copy())
 
-                if writer is not None:
-                    with self.profiler.stage("output_write") if self.profiling_enabled else open(os.devnull, 'w') as _:
-                        writer.write(overlay_frame)
+                self._write_output_frame(writer, overlay_frame)
 
                 if self.preview_enabled:
-                    preview_frame = overlay_frame
-                    if overlay_frame.shape[1] > PREVIEW_WIDTH or overlay_frame.shape[0] > PREVIEW_HEIGHT:
-                        preview_frame = cv2.resize(overlay_frame, (PREVIEW_WIDTH, PREVIEW_HEIGHT))
-                    cv2.imshow("Line Crossing Debug", preview_frame)
-                    elapsed_ms = (time.perf_counter() - frame_start) * 1000
-                    sleep_ms = max(1, int(frame_budget_ms - elapsed_ms)) if frame_budget_ms > 0 else 1
-                    if cv2.waitKey(sleep_ms) & 0xFF == ord("q"):
+                    if self._show_preview_frame(overlay_frame, frame_budget_ms, frame_start):
                         logger.info("Stopped by user")
                         break
                 elif frame_budget_ms > 0:
@@ -422,8 +455,8 @@ class LineCrossingDetector:
 
                 if self.frame_count % 30 == 1:
                     with self.lock:
-                        det = len(self.person_boxes)
-                        trk = len(self.tracked_objects)
+                        det     = len(self.person_boxes)
+                        trk     = len(self.tracked_objects)
                         c_count = self.crossing_count
                     logger.info(f"[{self.frame_count}] det:{det} trk:{trk} cross:{c_count} fps:{self.fps:.1f}")
         finally:
@@ -435,7 +468,6 @@ class LineCrossingDetector:
                 cv2.destroyAllWindows()
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
             logger.info(f"Done! Total crossings: {self.crossing_count}")
-            
             if self.profiling_enabled:
                 logger.info("\n" + self.profiler.format_profiling_summary(self.actual_fps))
 
@@ -456,25 +488,28 @@ class LineCrossingDetector:
         if not GST_AVAILABLE:
             self._run_cv2_fallback()
             return
-        
+
+        # [SE PRACTICE: Encapsulation] — run() never touches Gst.State directly.
+        # All GStreamer lifecycle details live inside src/gst_pipeline.py.
+        from src.gst_pipeline import start_pipeline, stop_pipeline
+
         self.loop = GLib.MainLoop()
         self._build_pipeline()
         self._start_rtsp_server()
-        
-        logger.info("Starting pipeline...")
+
         self.system_monitor.start()
-        self.pipeline.set_state(Gst.State.PLAYING)
-        
+        start_pipeline(self.pipeline)
+
         try:
             self.loop.run()
         except KeyboardInterrupt:
             logger.info("Stopped by user")
         finally:
             self.system_monitor.stop()
-            self.pipeline.set_state(Gst.State.NULL)
+            stop_pipeline(self.pipeline)
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
             logger.info(f"Done! Total crossings: {self.crossing_count}")
-            
+
             if self.profiling_enabled:
                 report_fps = self.source_fps if self.source_fps > 0 else self.video_fps
                 logger.info("\n" + self.profiler.format_profiling_summary(report_fps))

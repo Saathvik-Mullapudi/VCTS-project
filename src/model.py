@@ -86,14 +86,60 @@ class TFLitePersonDetector:
         self.interpreter.invoke()
         logger.info("Model ready")
 
-    def predict(self, frame_segment: np.ndarray, seg_h: int, seg_w: int, profiler=None):
+    def _get_tile_bounds(self, display_w, display_h, line_start_x, tile_padding):
+        """Right-half ROI with optional left padding (display coordinates)."""
+        x0 = max(0, min(display_w // 2, line_start_x) - tile_padding)
+        return x0, 0, display_w, display_h
+
+    def _map_boxes_tile_to_full_ml(self, boxes, tile_x0, tile_y0, display_w, display_h):
+        if not boxes:
+            return boxes
+        ml_scale_x = self.in_w / display_w
+        ml_scale_y = self.in_h / display_h
+        mapped = []
+        for x1, y1, x2, y2 in boxes:
+            dx1, dy1 = tile_x0 + x1, tile_y0 + y1
+            dx2, dy2 = tile_x0 + x2, tile_y0 + y2
+            mapped.append([
+                int(dx1 * ml_scale_x), int(dy1 * ml_scale_y),
+                int(dx2 * ml_scale_x), int(dy2 * ml_scale_y)
+            ])
+        return mapped
+
+    def _map_boxes_tile_to_display(self, boxes, tile_x0, tile_y0):
+        if not boxes:
+            return boxes
+        return [[int(tile_x0 + x1), int(tile_y0 + y1), int(tile_x0 + x2), int(tile_y0 + y2)] for x1, y1, x2, y2 in boxes]
+
+    def _map_boxes_ml_to_display(self, boxes, display_w, display_h):
+        if not boxes:
+            return boxes
+        scale_x = display_w / self.in_w
+        scale_y = display_h / self.in_h
+        return [[int(x1 * scale_x), int(y1 * scale_y), int(x2 * scale_x), int(y2 * scale_y)] for x1, y1, x2, y2 in boxes]
+
+    def predict(self, frame: np.ndarray, use_tiling: bool, tile_padding: int, line_start_x: int, profiler=None):
+        """
+        Accepts a full 1080p display frame, handles array slicing internally if tiling is enabled,
+        runs the AI model, and maps the boxes back to display space.
+        Returns: person_boxes (ML coords), person_boxes_display (Display coords), person_scores, person_classes
+        """
+        import contextlib
         @contextlib.contextmanager
         def _stage(name):
             if profiler:
-                with profiler.stage(name):
-                    yield
-            else:
-                yield
+                with profiler.stage(name): yield
+            else: yield
+
+        display_h, display_w = frame.shape[:2]
+        
+        if use_tiling:
+            tile_x0, tile_y0, tile_x1, tile_y1 = self._get_tile_bounds(display_w, display_h, line_start_x, tile_padding)
+            frame_segment = frame[tile_y0:tile_y1, tile_x0:tile_x1]
+            seg_h, seg_w = frame_segment.shape[:2]
+        else:
+            frame_segment = frame
+            seg_h, seg_w = display_h, display_w
 
         with _stage("preprocess"):
             input_tensor, scale, pad_x, pad_y = self.preprocessor.process(frame_segment)
@@ -104,8 +150,16 @@ class TFLitePersonDetector:
             output_data = self.interpreter.get_tensor(self.output_details[0]['index'])
         
         with _stage("postprocess"):
-            result = self.postprocessor.process(
+            raw_boxes, scores, classes = self.postprocessor.process(
                 output_data, (seg_h, seg_w), (self.in_h, self.in_w),
                 self.scale_params, scale, pad_x, pad_y
             )
-        return result
+            
+        if use_tiling:
+            boxes_display = self._map_boxes_tile_to_display(raw_boxes, tile_x0, tile_y0)
+            boxes_ml = self._map_boxes_tile_to_full_ml(raw_boxes, tile_x0, tile_y0, display_w, display_h)
+        else:
+            boxes_display = self._map_boxes_ml_to_display(raw_boxes, display_w, display_h)
+            boxes_ml = raw_boxes
+            
+        return boxes_ml, boxes_display, scores, classes

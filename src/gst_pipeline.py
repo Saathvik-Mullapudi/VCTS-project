@@ -1,10 +1,48 @@
 import logging
+import numpy as np
 # pyrefly: ignore [missing-import]
 import gi
 gi.require_version("Gst", "1.0")
 from gi.repository import Gst
 
 logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# FRAME EXTRACTION
+# [SE PRACTICE: Separation of Concerns]
+# GstBuffer unpacking is a GStreamer-specific operation and belongs here,
+# not inside LineCrossingDetector. This function is a pure converter:
+# GstSample → np.ndarray. It has no knowledge of detection or tracking.
+# ============================================================================
+
+def extract_frame_from_sample(sample):
+    """
+    Convert a GstSample into a (H, W, 3) uint8 numpy array.
+    Handles RGB, BGRx, RGBx, RGBA, BGRA pixel formats.
+    Returns None if the buffer cannot be mapped or the format is unsupported.
+    """
+    buf       = sample.get_buffer()
+    structure = sample.get_caps().get_structure(0)
+    width     = structure.get_value("width")
+    height    = structure.get_value("height")
+    fmt       = structure.get_value("format")
+
+    success, map_info = buf.map(Gst.MapFlags.READ)
+    if not success:
+        logger.warning("Could not map GStreamer frame buffer")
+        return None
+    try:
+        if fmt == "RGB":
+            return np.ndarray((height, width, 3), dtype=np.uint8, buffer=map_info.data).copy()
+        elif fmt in ("BGRx", "RGBx", "RGBA", "BGRA"):
+            return np.ndarray((height, width, 4), dtype=np.uint8, buffer=map_info.data)[:, :, :3].copy()
+        else:
+            logger.warning(f"Unsupported GStreamer frame format: {fmt}")
+            return None
+    finally:
+        buf.unmap(map_info)
+
 
 def on_pad_caps_notify(pad, pspec, element_name):
     """Callback when pad caps change."""
@@ -108,7 +146,6 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
         f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
         f"tee name=out "
         f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
-        f"out. ! queue max-size-buffers=2 leaky=downstream ! "
         f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
         f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
         f"t. ! queue max-size-buffers=2 leaky=downstream ! "
@@ -167,3 +204,22 @@ def start_rtsp_server(udp_port, rtsp_port):
     logger.info(f"[RTSP] Server running at rtsp://0.0.0.0:{rtsp_port}/video")
 
     return server
+
+
+# ============================================================================
+# PIPELINE LIFECYCLE HELPERS
+# [SE PRACTICE: Encapsulation / Information Hiding]
+# main.py should never need to know that "start" means Gst.State.PLAYING.
+# These helpers own that GStreamer-specific detail so main.py stays clean.
+# ============================================================================
+
+def start_pipeline(pipeline):
+    """Transition the pipeline to PLAYING state."""
+    pipeline.set_state(Gst.State.PLAYING)
+    logger.info("Pipeline started (PLAYING)")
+
+
+def stop_pipeline(pipeline):
+    """Transition the pipeline to NULL state, releasing all hardware resources."""
+    pipeline.set_state(Gst.State.NULL)
+    logger.info("Pipeline stopped (NULL)")

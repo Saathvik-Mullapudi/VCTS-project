@@ -6,9 +6,8 @@ def main():
     # This tunnels the video through the open 8554 port and bypasses UDP firewall blocks!
     os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp"
     
-    print("Waiting for direct UDP stream on port 5006...")
-    # Listen directly on port 5006 for the UDP stream coming from the board!
-    cap = cv2.VideoCapture("udp://@0.0.0.0:5006", cv2.CAP_FFMPEG)
+    print("Connecting to RTSP stream at 192.168.1.167...")
+    cap = cv2.VideoCapture("rtsp://192.168.1.167:8554/video")
     
     if not cap.isOpened():
         print("Error: Could not open the stream. Make sure the board is running!")

@@ -110,7 +110,7 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
         f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
         f"out. ! queue max-size-buffers=2 leaky=downstream ! "
         f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
-        f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! mpegtsmux ! udpsink name=udp_out host=192.168.10.232 port={GST_UDP_PORT} "
+        f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
         f"t. ! queue max-size-buffers=2 leaky=downstream ! "
         f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=1 sync=false"
     )
@@ -158,7 +158,7 @@ def start_rtsp_server(udp_port, rtsp_port):
     # Bridge the UDP stream from the main pipeline into the RTSP server
     factory.set_launch(
         f'( udpsrc port={udp_port} caps="application/x-rtp, media=video, clock-rate=90000, encoding-name=H264, payload=96" ! '
-        'rtph264depay ! rtph264pay name=pay0 pt=96 )'
+        'rtph264depay ! h264parse ! rtph264pay name=pay0 pt=96 config-interval=1 )'
     )
 
     mounts = server.get_mount_points()

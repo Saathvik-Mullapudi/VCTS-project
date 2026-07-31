@@ -1,0 +1,7 @@
+{
+    "video_src": "data/videos/vid.mp4",
+    "line_start": [100, 500],
+    "line_end": [1800, 500],
+    "use_tiling": true,
+    "tile_padding": 120
+}

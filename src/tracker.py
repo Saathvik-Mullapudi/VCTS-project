@@ -16,16 +16,20 @@ class CentroidTracker:
         self.crossed_status = {}
         self.smoothing = smoothing  # EMA factor: lower = smoother
         self.maxDistance = maxDistance
+        self.boxes = {}  # Store bounding box for active tracks (ML coordinates)
 
-    def register(self, centroid):
+    def register(self, centroid, box=None):
         self.objects[self.nextObjectID] = centroid
         self.disappeared[self.nextObjectID] = 0
+        self.boxes[self.nextObjectID] = box
         self.crossed_status[self.nextObjectID] = {"side": None, "counted": False, "pending_frames": 0, "pending_side": None}
         self.nextObjectID += 1
 
     def deregister(self, objectID):
         del self.objects[objectID]
         del self.disappeared[objectID]
+        if objectID in self.boxes:
+            del self.boxes[objectID]
         if objectID in self.crossed_status:
             del self.crossed_status[objectID]
 
@@ -33,6 +37,7 @@ class CentroidTracker:
         if len(boxes) == 0:
             for objectID in list(self.disappeared.keys()):
                 self.disappeared[objectID] += 1
+                self.boxes[objectID] = None
                 if self.disappeared[objectID] > self.maxDisappeared:
                     self.deregister(objectID)
             return self.objects, []
@@ -52,7 +57,7 @@ class CentroidTracker:
 
         if len(self.objects) == 0:
             for i in range(len(inputCentroids)):
-                self.register(inputCentroids[i])
+                self.register(inputCentroids[i], boxes[i])
         else:
             objectIDs = list(self.objects.keys())
             objectCentroids = list(self.objects.values())
@@ -72,30 +77,35 @@ class CentroidTracker:
                 smoothed = (int(old[0] * (1 - self.smoothing) + new[0] * self.smoothing),
                             int(old[1] * (1 - self.smoothing) + new[1] * self.smoothing))
                 self.objects[objectID] = smoothed
+                self.boxes[objectID] = boxes[col]
                 self.disappeared[objectID] = 0
                 usedRows.add(row)
                 usedCols.add(col)
+            
             unusedRows = set(range(0, D.shape[0])).difference(usedRows)
             unusedCols = set(range(0, D.shape[1])).difference(usedCols)
-            if D.shape[0] >= D.shape[1]:
-                for row in unusedRows:
-                    objectID = objectIDs[row]
-                    self.disappeared[objectID] += 1
-                    if self.disappeared[objectID] > self.maxDisappeared:
-                        self.deregister(objectID)
-            else:
-                for col in unusedCols:
-                    self.register(inputCentroids[col])
+            
+            # Robust updates: always handle disappeared tracks and new detections
+            for row in unusedRows:
+                objectID = objectIDs[row]
+                self.disappeared[objectID] += 1
+                self.boxes[objectID] = None
+                if self.disappeared[objectID] > self.maxDisappeared:
+                    self.deregister(objectID)
+            
+            for col in unusedCols:
+                self.register(inputCentroids[col], boxes[col])
+                
         return self.objects, inputFootPoints
 
-    def get_foot_point(self, objectID, boxes):
-        for (i, box) in enumerate(boxes):
-            x1, y1, x2, y2 = box
-            cX = int((x1 + x2) / 2.0)
-            cY = int((y1 + y2) / 2.0)
-            if np.linalg.norm(np.array([cX, cY]) - np.array(self.objects[objectID])) < TRACKER_FOOT_POINT_MAX_DIST:
-                return (cX, int(y2))
-        return None
+    def get_foot_point(self, objectID):
+        """Direct O(1) lookup of matched bounding box bottom-center."""
+        box = self.boxes.get(objectID)
+        if box is None:
+            return None
+        x1, y1, x2, y2 = box
+        cX = int((x1 + x2) / 2.0)
+        return (cX, int(y2))
 
 # ============================================================================
 # LINE CROSSING COUNTER
@@ -135,7 +145,7 @@ class LineCrossingCounter:
         BUFFER_PIXELS = 30   # Spatial padding in ML coords (~120px in display space) to prevent jitter double-counts
         
         for (objectID, centroid) in tracked_objects.items():
-            foot_point = tracker.get_foot_point(objectID, boxes)
+            foot_point = tracker.get_foot_point(objectID)
             if foot_point is None:
                 continue
             

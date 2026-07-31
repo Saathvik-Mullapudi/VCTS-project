@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 import time
 import threading
 import cv2
+import json
 from datetime import datetime
 import argparse
 try:
@@ -77,11 +78,12 @@ from src.renderer import draw_overlay_cv, draw_overlay_cairo
 class LineCrossingDetector:
     
     def __init__(self, model_path, video_src, output_file=None, use_tiling=USE_TILING, tile_padding=TILE_PADDING,
+                 line_start=LINE_START, line_end=LINE_END,
                  metrics_csv_path="outputs/metrics/metrics.csv", metrics_json_path="outputs/metrics/metrics.json", preview_enabled=True,
                  debug_mapping=False, profiling_enabled=PROFILING_ENABLED):
         # [SE PRACTICE: Single Responsibility — __init__ is a table of contents,
         #  not an implementation. Each _init_* method does one setup job.]
-        self._init_config(video_src, output_file, use_tiling, tile_padding,
+        self._init_config(video_src, output_file, use_tiling, tile_padding, line_start, line_end,
                          metrics_csv_path, metrics_json_path,
                          preview_enabled, debug_mapping, profiling_enabled)
         self._init_state(video_src)
@@ -91,7 +93,7 @@ class LineCrossingDetector:
     # INIT JOB 1: Store all user-supplied config and detect source type.
     # [SE PRACTICE: Single Responsibility]
     # -----------------------------------------------------------------------
-    def _init_config(self, video_src, output_file, use_tiling, tile_padding,
+    def _init_config(self, video_src, output_file, use_tiling, tile_padding, line_start, line_end,
                      metrics_csv_path, metrics_json_path,
                      preview_enabled, debug_mapping, profiling_enabled):
         """Assign all constructor arguments to instance attributes."""
@@ -99,6 +101,8 @@ class LineCrossingDetector:
         self.output_file = output_file
         self.use_tiling = use_tiling
         self.tile_padding = tile_padding
+        self.line_start = tuple(line_start)
+        self.line_end = tuple(line_end)
         self.metrics_csv_path = metrics_csv_path
         self.metrics_json_path = metrics_json_path
         self.preview_enabled = preview_enabled
@@ -158,7 +162,7 @@ class LineCrossingDetector:
             maxDistance=MAX_TRACK_DISTANCE,
         )
         self.counter = LineCrossingCounter(
-            LINE_START, LINE_END, self.in_w, self.in_h, DISPLAY_WIDTH, DISPLAY_HEIGHT
+            self.line_start, self.line_end, self.in_w, self.in_h, DISPLAY_WIDTH, DISPLAY_HEIGHT
         )
         # Profiler (stage timings for each pipeline step)
         self.profiler = ThroughputProfiler([
@@ -192,8 +196,8 @@ class LineCrossingDetector:
             "ml_input_height": self.in_h,
             "npu_available": NPU_AVAILABLE,
             "system_monitor_interval_sec": SYSTEM_MONITOR_INTERVAL,
-            "line_start": list(LINE_START),
-            "line_end": list(LINE_END),
+            "line_start": list(self.line_start),
+            "line_end": list(self.line_end),
         }
     
 
@@ -205,7 +209,7 @@ class LineCrossingDetector:
             frame=frame,
             use_tiling=self.use_tiling,
             tile_padding=self.tile_padding,
-            line_start_x=LINE_START[0],
+            line_start_x=self.line_start[0],
             profiler=self.profiler if self.profiling_enabled else None
         )
 
@@ -214,6 +218,8 @@ class LineCrossingDetector:
         
         with self.profiler.stage("line_crossing") if self.profiling_enabled else open(os.devnull, 'w') as _:
             crossing_count = self.counter.update(tracked_objects, self.tracker, person_boxes)
+        if self.debug_mapping and person_boxes_display:
+            logger.info(f"[DEBUG MAPPING] Detected {len(person_boxes_display)} boxes (Display space): {person_boxes_display[:2]}")
         logger.debug(f"Frame {self.frame_count}: Tracked {len(tracked_objects)} objects, crossings: {crossing_count}")
 
         with self.lock:
@@ -225,7 +231,7 @@ class LineCrossingDetector:
 
     def _get_tile_bounds(self):
         # We keep this helper *only* for the renderer to draw the red box
-        x0 = max(0, min(DISPLAY_WIDTH // 2, LINE_START[0]) - self.tile_padding)
+        x0 = max(0, min(DISPLAY_WIDTH // 2, self.line_start[0]) - self.tile_padding)
         return x0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT
 
     def _draw_overlay_cv(self, frame):
@@ -236,7 +242,7 @@ class LineCrossingDetector:
         tile_bounds = self._get_tile_bounds() if self.use_tiling else None
         return draw_overlay_cv(
             frame, boxes, tracked, crossings,
-            LINE_START, LINE_END,
+            self.line_start, self.line_end,
             DISPLAY_WIDTH, DISPLAY_HEIGHT, self.in_w, self.in_h,
             tile_bounds=tile_bounds,
         )
@@ -331,7 +337,7 @@ class LineCrossingDetector:
             tile_bounds = self._get_tile_bounds() if self.use_tiling else None
             draw_overlay_cairo(
                 ctx, boxes, tracked, crossings,
-                LINE_START, LINE_END,
+                self.line_start, self.line_end,
                 DISPLAY_WIDTH, DISPLAY_HEIGHT, self.in_w, self.in_h,
                 tile_bounds=tile_bounds,
             )
@@ -424,7 +430,7 @@ class LineCrossingDetector:
             while cap.isOpened():
                 frame_start = time.perf_counter()
 
-                with self.profiler.stage("decode") if self.profiling_enabled else open(os.devnull, 'w') as _:
+                with self.profiler.stage("decoder") if self.profiling_enabled else open(os.devnull, 'w') as _:
                     ok, frame = cap.read()
                 if not ok:
                     logger.info("End of stream")
@@ -436,7 +442,8 @@ class LineCrossingDetector:
                 self.frame_count += 1
                 self._update_ai_fps()  # reuse the same FPS helper as GStreamer path
 
-                self._process_frame_for_detection(frame)
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                self._process_frame_for_detection(rgb_frame)
 
                 with self.profiler.stage("overlay") if self.profiling_enabled else open(os.devnull, 'w') as _:
                     overlay_frame = self._draw_overlay_cv(frame.copy())
@@ -478,7 +485,7 @@ class LineCrossingDetector:
     def run(self):
         logger.info(f"Input: {'Camera' if self.is_camera else 'Video'} {self.video_src}")
         logger.info(f"Output: {self.output_file if self.output_file else 'Display only'}")
-        logger.info(f"Line: {LINE_START} -> {LINE_END}")
+        logger.info(f"Line: {self.line_start} -> {self.line_end}")
         if self.use_tiling:
             tile_x0, _, tile_x1, _ = self._get_tile_bounds()
             logger.info(f"Tiling: right-half ROI x={tile_x0}-{tile_x1} (padding={self.tile_padding})")
@@ -516,6 +523,7 @@ class LineCrossingDetector:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', help='Path to JSON configuration file for the camera')
     parser.add_argument('-m', '--model', default=DEFAULT_MODEL)
     parser.add_argument('-v', '--video', default=DEFAULT_SOURCE)
     parser.add_argument('-o', '--output', default=DEFAULT_OUTPUT)
@@ -535,6 +543,27 @@ if __name__ == "__main__":
                         help='Enable detailed latency profiling')
     args = parser.parse_args()
     
+    # Load dynamic camera configuration if provided
+    video_src = args.video
+    line_start = LINE_START
+    line_end = LINE_END
+    use_tiling = args.use_tiling
+    tile_padding = args.tile_padding
+    
+    if args.config:
+        try:
+            with open(args.config, 'r') as f:
+                config_data = json.load(f)
+            video_src = config_data.get("video_src", video_src)
+            line_start = tuple(config_data.get("line_start", line_start))
+            line_end = tuple(config_data.get("line_end", line_end))
+            use_tiling = config_data.get("use_tiling", use_tiling)
+            tile_padding = config_data.get("tile_padding", tile_padding)
+            logger.info(f"Loaded camera config from {args.config}")
+        except Exception as e:
+            logger.error(f"Failed to load config file {args.config}: {e}")
+            exit(1)
+
     if GST_AVAILABLE:
         Gst.init(None)
         # Required for Wayland/KMS display on i.MX boards
@@ -544,9 +573,13 @@ if __name__ == "__main__":
         logger.info("GStreamer bindings not available on this machine; using OpenCV fallback.")
     
     LineCrossingDetector(
-        args.model, args.video, args.output,
-        use_tiling=args.use_tiling,
-        tile_padding=args.tile_padding,
+        model_path=args.model,
+        video_src=video_src,
+        output_file=args.output,
+        use_tiling=use_tiling,
+        tile_padding=tile_padding,
+        line_start=line_start,
+        line_end=line_end,
         metrics_csv_path=args.metrics_csv,
         metrics_json_path=args.metrics_json,
         preview_enabled=args.preview,

@@ -79,10 +79,9 @@ class OptimizedPostprocessor:
         if scale_params['scale'] is not None:
             out = (out.astype(np.float32) - scale_params['zero_point']) * scale_params['scale']
         
-        if len(out.shape) == 3:
-            out = np.squeeze(out).T
-        else:
-            out = np.squeeze(out)
+        out = np.squeeze(out)
+        if out.ndim == 2 and out.shape[0] < out.shape[1]:
+            out = out.T
         
         if out.ndim == 1:
             out = np.expand_dims(out, 0)
@@ -115,13 +114,26 @@ class OptimizedPostprocessor:
             sel_cls = sel_cls[topk_inds]
             sel_preds = sel_preds[topk_inds]
         
-        box_scale_x = in_w if np.nanmax(sel_preds[:, [0, 2]]) <= 2.0 else 1.0
-        box_scale_y = in_h if np.nanmax(sel_preds[:, [1, 3]]) <= 2.0 else 1.0
+        # Explicit Data Contract: YOLOv8 outputs are expected in model pixel coordinates (0 to in_w)
+        # No guessing scales. Just apply deterministic affine transform back to the frame.
 
-        cx = (sel_preds[:, 0] * box_scale_x - pad_x) / scale
-        cy = (sel_preds[:, 1] * box_scale_y - pad_y) / scale
-        bw = (sel_preds[:, 2] * box_scale_x) / scale
-        bh = (sel_preds[:, 3] * box_scale_y) / scale
+
+        # Deterministic check for coordinate normalization:
+        # 1. Quantized models output dequantized coordinates in [0, 2] range (normalized).
+        # 2. Float32 models output coordinates in pixel space [0, 640] directly.
+        # Fallback check (max_val <= 2.0) covers any float32 model exported with normalized output.
+        is_normalized = (scale_params['scale'] is not None) or (float(np.nanmax(sel_preds[:, [0, 2]])) <= 2.0)
+        
+        if is_normalized:
+            cx = (sel_preds[:, 0] * in_w - pad_x) / scale
+            cy = (sel_preds[:, 1] * in_h - pad_y) / scale
+            bw = (sel_preds[:, 2] * in_w) / scale
+            bh = (sel_preds[:, 3] * in_h) / scale
+        else:
+            cx = (sel_preds[:, 0] - pad_x) / scale
+            cy = (sel_preds[:, 1] - pad_y) / scale
+            bw = sel_preds[:, 2] / scale
+            bh = sel_preds[:, 3] / scale
         
         x1 = np.clip(cx - bw / 2.0, 0, frame_w - 1)
         y1 = np.clip(cy - bh / 2.0, 0, frame_h - 1)

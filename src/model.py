@@ -159,7 +159,7 @@ class TFLitePersonDetector:
             boxes_display = self._map_boxes_tile_to_display(raw_boxes, tile_x0, tile_y0)
             boxes_ml = self._map_boxes_tile_to_full_ml(raw_boxes, tile_x0, tile_y0, display_w, display_h)
         else:
-            boxes_display = self._map_boxes_ml_to_display(raw_boxes, display_w, display_h)
-            boxes_ml = raw_boxes
+            boxes_display = raw_boxes
+            boxes_ml = self._map_boxes_tile_to_full_ml(raw_boxes, 0, 0, display_w, display_h)
             
         return boxes_ml, boxes_display, scores, classes

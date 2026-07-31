@@ -1,0 +1,7 @@
+{
+    "video_src": "/dev/video3",
+    "line_start": [960, 0],
+    "line_end": [960, 1080],
+    "use_tiling": false,
+    "tile_padding": 0
+}

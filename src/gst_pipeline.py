@@ -122,7 +122,7 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
     from configs.settings import GST_BITRATE_FILE, GST_BITRATE_STREAM, GST_UDP_PORT
     
     if is_camera:
-        source = f"v4l2src device={video_src} ! video/x-raw,framerate=30/1"
+        source = f"v4l2src device={video_src} do-timestamp=true ! video/x-raw,framerate=30/1"
     elif video_src.startswith("udp://"):
         port = video_src.split(":")[-1]
         source = f"udpsrc port={port} ! tsdemux name=demux ! h264parse ! vpudec name=decoder ! imxvideoconvert_g2d ! video/x-raw,format=BGRx"
@@ -137,7 +137,7 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
             f"vpuenc_h264 name=file_enc bitrate={GST_BITRATE_FILE} ! h264parse ! mp4mux ! filesink name=file_out location={output_file} "
         )
     else:
-        sink_str = "fakesink "
+        sink_str = "fakesink sync=false"
     
     pipeline_str = (
         f"{source} ! "
@@ -146,7 +146,7 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
         f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
         f"tee name=out "
         f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
-        f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
+        f"out. ! queue max-size-buffers=2 leaky=downstream ! imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
         f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
         f"t. ! queue max-size-buffers=2 leaky=downstream ! "
         f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=1 sync=false"

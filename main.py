@@ -566,6 +566,7 @@ class LineCrossingDetector:
             if self.profiling_enabled:
                 report_fps = self.source_fps if self.source_fps > 0 else self.video_fps
                 logger.info("\n" + self.profiler.format_profiling_summary(report_fps))
+                logger.info("\n" + self.system_monitor.format_system_summary())
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

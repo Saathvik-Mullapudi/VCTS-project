@@ -173,10 +173,43 @@ class SystemMonitor:
                 temps.append((value, zone.name))
         return temps
 
+    def _sample_gc_loads(self):
+        """Read /sys/kernel/debug/gc/load to parse Vivante GPU and NPU loads."""
+        path = Path("/sys/kernel/debug/gc/load")
+        if not path.exists():
+            return None, None
+        try:
+            content = path.read_text(encoding="utf-8")
+            cores = {}
+            current_core = None
+            for line in content.splitlines():
+                line = line.strip().lower()
+                if "core" in line and ":" in line:
+                    parts = line.split(":")
+                    if len(parts) >= 2:
+                        current_core = int(parts[1].strip())
+                elif "load" in line and ":" in line and current_core is not None:
+                    parts = line.split(":")
+                    if len(parts) >= 2:
+                        val_str = parts[1].replace("%", "").strip()
+                        cores[current_core] = float(val_str)
+            # Map core 0 to GPU (galcore), core 1 to NPU (VIP8000) on i.MX8
+            gpu = cores.get(0, None)
+            npu = cores.get(1, None)
+            return gpu, npu
+        except Exception:
+            return None, None
+
     def _sample_npu_utilization(self):
+        gpu, npu = self._sample_gc_loads()
+        if npu is not None:
+            return npu, "/sys/kernel/debug/gc/load (core 1)"
         return self._sample_devfreq_utilization(("npu", "neutron"))
 
     def _sample_gpu_utilization(self):
+        gpu, npu = self._sample_gc_loads()
+        if gpu is not None:
+            return gpu, "/sys/kernel/debug/gc/load (core 0)"
         return self._sample_devfreq_utilization(("gpu", "galcore"))
 
     def _sample_devfreq_utilization(self, keywords):
@@ -334,4 +367,39 @@ class SystemMonitor:
             return "n/a"
         formatted = f"{value:.2f}W"
         return f"{formatted} ({Path(source).name})" if source else formatted
+
+    def format_system_summary(self):
+        """Calculate and return a summary of CPU, NPU, GPU, RAM, and Temperature metrics."""
+        import numpy as np
+        if not self.records:
+            return "No system resource metrics were collected."
+            
+        cpus = [r["cpu_total_percent"] for r in self.records if r["cpu_total_percent"] is not None]
+        npus = [r["npu_utilization_percent"] for r in self.records if r["npu_utilization_percent"] is not None]
+        gpus = [r["gpu_utilization_percent"] for r in self.records if r["gpu_utilization_percent"] is not None]
+        rams = [r["ram_percent"] for r in self.records if r["ram_percent"] is not None]
+        temps = [r["temperature_c"] for r in self.records if r["temperature_c"] is not None]
+        
+        lines = [
+            "=" * 80,
+            "System Resource Utilization Summary",
+            "=" * 80,
+            f"Active Monitoring Time: {len(self.records) * self.interval_sec:.1f} seconds"
+        ]
+        
+        if cpus:
+            lines.append(f"CPU Utilization  | Avg: {np.mean(cpus):>5.1f}% | Max: {np.max(cpus):>5.1f}%")
+        if npus:
+            lines.append(f"NPU Utilization  | Avg: {np.mean(npus):>5.1f}% | Max: {np.max(npus):>5.1f}%")
+        else:
+            lines.append(f"NPU Utilization  | Avg:   n/a% | Max:   n/a%")
+        if gpus:
+            lines.append(f"GPU Utilization  | Avg: {np.mean(gpus):>5.1f}% | Max: {np.max(gpus):>5.1f}%")
+        if rams:
+            lines.append(f"RAM Utilization  | Avg: {np.mean(rams):>5.1f}% | Max: {np.max(rams):>5.1f}%")
+        if temps:
+            lines.append(f"CPU/SoC Temp     | Avg: {np.mean(temps):>5.1f}°C | Max: {np.max(temps):>5.1f}°C")
+            
+        lines.append("=" * 80)
+        return "\n".join(lines)
 

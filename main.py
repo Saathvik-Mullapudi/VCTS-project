@@ -521,9 +521,16 @@ class LineCrossingDetector:
                     self.loop.quit()
                     return True  # Keep the signal handler active
                 
+                def handle_shutdown_signal():
+                    logger.info("Shutdown signal received. Exiting gracefully...")
+                    self.stop_requested = True
+                    self.loop.quit()
+                    return False
+                
                 import signal
-                # Register the signal directly with the GLib C-loop so it doesn't get blocked!
+                # Register the signals directly with the GLib C-loop so they don't get blocked!
                 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, simulate_error_signal)
+                GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, handle_shutdown_signal)
 
                 try:
                     self.loop.run()

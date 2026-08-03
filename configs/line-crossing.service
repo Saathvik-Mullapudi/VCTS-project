@@ -1,0 +1,15 @@
+[Unit]
+Description=Line Crossing Detector Service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/line_crossing
+ExecStart=/usr/bin/python3 main.py --config configs/imx462_camera.json --no-use-tiling --profile -o ""
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

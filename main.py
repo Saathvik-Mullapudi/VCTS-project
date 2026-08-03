@@ -500,20 +500,59 @@ class LineCrossingDetector:
         # All GStreamer lifecycle details live inside src/gst_pipeline.py.
         from src.gst_pipeline import start_pipeline, stop_pipeline
 
-        self.loop = GLib.MainLoop()
-        self._build_pipeline()
         self._start_rtsp_server()
-
         self.system_monitor.start()
-        start_pipeline(self.pipeline)
+        
+        self.stop_requested = False
+        retry_count = 0
+        max_fast_retries = 40  # 40 retries * 3 seconds = 120 seconds (2 minutes)
 
         try:
-            self.loop.run()
-        except KeyboardInterrupt:
-            logger.info("Stopped by user")
+            while not self.stop_requested:
+                self.loop = GLib.MainLoop()
+                self._build_pipeline()
+                self.pipeline.error_occurred = False
+                
+                start_pipeline(self.pipeline)
+
+                def simulate_error_signal():
+                    logger.error("Simulated camera error triggered via SIGUSR1!")
+                    self.pipeline.error_occurred = True
+                    self.loop.quit()
+                    return True  # Keep the signal handler active
+                
+                import signal
+                # Register the signal directly with the GLib C-loop so it doesn't get blocked!
+                GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, simulate_error_signal)
+
+                try:
+                    self.loop.run()
+                except KeyboardInterrupt:
+                    logger.info("Stopped by user")
+                    self.stop_requested = True
+                    break
+                
+                # Check if the loop exited due to an error (e.g. camera unplugged)
+                if getattr(self.pipeline, "error_occurred", False) and self.is_camera:
+                    stop_pipeline(self.pipeline)
+                    
+                    wait_sec = 3 if retry_count < max_fast_retries else 180
+                    logger.warning(f"Camera error detected! Waiting {wait_sec}s to reconnect... (Attempt {retry_count + 1})")
+                    
+                    # Sleep interruptibly so Ctrl+C still works while waiting
+                    for _ in range(wait_sec):
+                        if self.stop_requested:
+                            break
+                        time.sleep(1)
+                        
+                    retry_count += 1
+                else:
+                    # Normal End of Stream (video file finished playing)
+                    break
         finally:
             self.system_monitor.stop()
-            stop_pipeline(self.pipeline)
+            if hasattr(self, 'pipeline'):
+                stop_pipeline(self.pipeline)
             self.metrics_recorder.save(self.metrics_csv_path, self.metrics_json_path)
             logger.info(f"Done! Total crossings: {self.crossing_count}")
 

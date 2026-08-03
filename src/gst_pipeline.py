@@ -107,6 +107,7 @@ def handle_bus_message(bus, message, pipeline, loop):
     elif t == Gst.MessageType.ERROR:
         err, debug = message.parse_error()
         logger.error(f"{err}: {debug}")
+        pipeline.error_occurred = True
         pipeline.set_state(Gst.State.NULL)
         loop.quit()
     elif t == Gst.MessageType.STATE_CHANGED:

@@ -44,7 +44,7 @@ The pipeline consists of a decoupled architecture. GStreamer handles hardware-ac
 
 ## 📊 Live On-Device Performance Metrics
 
-The following reports represent continuous profiling data collected directly from the physical i.MX8 board during a **130.0-second** live camera test running a full-integer quantized YOLOv8n TFLite model.
+The following reports represent continuous profiling data collected directly from the physical i.MX8 board during a **30.7-minute (1,841.0-second)** stability run. The system processed **26,911 frames** overall, running a full-integer quantized YOLOv8n TFLite model on the NPU.
 
 ### 1. Stage Latency Profile
 *Identifies average execution latency at each step in the pipeline cycle.*
@@ -53,34 +53,35 @@ The following reports represent continuous profiling data collected directly fro
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **0. Demux** | - | *N/A (HW)* | - | - | - | - |
 | **1. Decoder** | - | *N/A (HW)* | - | - | - | - |
-| **2. Appsink** | 1081 | 0.11 ms | 0.07 ms | 1.45 ms | 0.09 ms | 0.24 ms |
-| **3. Color Convert (imx g2d)** | 1081 | **8.00 ms** | 6.29 ms | 29.34 ms | 7.26 ms | 11.98 ms |
-| **4. Preprocess** | 1081 | 9.24 ms | 7.20 ms | 19.23 ms | 8.84 ms | 11.92 ms |
-| **5. Inference (YOLO NPU)** | 1081 | **76.26 ms** | 72.30 ms | 85.54 ms | 75.42 ms | 80.39 ms |
-| **6. Postprocess (NMS)** | 1081 | 26.43 ms | 22.71 ms | 37.00 ms | 26.20 ms | 30.52 ms |
-| **7. Tracking (Centroid)** | 1081 | 0.26 ms | 0.02 ms | 2.61 ms | 0.34 ms | 0.68 ms |
-| **8. Line Crossing Math** | 1081 | 0.04 ms | 0.01 ms | 0.82 ms | 0.04 ms | 0.08 ms |
-| **9. Overlay (Cairo Draw)** | 2449 | 1.39 ms | 0.56 ms | 23.73 ms | 1.16 ms | 2.60 ms |
+| **2. Appsink** | 13730 | 0.12 ms | 0.07 ms | 4.20 ms | 0.10 ms | 0.28 ms |
+| **3. Color Convert (imx g2d)** | 13730 | **8.81 ms** | 6.24 ms | 27.80 ms | 7.92 ms | 12.80 ms |
+| **4. Preprocess** | 13730 | 11.02 ms | 5.56 ms | 34.90 ms | 11.01 ms | 13.86 ms |
+| **5. Inference (YOLO NPU)** | 13730 | **78.21 ms** | 73.61 ms | 92.38 ms | 78.33 ms | 80.43 ms |
+| **6. Postprocess (NMS)** | 13730 | 32.27 ms | 22.79 ms | 64.93 ms | 32.24 ms | 38.34 ms |
+| **7. Tracking (Centroid)** | 13730 | 0.17 ms | 0.02 ms | 5.07 ms | 0.03 ms | 0.73 ms |
+| **8. Line Crossing Math** | 13730 | 0.04 ms | 0.01 ms | 1.81 ms | 0.02 ms | 0.09 ms |
+| **9. Overlay (Cairo Draw)** | 26911 | 1.39 ms | 0.57 ms | 47.92 ms | 1.09 ms | 2.84 ms |
 
 ### 2. Stage Throughput Profile (FPS)
 *Measures continuous frame processing rates across decoupled stages.*
 
 | Stage | Processed Frames | Throughput (FPS) | Behavior |
 | :--- | :---: | :---: | :--- |
-| **Appsink Ingestion** | 1081 | **6.8 FPS** | Frame landing rate |
-| **NPU Inference** | 1081 | **6.8 FPS** | YOLOv8n network rate |
-| **Cairo Overlays** | 2449 | **15.5 FPS** | Output display rate |
+| **Display Rendering (RTSP Output)** | 26911 | **11.2 FPS** | Fluid real-time video output |
+| **NPU Inference Rate** | 13730 | **6.0 FPS** | YOLOv8n networks processed per second |
 
-> ℹ️ **Decoupled Throughput Design:** The display rendering pipeline operates at a smooth **15.5 FPS**. However, since YOLOv8n inference on the NPU takes **76.26 ms**, the inference loop runs at **6.8 FPS**. To prevent latency queues from backing up, the GStreamer `appsink` uses a frame-dropping policy (`drop=true`, `max-buffers=1`) that automatically discards stale frames, ensuring the camera stream remains perfectly real-time.
+> ℹ️ **Decoupled Throughput Design:** The display rendering pipeline operates at **11.2 FPS** (matching the camera feed's output speed). However, since YOLOv8n inference on the NPU takes **78.21 ms**, the NPU loop processes frames at **6.0 FPS**. To prevent latency queues from backing up, the GStreamer `appsink` drops outdated frames dynamically (`drop=true`, `max-buffers=1`) so that the video overlay remains perfectly real-time.
+>
+> ⚠️ **Embedded Systems Time-Sync Gotcha:** If the i.MX8 board does not have a battery-backed RTC, the system clock may start at a default compile timestamp (e.g. Feb 2024) and jump forward by years when NTP syncs over the network. Our profiler accounts for this clock skew by relying on monotonic clocks for frame-by-frame throughput, avoiding division errors caused by system clock jumps.
 
 ### 3. System Resource Utilization
 
 | Resource | Average Load | Maximum Peak | Monitoring Path / Source |
 | :--- | :---: | :---: | :--- |
-| **NPU Utilization** | **24.4%** | **42.0%** | `/sys/kernel/debug/gc/load` (Core 1 - VIP8000) |
-| **CPU Utilization** | **44.3%** | **46.6%** | `psutil` (system total) |
-| **RAM Utilization** | **18.1%** | **18.2%** | `psutil` (system total) |
-| **SoC Temperature** | **72.4°C** | **79.0°C** | `/sys/class/thermal/thermal_zone0` |
+| **NPU Utilization** | **21.5%** | **42.0%** | `/sys/kernel/debug/gc/load` (Core 1 - VIP8000) |
+| **CPU Utilization** | **47.3%** | **84.0%** | `psutil` (system total) |
+| **RAM Utilization** | **18.9%** | **21.7%** | `psutil` (system total) |
+| **SoC Temperature** | **80.6°C** | **84.0°C** | `/sys/class/thermal/thermal_zone0` |
 | **GPU Utilization** | **0.0%** | **0.0%** | `/sys/kernel/debug/gc/load` (Core 0 - GPU) |
 
 ---

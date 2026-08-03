@@ -1,139 +1,127 @@
+# Live Line Crossing Detector on i.MX8 NPU
 
-# Line Crossing Detection with YOLOv8n
+A production-grade, high-performance, and self-healing ML vision system designed to track people and count boundary crossings in real-time. Built specifically for **i.MX8 boards** utilizing hardware NPU acceleration, GStreamer media pipelines, and system-level boot autostart and crash recovery.
 
-Fast, readable people-crossing detection built with **OpenCV** and **YOLOv8n**.  
-The app watches a video, tracks people, draws a virtual boundary, and counts when a tracked person moves from one side of the line to the other.
+---
 
-> Model rule: this project is intended to stay on `yolov8n.pt` for speed. No larger model is required.
+## Key Features
 
-## At A Glance
+* 🚀 **NPU Accelerated Inference:** Runs YOLOv8n inference on the onboard VeriSilicon VIP8000 NPU using TensorFlow Lite delegates, achieving high framerates with low CPU utilization.
+* 📹 **GStreamer Media Pipelines:** Leverages hardware-accelerated GStreamer elements (`imxvideoconvert_g2d`, `vpuenc_h264`) for zero-copy frame capturing, color conversion, and H.264 video encoding.
+* 🔌 **Hardware Disconnect Resilience:** Stepped backoff reconnection loop. Intercepts physical camera unplugs, cleanly tears down the pipeline, and retries every 3 seconds for 2 minutes, then backs off to every 3 minutes indefinitely to prevent CPU lockups.
+* 🔄 **Systemd Autostart & Recovery:** Configured as a native Linux background service (`line-crossing.service`) that automatically launches at system boot and auto-restarts within 3 seconds if the process is killed or crashes.
+* 📊 **Resource & Throughput Profiling:** Logs stage-by-stage latencies (inference vs. preprocess vs. draw) and captures CPU/NPU/RAM/SoC temperature averages.
 
-| Area | Current Behavior |
-| --- | --- |
-| Model | `models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite` by default |
-| Input | Image, video file, webcam index, or stream URL |
-| Detection | YOLOv8n tracking with person filtering |
-| Speed controls | Built-in frame skipping and optional tiled inference |
-| Crossing point | Bottom-center foot point against the drawn line |
-| Tiling | Optional right-half tile for crowded CCTV regions |
-| Output | Live OpenCV window, optional `outputs/videos/output.mp4` |
-| Main sample | `data/videos/vid.mp4` |
+---
 
-## Project Map
+## System Architecture
 
 ```text
-line_crossing/
-|-- main.py              # CLI, video loop, line geometry, crossing count
-|-- requirements.txt     # Python dependencies
-|-- src/line_crossing/   # Reusable detector, visualization, motion, and GStreamer modules
-|-- scripts/             # Export, calibration, and model verification scripts
-|-- configs/             # YAML configuration files
-|-- models/              # YOLO and exported TFLite model artifacts
-|-- data/calibration/    # Local calibration arrays; calibration images live outside Git
-|-- data/videos/         # Input/demo videos
-|-- outputs/             # Generated videos, metrics, and debug frames
-|-- docs/                # Reports and project documents
+               +--------------------------------------------------------+
+               |                       i.MX8 Board                      |
+               |                                                        |
++----------+   | +------------+     +----------------+     +----------+ |   +-----------+
+| Physical |-->| |  v4l2src   |-->| | imxvideoconvert |-->| | appsink  | |-->|  YOLOv8n  |
+|  Camera  |   | | (Camera)   |     |     (g2d)      |     | (RGB/Raw)| |   | (NPU/TFL) |
++----------+   | +------------+     +----------------+     +----------+ |   +-----------+
+               |                                                |       |         |
+               |                                                v       |         v
+               | +------------+     +----------------+     +----------+ |   +-----------+
+               | |  udpsink   |     | cairooverlay   |     | OpenCV   |<--| Centroid  |
+               | | (RTSP/UDP) |<--| | (Overlays)     |<--| Tracker  |   |  Tracker  |
+               | +------------+     +----------------+     +----------+ |   +-----------+
+               +--------------------------------------------------------+
 ```
 
-## Pipeline
+---
 
-```mermaid
-flowchart TD
-    A[main.py] --> B[Parse CLI args]
-    B --> C[Load YOLOv8n]
-    C --> D{Input type}
-    D -->|Image| E[Run inference]
-    E --> F[Print detections]
-    D -->|Video| G[Open VideoCapture]
-    G --> H[Read frame]
-    H --> I{Frame ok?}
-    I -->|No| Z[Release resources]
-    I -->|Yes| J{Skip frame?}
-    J -->|Yes| H
-    J -->|No| K[Resize]
-    K --> L[Draw boundary]
-    L --> M[Track people]
-    M --> N[Filter class 0: person]
-    N --> O[Draw overlays]
-    O --> P[Stable foot-point line crossing]
-    P --> Q[Display / save]
-    Q --> H
+## On-Device Performance & Metrics
+
+The system was profiled on the live i.MX8 board with the following latency and system resource averages.
+
+### Stage Latency Profile
+
+| Stage | Processed Frames | Avg Latency (ms) | p95 Latency (ms) |
+| :--- | :---: | :---: | :---: |
+| **Inference (YOLOv8n NPU)** | 713 | **74.3 ms** | **76.5 ms** |
+| **Cairo Overlay Drawing** | 1605 | 1.6 ms | 3.3 ms |
+| **Postprocessing** | 713 | 26.2 ms | 30.7 ms |
+| **Color Convert (imx g2d)** | 713 | 7.5 ms | 11.1 ms |
+| **Centroid Tracking** | 713 | 0.3 ms | 0.7 ms |
+
+### System Resource Utilization (1–2 Hour Continuous Run)
+*Note: A 2.8-minute validation run yielded the following averages; to be updated with long-term metrics.*
+
+| Resource | Average Load | Maximum Peak | Monitoring Source |
+| :--- | :---: | :---: | :---: |
+| **NPU Utilization** | **22.1%** | **40.0%** | `/sys/kernel/debug/gc/load` (Core 1) |
+| **CPU Utilization** | **44.6%** | **50.0%** | `psutil` (system total) |
+| **RAM Utilization** | **17.9%** | **18.0%** | `psutil` (system total) |
+| **SoC Temperature** | **73.2°C** | **80.0°C** | `/sys/class/thermal/thermal_zone0` |
+| **GPU Utilization** | **0.0%** | **0.0%** | `/sys/kernel/debug/gc/load` (Core 0) |
+
+---
+
+## Embedded Board Installation
+
+Follow these steps to deploy, enable autostart, and monitor the application on your i.MX8 device:
+
+### 1. Copy the code to the board (Run on Laptop)
+Navigate to the project root directory on your laptop and copy the files via SCP:
+```bash
+scp -r src configs main.py root@192.168.1.87:~/line_crossing/
 ```
 
-## Crossing Logic
+### 2. Register the Systemd Service (Run on Board via SSH)
+Log into the board and copy the service unit configuration to systemd:
+```bash
+# 1. SSH into the board
+ssh root@192.168.1.87
 
-```mermaid
-stateDiagram-v2
-    [*] --> NewTrack
-    NewTrack --> Above: foot point on side A
-    NewTrack --> Below: foot point on side B
-    Above --> Above: same side
-    Below --> Below: same side
-    Above --> Counted: side changed
-    Below --> Counted: side changed
-    Counted --> Above
-    Counted --> Below
+# 2. Copy the service config to systemd system directories
+cp /root/line_crossing/configs/line-crossing.service /etc/systemd/system/
+
+# 3. Reload systemd daemon to pick up the new service
+systemctl daemon-reload
+
+# 4. Enable the service to launch automatically on system boot
+systemctl enable line-crossing
+
+# 5. Start the service
+systemctl start line-crossing
 ```
 
-Crossing is based on YOLO track IDs, the bottom-center foot point of each person box, a margin around the line, and a short stable-frame check. This reduces false counts from box jitter near the boundary.
+### 3. Monitoring and Managing the Service (Run on Board via SSH)
+Use these systemctl commands to check status, review logs, and stop the service:
 
-## Setup
+* **Check Service Status:**
+  ```bash
+  systemctl status line-crossing
+  ```
+* **Watch Live Metrics & Output Logs:**
+  ```bash
+  journalctl -u line-crossing -f
+  ```
+* **Gracefully Stop (Triggers Profiling Export):**
+  ```bash
+  systemctl stop line-crossing
+  ```
 
+---
+
+## Laptop Development Setup (Simulation Mode)
+
+For local testing, model adjustments, and simulation without physical hardware, you can run the pipeline on your laptop with OpenCV window popups.
+
+### 1. Python Environment Setup
 ```powershell
 python -m venv venv
 venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-## Run
-
+### 2. Run in Simulation Mode (Run on Laptop)
 ```powershell
-python main.py
-python main.py --model models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite
-python main.py --video data/videos/vid.mp4
-python main.py --output outputs/videos/output.mp4
-python main.py --video data/videos/vid.mp4 --use-tiling --tile-padding 120
-python main.py --metrics-csv outputs/metrics/metrics.csv --metrics-json outputs/metrics/metrics.json
+# Run using local video file with performance profiling enabled
+python main.py -v data/videos/vid.mp4 --no-use-tiling --profile
 ```
-
-Press `q` in the playback window to stop.
-
-## CLI Options
-
-| Option | Default | Meaning |
-| --- | ---: | --- |
-| `--video` | `data/videos/vid.mp4` | Video file, webcam, or stream URL |
-| `--model` | `models/yolov8n_saved_model/yolov8n_full_integer_quant.tflite` | TFLite model path |
-| `--output` | `outputs/videos/output.mp4` | Save annotated output video |
-| `--use-tiling` | on | Track people inside the right-half tile |
-| `--tile-padding` | `120` | Pixels to extend tile left of center |
-| `--metrics-csv` | `outputs/metrics/metrics.csv` | CSV file for runtime metrics |
-| `--metrics-json` | `outputs/metrics/metrics.json` | JSON file for runtime metrics |
-| `--preview` | off | Enable local OpenCV display |
-| `--debug-mapping` | off | Print tile-to-model box mapping details |
-
-## Next Improvements
-
-## Calibration Data
-
-Calibration images are stored outside the repository by default:
-
-```text
-C:/Users/saath/VCTS_DATA/calibration_images/
-```
-
-The TFLite export uses `configs/calib_dataset.yaml`. To override the calibration YAML or extracted-frame location:
-
-```powershell
-python scripts/export_to_tflite.py --data configs/calib_dataset.yaml
-python scripts/extract_calibration_frames.py --out-dir C:/Users/saath/VCTS_DATA/calibration_images
-```
-
-1. Add a short smoke-test mode for quick CI checks.
-2. Tune tracker settings for the target CCTV angle.
-3. Wire `src/line_crossing/motion_utils.py` into the loop to skip low-motion frames.
-4. Add a no-output benchmark mode for faster testing.
-
-# VCTS-project
-YOLOv8n + OpenCV CCTV line-crossing detector using person tracking, foot-point logic, and configurable crossing controls.
-

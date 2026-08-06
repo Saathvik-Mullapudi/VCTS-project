@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 from configs.settings import PREPROCESS_PAD_COLOR, PREPROCESS_INT8_OFFSET
 
 # ============================================================================
-# CPU PREPROCESSOR (FROM OVERSPEED PROJECT)
+# CPU PREPROCESSOR 
 # ============================================================================
 class CPUPreprocessor:
     def __init__(self, target_width, target_height, input_dtype):

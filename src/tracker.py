@@ -5,7 +5,7 @@ from collections import OrderedDict
 logger = logging.getLogger(__name__)
 from configs.settings import TRACKER_FOOT_POINT_MAX_DIST
 
-# CENTROID TRACKER (FROM OVERSPEED PROJECT)
+# CENTROID TRACKER 
 # ============================================================================
 class CentroidTracker:
     def __init__(self, maxDisappeared=15, smoothing=0.75, maxDistance=120):

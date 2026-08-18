@@ -122,33 +122,42 @@ def build_pipeline(video_src: str, is_camera: bool, output_file: str,
                    profiler=None):
     from configs.settings import GST_BITRATE_FILE, GST_BITRATE_STREAM, GST_UDP_PORT
     
+    # Detect if NXP i.MX8 hardware acceleration elements are available
+    has_imx = (Gst.ElementFactory.find("vpudec") is not None and 
+               Gst.ElementFactory.find("imxvideoconvert_g2d") is not None)
+
+    dec_elem = "vpudec name=decoder" if has_imx else ("avdec_h264 name=decoder" if Gst.ElementFactory.find("avdec_h264") is not None else "decodebin name=decoder")
+    conv_elem = "imxvideoconvert_g2d" if has_imx else "videoconvert"
+    file_enc_elem = f"vpuenc_h264 name=file_enc bitrate={GST_BITRATE_FILE}" if has_imx else f"x264enc name=file_enc bitrate={GST_BITRATE_FILE} speed-preset=ultrafast"
+    stream_enc_elem = f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM}" if has_imx else f"x264enc name=stream_enc bitrate={GST_BITRATE_STREAM} speed-preset=ultrafast"
+
     if is_camera:
         source = f"v4l2src device={video_src} do-timestamp=true ! video/x-raw,framerate=30/1"
     elif video_src.startswith("udp://"):
         port = video_src.split(":")[-1]
-        source = f"udpsrc port={port} ! tsdemux name=demux ! h264parse ! vpudec name=decoder ! imxvideoconvert_g2d ! video/x-raw,format=BGRx"
+        source = f"udpsrc port={port} ! tsdemux name=demux ! h264parse ! {dec_elem} ! {conv_elem} ! video/x-raw,format=BGRx"
     else:
-        source = f"filesrc location={video_src} ! qtdemux name=demux ! h264parse ! vpudec name=decoder ! imxvideoconvert_g2d ! video/x-raw,format=BGRx"
+        source = f"filesrc location={video_src} ! qtdemux name=demux ! h264parse ! {dec_elem} ! {conv_elem} ! video/x-raw,format=BGRx"
         
     sink_str = "fakesink sync=false"
     
     if output_file:
         sink_str = (
-            f"imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
-            f"vpuenc_h264 name=file_enc bitrate={GST_BITRATE_FILE} ! h264parse ! mp4mux ! filesink name=file_out location={output_file} "
+            f"{conv_elem} ! videoconvert ! video/x-raw,format=I420 ! "
+            f"{file_enc_elem} ! h264parse ! mp4mux ! filesink name=file_out location={output_file} "
         )
     else:
         sink_str = "fakesink sync=false"
     
     pipeline_str = (
         f"{source} ! "
-        f"imxvideoconvert_g2d ! video/x-raw,width={display_w},height={display_h},format=BGRx ! "
+        f"{conv_elem} ! video/x-raw,width={display_w},height={display_h},format=BGRx ! "
         f"tee name=t "
         f"t. ! queue max-size-buffers=2 leaky=downstream ! cairooverlay name=overlay ! "
         f"tee name=out "
         f"out. ! queue max-size-buffers=2 leaky=downstream ! {sink_str} "
-        f"out. ! queue max-size-buffers=2 leaky=downstream ! imxvideoconvert_g2d ! videoconvert ! video/x-raw,format=I420 ! "
-        f"vpuenc_h264 name=stream_enc bitrate={GST_BITRATE_STREAM} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
+        f"out. ! queue max-size-buffers=2 leaky=downstream ! {conv_elem} ! videoconvert ! video/x-raw,format=I420 ! "
+        f"{stream_enc_elem} ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink name=udp_out host=127.0.0.1 port={GST_UDP_PORT} "
         f"t. ! queue max-size-buffers=2 leaky=downstream ! "
         f"videoconvert ! video/x-raw,format=RGB ! appsink name=ml_sink emit-signals=true drop=true max-buffers=1 sync=false"
     )

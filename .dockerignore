@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+
+# Python Virtual Environments & Caches
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# IDE & Project Files
+.vscode
+.idea
+*.code-workspace
+.agents
+
+# Runtime Outputs & Logs (Exclude contents, keep structure)
+outputs/logs/*
+outputs/metrics/*
+outputs/videos/*
+!outputs/logs/.gitkeep
+!outputs/metrics/.gitkeep
+!outputs/videos/.gitkeep
+
+# Temporary, Scratch & Backup Files
+scratch/
+board_backup/
+debug_frames/
+*.tmp
+~$*
+smoke_output.log
+smoke_error.log
+final_output.mp4
+generate_pptx.py
